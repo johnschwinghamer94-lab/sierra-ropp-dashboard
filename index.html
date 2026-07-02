@@ -65,10 +65,11 @@ function ManagePanel({ data, setData, onClose }) {
   const [pubBusy, setPubBusy] = useState(false);
   const [rbFiles, setRbFiles] = useState({});
   const [rbAsof, setRbAsof] = useState(new Date().toISOString().slice(0,10));
-  const [rbMonth, setRbMonth] = useState("June");
+  const [rbMonth, setRbMonth] = useState(Object.keys(MONTHLY_DETAIL).slice(-1)[0]);
   const [rbMsg, setRbMsg] = useState("");
   const [rbBusy, setRbBusy] = useState(false);
-  const MONTHS_LIST = ["January","February","March","April","May","June"];
+  const MONTHS_LIST = Object.keys(MONTHLY_DETAIL);                 // months that carry data (for the per-tech editor)
+  const RPT_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const PERIODS = ["ytd","mtd"];
 
   // ── GitHub helpers (token stored only in this browser) ──
@@ -248,7 +249,7 @@ function ManagePanel({ data, setData, onClose }) {
               <span style={{ fontSize: 9, color: "#94a3b8", letterSpacing: "0.1em" }}>REPORTING MONTH (MTD)</span>
               <select value={rbMonth} onChange={e => setRbMonth(e.target.value)}
                 style={{ background: "#0d1f3c", border: "1px solid #1e3a5f", color: "#FFFFFF", borderRadius: 6, padding: "7px 10px", fontSize: 12, fontFamily: "inherit" }}>
-                {MONTHS_LIST.map(m => <option key={m} value={m}>{m}</option>)}
+                {RPT_MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
               </select>
             </div>
             <button onClick={rebuildAndPublish} disabled={rbBusy}
@@ -349,8 +350,11 @@ function ManagePanel({ data, setData, onClose }) {
   );
 }
 
-const MONTHS = ["January","February","March","April","May","June"];
-const MONTH_SHORT = ["Jan","Feb","Mar","Apr","May","Jun"];
+// Month lists derive from the data so a new month appears automatically on rollover.
+const MONTHS = Object.keys(MONTHLY_DETAIL);
+const MONTH_SHORT = MONTHS.map(m => m.slice(0,3));
+const CUR_MONTH = MONTHS[MONTHS.length - 1];
+const CUR_ABBR = CUR_MONTH.slice(0,3);
 const TECH_COLORS = ["#F5B324","#F5B324","#2E78C7","#F5B324","#F5B324","#5BA4E6","#F5B324","#2E78C7","#F5B324","#5BA4E6","#E63946","#2E78C7","#F5B324","#5BA4E6","#E63946","#F5B324","#2E78C7","#2E78C7","#F5B324","#F5B324","#5BA4E6","#F5B324","#5BA4E6","#F5B324"];
 
 const conv = (calls, tgls) => calls > 0 ? (tgls / calls) * 100 : null;
@@ -508,7 +512,7 @@ function PeriodTable({ period, data }) {
   };
   const si = (col) => sortBy === col ? (sortDir === "asc" ? " ↑" : " ↓") : " ⇅";
 
-  const periodLabel = period === "ytd" ? "YTD (Jan–Jun 2026 · Current)" : "MTD (June 2026)";
+  const periodLabel = period === "ytd" ? ("YTD (Jan–" + CUR_ABBR + " 2026 · Current)") : ("MTD (" + CUR_MONTH + " 2026)");
 
   return (
     <div>
@@ -2255,8 +2259,8 @@ function Root() {
   const [showManage, setShowManage] = useState(false);
 
   const tabs = [
-    { id: "ytd",     label: "📊 YTD",            sub: "Jan–Jun 2026 (Current)" },
-    { id: "mtd",     label: "📅 MTD",            sub: "June 2026" },
+    { id: "ytd",     label: "📊 YTD",            sub: "Jan–" + CUR_ABBR + " 2026 (Current)" },
+    { id: "mtd",     label: "📅 MTD",            sub: CUR_MONTH + " 2026" },
     { id: "weeklyconv",       label: "📈 WEEKLY CONV",        sub: "Week by Week MTD" },
     { id: "revenue", label: "💰 REVENUE / SPLIT", sub: "Svc + Maint" },
     { id: "monthly_breakdown", label: "📆 MONTHLY",           sub: "Month by Month Detail" },

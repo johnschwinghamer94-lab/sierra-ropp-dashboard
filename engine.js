@@ -7,7 +7,24 @@
 "use strict";
 
 // ----------------------------- CONFIG ---------------------------------------
-const MONTHS = ["January","February","March","April","May","June"];
+const ALL_MONTHS = ["January","February","March","April","May","June","July",
+  "August","September","October","November","December"];
+// MONTHS / LM (last month #) / WMAP / WEEKLABELS are set per-rebuild from the
+// reporting month, so rolling to a new month needs NO code change.
+let MONTHS = ["January","February","March","April","May","June"];
+let LM = 6;
+let WMAP = { W1:"Jun 1-7", W2:"Jun 8-14", W3:"Jun 15-21", W4:"Jun 22-28" };
+let WEEKLABELS = { W1:"Jun 1-7", W2:"Jun 8-14", W3:"Jun 15-21", W4:"Jun 22-30" };
+function setReportingMonth(rm){
+  const n = ALL_MONTHS.indexOf(rm) + 1;
+  if (n < 1) throw new Error("Unknown reporting month: " + rm);
+  LM = n;
+  MONTHS = ALL_MONTHS.slice(0, LM);
+  const ab = ALL_MONTHS[LM-1].slice(0,3);
+  const eom = new Date(Date.UTC(2026, LM, 0)).getUTCDate();   // last day of month
+  WMAP       = { W1:ab+" 1-7", W2:ab+" 8-14", W3:ab+" 15-21", W4:ab+" 22-28" };
+  WEEKLABELS = { W1:ab+" 1-7", W2:ab+" 8-14", W3:ab+" 15-21", W4:ab+" 22-"+eom };
+}
 const SILO_12 = ["Alex - Oleksiy Yakovchuk","Andrew Trujillo","Cole Pantol",
   "Dustin Romine","Francisco Valencia","Joe Mendoza","Mario Castro",
   "Nikko April","Benjamin Wyllie","Noah Weng","Brandon Moreno","Nathan Colquitt"];
@@ -68,10 +85,9 @@ function isjob(v){
 }
 function jk(v){ return (typeof v === "number") ? String(Math.trunc(v)) : String(v).trim(); }
 function wk(d){
-  if (d.m === 6) return d.d<=7?"W1":d.d<=14?"W2":d.d<=21?"W3":d.d<=28?"W4":null;
+  if (d.m === LM) return d.d<=7?"W1":d.d<=14?"W2":d.d<=21?"W3":d.d<=28?"W4":null;
   return null;
 }
-const WMAP = {W1:"Jun 1-7",W2:"Jun 8-14",W3:"Jun 15-21",W4:"Jun 22-28"};
 
 function splitParts(field){
   if (typeof field !== "string") return [];
@@ -137,25 +153,25 @@ function build_dataset(rev, tg, cn, sr){
   // ---- CALLS ----
   for (const r of rev){
     const dt = asdate(r[4]);
-    if (!dt || dt.y !== 2026 || dt.m > 6) continue;
+    if (!dt || dt.y !== 2026 || dt.m > LM) continue;
     const bu = (typeof r[10]==="string") ? r[10] : "";
     if (!(bu.includes("HVAC") && (bu.includes("Service") || bu.includes("Maintenance")))) continue;
     const t = resolve_dept(r[7]); if (!t) continue;
     const R = rec(t); const mo = MONTHS[dt.m-1]; const svc = bu.includes("Service");
     inc(R.c,mo,1); inc(R.sv,mo,svc?1:0); inc(R.mn,mo,svc?0:1);
     if (svc) R.ysvc++; else R.ymnt++;
-    if (dt.m===6){ if (svc) R.msvc++; else R.mmnt++; }
+    if (dt.m === LM){ if (svc) R.msvc++; else R.mmnt++; }
     const w = wk(dt); if (w) inc(R.wc,w,1);
   }
   // ---- TGLs + revenue + svc/maint TGL split ----
   for (const r of tg){
     const sd = asdate(r[5]);
-    if (!sd || sd.y!==2026 || sd.m>6 || !isjob(r[1])) continue;
+    if (!sd || sd.y!==2026 || sd.m > LM || !isjob(r[1])) continue;
     const t = resolve_dept(r[3]); if (!t) continue;
     const R = rec(t); const mo = MONTHS[sd.m-1]; const rv = num(r[8]);
     inc(R.tg,mo,1); inc(R.rv,mo,rv);
     const w = wk(sd); if (w){ inc(R.wt,w,1); inc(R.wr,w,rv); }
-    if (sd.m===6){
+    if (sd.m === LM){
       const cat = job_bu[jk(r[1])] || "svc";
       if (cat==="maint"){ R.jmnt++; R.jmntr+=rv; } else { R.jsvc++; R.jsvcr+=rv; }
     }
@@ -166,28 +182,28 @@ function build_dataset(rev, tg, cn, sr){
     const t = resolve_dept(r[10]); if (!t) continue;
     const R = rec(t);
     const s = asdate(r[7]);
-    if (s && s.y===2026 && s.m<=6){ inc(R.cm,MONTHS[s.m-1],1); const w=wk(s); if(w) inc(R.cw,w,1); }
+    if (s && s.y===2026 && s.m <= LM){ inc(R.cm,MONTHS[s.m-1],1); const w=wk(s); if(w) inc(R.cw,w,1); }
     const cd = asdate(r[9]);
-    if (cd && cd.y===2026 && cd.m<=6) R.cy++;
+    if (cd && cd.y===2026 && cd.m <= LM) R.cy++;
   }
   // ---- SAME-DAY / NEXT-DAY ----
   for (let idx=1; idx<sr.length; idx++){
     const r = sr[idx];
     const t = resolve_dept(r[4]); if (!t || !isjob(r[1])) continue;
     const s = asdate(r[6]), c = asdate(r[7]);
-    if (!s || !c || s.y!==2026 || s.m>6) continue;
+    if (!s || !c || s.y!==2026 || s.m > LM) continue;
     const dl = dCmp(s,c);
     const R = rec(t);
     const bump = x => { x.t++; if(dl===0)x.f++; if(dl===1)x.n++; };
     bump(R.sdy);
-    if (s.m<=6){ const mo=MONTHS[s.m-1]; (R.sdm[mo]||(R.sdm[mo]=newND())); bump(R.sdm[mo]); }
+    if (s.m <= LM){ const mo=MONTHS[s.m-1]; (R.sdm[mo]||(R.sdm[mo]=newND())); bump(R.sdm[mo]); }
     const w = wk(s); if (w){ (R.sdw[w]||(R.sdw[w]=newND())); bump(R.sdw[w]); }
   }
   // ---- Andrew Alonso (scoped >= 6/14) ----
   const aa = {yc:0,yt:0,yr:0.0,sdt:0,sdf:0};
   for (const r of rev){
     const dt = asdate(r[4]);
-    if (dt && dt.y===2026 && dt.m<=6 && dCmp(dt,ALONSO_START)>=0){
+    if (dt && dt.y===2026 && dt.m <= LM && dCmp(dt,ALONSO_START)>=0){
       const bu = (typeof r[10]==="string") ? r[10] : "";
       if (bu.includes("HVAC") && (bu.includes("Service")||bu.includes("Maintenance")) && resolve_aa(r[7])==="Andrew Alonso")
         aa.yc++;
@@ -195,7 +211,7 @@ function build_dataset(rev, tg, cn, sr){
   }
   for (const r of tg){
     const sd = asdate(r[5]);
-    if (sd && sd.y===2026 && sd.m<=6 && dCmp(sd,ALONSO_START)>=0 && isjob(r[1]) && resolve_aa(r[3])==="Andrew Alonso"){
+    if (sd && sd.y===2026 && sd.m <= LM && dCmp(sd,ALONSO_START)>=0 && isjob(r[1]) && resolve_aa(r[3])==="Andrew Alonso"){
       aa.yt++; aa.yr += num(r[8]);
     }
   }
@@ -203,7 +219,7 @@ function build_dataset(rev, tg, cn, sr){
     const r = sr[idx];
     if (resolve_aa(r[4])==="Andrew Alonso" && isjob(r[1])){
       const s = asdate(r[6]), c = asdate(r[7]);
-      if (s && c && s.y===2026 && s.m<=6 && dCmp(s,ALONSO_START)>=0){
+      if (s && c && s.y===2026 && s.m <= LM && dCmp(s,ALONSO_START)>=0){
         aa.sdt++; if (dCmp(s,c)===0) aa.sdf++;
       }
     }
@@ -260,6 +276,7 @@ function apply_all(html, D, DEPT, aa, asof, reporting_month){
 
   // ---- MONTHLY_DETAIL ----
   let MD = extract(html,"MONTHLY_DETAIL").obj;
+  if (!MD[reporting_month]) MD[reporting_month] = {};   // scaffold a newly-rolled month
   for (const t of DEPT){
     if (!MD[reporting_month][t]) MD[reporting_month][t]={};
     Object.assign(MD[reporting_month][t], {
@@ -283,6 +300,7 @@ function apply_all(html, D, DEPT, aa, asof, reporting_month){
     if (!CA.weekly[t]) CA.weekly[t]={};
     for (const w of ["W1","W2","W3","W4"]) CA.weekly[t][w] = {scheduled:get(t,"wt",w),cancelled:get(t,"cw",w)};
   }
+  CA.months = MONTHS.slice(); CA.weeks = ["W1","W2","W3","W4"]; CA.weekLabels = Object.assign({}, WEEKLABELS);
   html = put(html,"CANCEL_DATA",CA);
 
   // ---- SAMEDAY_DATA ----
@@ -296,6 +314,7 @@ function apply_all(html, D, DEPT, aa, asof, reporting_month){
     if (!SDB.weekly[t]) SDB.weekly[t]={};
     for (const w of ["W1","W2","W3","W4"]){ const y=sdg(t,"sdw",w); SDB.weekly[t][w]={total:y.t,flipped:y.f,nextday:y.n}; }
   }
+  SDB.months = MONTHS.slice(); SDB.weeks = ["W1","W2","W3","W4"]; SDB.weekLabels = Object.assign({}, WEEKLABELS);
   html = put(html,"SAMEDAY_DATA",SDB);
 
   // ---- WEEKLY_CONV_DATA ----
@@ -313,6 +332,7 @@ function apply_all(html, D, DEPT, aa, asof, reporting_month){
     WC.team_totals.push({week:WMAP[w],calls:c,tgls:tl,rate:r1(tl,c),
       revenue:pyround(DEPT.reduce((a,t)=>a+get(t,"wr",w),0))});
   }
+  WC.weeks = ["W1","W2","W3","W4"].map(w=>WMAP[w]); WC.month = ALL_MONTHS[LM-1];
   html = put(html,"WEEKLY_CONV_DATA",WC);
 
   // ---- PACE_DATA ----
@@ -328,7 +348,12 @@ function apply_all(html, D, DEPT, aa, asof, reporting_month){
       expected_pace:pyround(goal*DE/DAYS_TOTAL),daily_needed:pyround((goal-yrv)/DR),
       daily_actual:pyround(yrv/DE),projected_eoy:pyround(yrv*DAYS_TOTAL/DE),
       pace_pct:r1(yrv*DAYS_TOTAL/DE, goal)});
-    for (const mm of (p.monthly||[])){
+    if (!p.monthly) p.monthly = [];
+    const havM = new Set(p.monthly.map(mm=>mm.month));
+    for (const m of MONTHS){                       // append any newly-rolled month
+      if (!havM.has(m)) p.monthly.push({month:m,calls:0,tgls:0,revenue:0});
+    }
+    for (const mm of p.monthly){
       if (MONTHS.includes(mm.month)){
         mm.calls = D[t].c[mm.month]||0;
         mm.tgls  = D[t].tg[mm.month]||0;
@@ -500,6 +525,7 @@ function rebuild(templateHtml, sheets, opts){
   const asof = parseISO(opts.asof);
   const yday = opts.yesterday ? parseISO(opts.yesterday) : asof;
   const rm = opts.reportingMonth || "June";
+  setReportingMonth(rm);                       // drives MONTHS / LM / week labels
   const {D, DEPT, aa} = build_dataset(rev, tg, cn, sr);
   let html = apply_all(templateHtml, D, DEPT, aa, asof, rm);
   html = set_yesterday(html, rev, tg, yday);

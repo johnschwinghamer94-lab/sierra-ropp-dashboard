@@ -59,8 +59,48 @@ const YESTERDAY_DATA = {"date": "2026-06-30", "team_a": {"techs": [{"name": "Noa
 function ManagePanel({ data, setData, onClose }) {
   const [newName, setNewName] = useState("");
   const [err, setErr] = useState("");
+  const [pubMsg, setPubMsg] = useState("");
+  const [pubBusy, setPubBusy] = useState(false);
   const MONTHS_LIST = ["January","February","March","April","May","June"];
   const PERIODS = ["ytd","mtd"];
+
+  // ── Publish to the live GitHub Pages site ──
+  const REPO = { owner: "johnschwinghamer94-lab", name: "sierra-ropp-dashboard", branch: "main", path: "data.json" };
+  const publish = async () => {
+    let token = localStorage.getItem("gh_publish_token");
+    if (!token) {
+      token = window.prompt("Paste your GitHub token (starts with ghp_ or github_pat_).\n\nIt is saved ONLY in this browser and used to update the live site.");
+      if (!token) return;
+      token = token.trim();
+      localStorage.setItem("gh_publish_token", token);
+    }
+    setPubBusy(true); setPubMsg("Publishing…");
+    try {
+      const api = "https://api.github.com/repos/" + REPO.owner + "/" + REPO.name + "/contents/" + REPO.path;
+      let sha;
+      const getRes = await fetch(api + "?ref=" + REPO.branch + "&t=" + Date.now(), { headers: { Authorization: "token " + token } });
+      if (getRes.ok) { const j = await getRes.json(); sha = j.sha; }
+      const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+      const putRes = await fetch(api, {
+        method: "PUT",
+        headers: { Authorization: "token " + token, "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "Update dashboard data", content: content, sha: sha, branch: REPO.branch })
+      });
+      if (putRes.status === 401 || putRes.status === 403 || putRes.status === 404) {
+        localStorage.removeItem("gh_publish_token");
+        setPubMsg("❌ Token was rejected. Click Publish again to re-enter a valid token.");
+      } else if (!putRes.ok) {
+        const e = await putRes.json().catch(() => ({}));
+        setPubMsg("❌ Failed: " + (e.message || ("HTTP " + putRes.status)));
+      } else {
+        setPubMsg("✅ Published! The live site updates for everyone in about 1 minute.");
+      }
+    } catch (err) {
+      setPubMsg("❌ Error: " + err.message);
+    }
+    setPubBusy(false);
+  };
+  const forgetToken = () => { localStorage.removeItem("gh_publish_token"); setPubMsg("Saved token cleared from this browser."); };
 
   const addTech = () => {
     const name = newName.trim();
@@ -110,7 +150,19 @@ function ManagePanel({ data, setData, onClose }) {
             <div style={{ fontSize: 9, color: "#F5B324", letterSpacing: "0.2em", fontWeight: 700 }}>MANAGE TECHNICIANS</div>
             <div style={{ fontSize: 16, fontWeight: 800, color: "#FFFFFF", fontFamily: "'Syne',sans-serif", marginTop: 2 }}>Add · Remove · Edit Numbers</div>
           </div>
-          <button onClick={onClose} style={{ background: "#2E78C7", border: "none", color: "#FFFFFF", borderRadius: 8, padding: "8px 16px", cursor: "pointer", fontFamily: "inherit", fontSize: 12, fontWeight: 700 }}>✕ CLOSE</button>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <button onClick={publish} disabled={pubBusy} style={{ background: pubBusy ? "#555" : "#16a34a", border: "none", color: "#FFFFFF", borderRadius: 8, padding: "8px 16px", cursor: pubBusy ? "default" : "pointer", fontFamily: "inherit", fontSize: 12, fontWeight: 700 }}>{pubBusy ? "⏳ PUBLISHING…" : "⬆ PUBLISH TO LIVE SITE"}</button>
+            <button onClick={onClose} style={{ background: "#2E78C7", border: "none", color: "#FFFFFF", borderRadius: 8, padding: "8px 16px", cursor: "pointer", fontFamily: "inherit", fontSize: 12, fontWeight: 700 }}>✕ CLOSE</button>
+          </div>
+        </div>
+
+        {/* Publish status bar */}
+        <div style={{ padding: "10px 24px", background: "#0a1a30", borderBottom: "1px solid #1e293b", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ fontSize: 11, color: "#94a3b8" }}>
+            Edits below apply instantly on your screen. Click <b style={{ color: "#22c55e" }}>PUBLISH TO LIVE SITE</b> to save them for everyone who opens the link.
+          </div>
+          {pubMsg && <div style={{ fontSize: 11, color: "#FFFFFF", fontWeight: 700 }}>{pubMsg}</div>}
+          <button onClick={forgetToken} style={{ marginLeft: "auto", background: "transparent", border: "1px solid #334155", color: "#94a3b8", borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontFamily: "inherit", fontSize: 10 }}>Forget saved token</button>
         </div>
 
         {/* Add tech */}
@@ -2099,6 +2151,14 @@ function Root() {
   const [tab, setTab] = useState("ytd");
   const [data, setData] = useState(INITIAL_DATA);
   const [showManage, setShowManage] = useState(false);
+
+  // Load the latest published data from data.json (falls back to built-in data)
+  useEffect(() => {
+    fetch("data.json?t=" + Date.now())
+      .then(r => (r.ok ? r.json() : null))
+      .then(j => { if (j && typeof j === "object" && Object.keys(j).length) setData(j); })
+      .catch(() => {});
+  }, []);
 
   const tabs = [
     { id: "ytd",     label: "📊 YTD",            sub: "Jan–Jun 2026 (Current)" },

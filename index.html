@@ -9,6 +9,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="engine.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -953,223 +954,168 @@ function PeriodTable({ period, data }) {
 }
 
 
-  // ── Weekly Trends ──────────────────────────────────────────────────────────
+  // ── Week over Week (interactive Chart.js) ──────────────────────────────────
   function WeeklyTrends() {
-    const weeks = WEEKLY_DATA.weeks;
-    const wl = WEEKLY_DATA.weekLabels;
-    const techs = Object.keys(WEEKLY_DATA.techs).sort((a, b) => siloRank(a) - siloRank(b) || a.localeCompare(b));
-    const [metric, setMetric] = React.useState("calls");
-    const metricLabel = {calls:"Calls Ran", tgls:"TGLs Created", rate:"Conv %", revenue:"Revenue"};
-    const fmt = (v, m) => m==="revenue" ? "$"+Number(v).toLocaleString() : m==="rate" ? v+"%" : v;
-    const COLORS = ["#F5B324","#F5B324","#2E78C7","#F5B324","#F5B324","#F5B324","#5BA4E6","#5BA4E6","#E63946","#5BA4E6","#F5B324","#F5B324"];
+    const WC = WEEKLY_CONV_DATA;
+    const weekKeys = ["W1","W2","W3","W4"];
+    const weekLabels = WC.weeks;                         // e.g. ["Jul 1-7", ...]
+    const [metric, setMetric] = React.useState("rate");
+    const [byTech, setByTech] = React.useState(false);
+    const canvasRef = React.useRef(null);
+    const chartRef = React.useRef(null);
+    const [ready, setReady] = React.useState(!!window.Chart);
 
-    // Weekly KPI totals for latest week
-    const latestW = weeks[weeks.length-1];
-    const ltc = techs.reduce((a,t)=>a+WEEKLY_DATA.techs[t][latestW].calls,0);
-    const ltt = techs.reduce((a,t)=>a+WEEKLY_DATA.techs[t][latestW].tgls,0);
-    const latestRate = ltc>0?parseFloat((ltt/ltc*100).toFixed(1)):null;
-    const latestBadge = getBadge(latestRate);
-    const aboveKpi = techs.filter(t=>{const d=WEEKLY_DATA.techs[t][latestW];return d.calls>0&&(d.tgls/d.calls*100)>=50;}).length;
-    const belowKpi = techs.filter(t=>{const d=WEEKLY_DATA.techs[t][latestW];return d.calls>0&&(d.tgls/d.calls*100)<50;}).length;
+    React.useEffect(() => {
+      if (window.Chart) { setReady(true); return; }
+      let n = 0; const id = setInterval(() => {
+        if (window.Chart) { setReady(true); clearInterval(id); }
+        else if (++n > 60) clearInterval(id);
+      }, 100);
+      return () => clearInterval(id);
+    }, []);
 
-    // All weeks team totals
-    const weekTotals = weeks.map(w=>{
-      const tc=techs.reduce((a,t)=>a+WEEKLY_DATA.techs[t][w].calls,0);
-      const tt=techs.reduce((a,t)=>a+WEEKLY_DATA.techs[t][w].tgls,0);
-      return {w,calls:tc,tgls:tt,rate:tc>0?parseFloat((tt/tc*100).toFixed(1)):null};
+    // Team-level series for each metric (all from live weekly data blocks)
+    const wkCancelRate = weekKeys.map(wk => {
+      let s = 0, c = 0;
+      DEPT_TECHS.forEach(t => { const x = (CANCEL_DATA.weekly[t] || {})[wk]; if (x) { s += x.scheduled; c += x.cancelled; } });
+      return s > 0 ? Math.round(c / s * 1000) / 10 : 0;
     });
-
-    const getTrend = tech => {
-      const last=WEEKLY_DATA.techs[tech][weeks[weeks.length-1]][metric];
-      const prev=WEEKLY_DATA.techs[tech][weeks[weeks.length-2]][metric];
-      if(last>prev) return {arrow:"▲",color:"#5BA4E6"};
-      if(last<prev) return {arrow:"▼",color:"#E63946"};
-      return {arrow:"—",color:"#FFFFFF"};
+    const wkSameDay = weekKeys.map(wk => {
+      let tot = 0, fl = 0;
+      DEPT_TECHS.forEach(t => { const x = (SAMEDAY_DATA.weekly[t] || {})[wk]; if (x) { tot += x.total; fl += x.flipped; } });
+      return tot > 0 ? Math.round(fl / tot * 1000) / 10 : 0;
+    });
+    const teamSeries = {
+      rate:    WC.team_totals.map(w => w.rate),
+      calls:   WC.team_totals.map(w => w.calls),
+      tgls:    WC.team_totals.map(w => w.tgls),
+      revenue: WC.team_totals.map(w => w.revenue),
+      cancel:  wkCancelRate,
+      sameday: wkSameDay,
     };
-    const thS={padding:"8px 12px",textAlign:"center",fontSize:11,color:"#FFFFFF",borderBottom:"1px solid #1e2d47",fontWeight:700,letterSpacing:1};
-    const tdS=(bold)=>({padding:"8px 12px",textAlign:"center",fontSize:12,color:bold?"#FFFFFF":"#FFFFFF",borderBottom:"1px solid #111827",fontWeight:bold?700:400});
+    const metrics = [
+      { id:"rate",    label:"Conversion %", kind:"pct",   kpi:60, color:"#F5B324" },
+      { id:"calls",   label:"Calls Ran",    kind:"count", color:"#2E78C7" },
+      { id:"tgls",    label:"TGLs",         kind:"count", color:"#F5B324" },
+      { id:"revenue", label:"Revenue",      kind:"money", color:"#4ADE80" },
+      { id:"cancel",  label:"Cancel %",     kind:"pct",   color:"#E63946" },
+      { id:"sameday", label:"Same-Day %",   kind:"pct",   color:"#5BA4E6" },
+    ];
+    const M = metrics.find(m => m.id === metric);
+    const perTechAvail = ["rate","calls","tgls","revenue"].includes(metric);
+    const siloTechs = Object.keys(WC.techs).filter(t => SILO_TEAM.has(t)).sort((a,b) => a.localeCompare(b));
+    const activeIdx = WC.team_totals.map((w,i) => w.calls > 0 ? i : -1).filter(i => i >= 0);
+
+    const fmtV = v => M.kind === "money" ? (v >= 1000000 ? "$"+(v/1000000).toFixed(2)+"M" : v >= 1000 ? "$"+Math.round(v/1000)+"k" : "$"+v)
+                     : M.kind === "pct" ? v + "%" : Number(v).toLocaleString();
+
+    // Build / rebuild the chart when metric, view, or Chart availability changes
+    React.useEffect(() => {
+      if (!ready || !window.Chart || !canvasRef.current) return;
+      if (chartRef.current) { chartRef.current.destroy(); chartRef.current = null; }
+      const isPct = M.kind === "pct", isMoney = M.kind === "money";
+      let datasets;
+      if (byTech && perTechAvail) {
+        const palette = ["#F5B324","#2E78C7","#4ADE80","#E63946","#5BA4E6","#a78bfa","#fb923c","#ec4899","#22d3ee","#84cc16","#f472b6","#38bdf8","#fbbf24","#c084fc","#f87171"];
+        datasets = siloTechs.map((t,i) => ({
+          label: t,
+          data: weekLabels.map(wl => { const d = WC.techs[t] && WC.techs[t][wl]; return d ? (metric === "rate" ? d.rate : metric === "revenue" ? d.revenue : d[metric]) : 0; }),
+          borderColor: palette[i % palette.length], backgroundColor: palette[i % palette.length],
+          tension: 0.3, borderWidth: 2, pointRadius: 3, spanGaps: true,
+        }));
+      } else {
+        datasets = [{
+          label: M.label, data: teamSeries[metric],
+          borderColor: M.color, backgroundColor: M.kind === "count" ? M.color : (M.color + "26"),
+          tension: 0.3, borderWidth: 3, pointRadius: 5, pointBackgroundColor: M.color, fill: false,
+        }];
+        if (M.kpi) datasets.push({ label: "KPI " + M.kpi + "%", data: weekLabels.map(() => M.kpi), borderColor: "#6b7a99", borderDash: [6,6], borderWidth: 1.5, pointRadius: 0 });
+      }
+      chartRef.current = new window.Chart(canvasRef.current, {
+        type: (M.kind === "count" && !byTech) ? "bar" : "line",
+        data: { labels: weekLabels, datasets },
+        options: {
+          responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+          plugins: {
+            legend: { display: byTech && perTechAvail, position: "bottom", labels: { color: "#9fb3cc", boxWidth: 11, font: { size: 10 } } },
+            tooltip: { callbacks: { label: c => c.dataset.label + ": " + (isMoney ? "$" + Number(c.parsed.y).toLocaleString() : isPct ? c.parsed.y + "%" : c.parsed.y) } },
+          },
+          scales: {
+            x: { ticks: { color: "#9fb3cc", font: { size: 11 } }, grid: { color: "#1e2d47" } },
+            y: { beginAtZero: true, ticks: { color: "#6b7a99", callback: v => isMoney ? "$" + Math.round(v/1000) + "k" : isPct ? v + "%" : v }, grid: { color: "#1e2d47" } },
+          },
+        },
+      });
+      return () => { if (chartRef.current) { chartRef.current.destroy(); chartRef.current = null; } };
+    }, [metric, byTech, ready]);
+
+    // Week-over-week delta between the last two active weeks
+    let wow = null;
+    if (activeIdx.length >= 2) {
+      const a = activeIdx[activeIdx.length - 2], b = activeIdx[activeIdx.length - 1];
+      wow = { from: weekLabels[a], to: weekLabels[b], va: teamSeries[metric][a], vb: teamSeries[metric][b], delta: Math.round((teamSeries[metric][b] - teamSeries[metric][a]) * 10) / 10 };
+    }
+    const goodUp = metric !== "cancel";           // for cancel %, down is good
+    const deltaColor = wow ? (wow.delta === 0 ? "#9fb3cc" : (wow.delta > 0) === goodUp ? "#4ADE80" : "#E63946") : "#9fb3cc";
 
     return (
-      <div>
-        {/* Weekly KPI Bar */}
-        <div style={{padding:"16px 24px",background:"linear-gradient(135deg,#161d2e,#1e2d47)",
-          borderBottom:"1px solid #1e2d47",display:"flex",gap:12,alignItems:"center",flexWrap:"wrap"}}>
-          <div style={{flex:1}}>
-            <div style={{fontSize:9,color:"#F5B324",letterSpacing:"0.2em",fontWeight:700}}>CURRENT WEEK — {wl[latestW]}</div>
-            <div style={{fontSize:11,color:"#FFFFFF",marginTop:2}}>KPI Target: <span style={{color:"#2E78C7",fontWeight:700}}>50% Conversion</span></div>
-          </div>
-          <KPICard label="WEEKLY CONV RATE" value={latestRate!==null?latestRate.toFixed(1)+"%":"—"} color={latestBadge.color} big/>
-          <KPICard label="WEEK CALLS"   value={ltc}      color="#F5B324"/>
-          <KPICard label="WEEK TGLs"    value={ltt}      color="#F5B324"/>
-          <KPICard label="AT/ABOVE 50%" value={aboveKpi} color="#2E78C7"/>
-          <KPICard label="BELOW 50%"    value={belowKpi} color="#E63946"/>
+      <div style={{ padding: "0 0 40px" }}>
+        <div style={{ padding: "14px 24px 12px", background: "linear-gradient(135deg,#161d2e,#1e2d47)", borderBottom: "1px solid #1e2d47" }}>
+          <div style={{ fontSize: 9, color: "#F5B324", fontWeight: 700, letterSpacing: "0.2em" }}>{"📈 WEEK OVER WEEK · " + (WC.month || "").toUpperCase()}</div>
+          <div style={{ fontSize: 11, color: "#6b7a99", marginTop: 2 }}>{"Interactive · hover any point for details · " + activeIdx.length + " week" + (activeIdx.length === 1 ? "" : "s") + " with activity"}</div>
         </div>
-        {/* Week-by-week summary strip */}
-        <div style={{display:"flex",borderBottom:"1px solid #111827",background:"#0a0e1a"}}>
-          {weekTotals.map((wt,i)=>{
-            const rc=wt.rate===null?"#FFFFFF":wt.rate>=50?"#5BA4E6":"#E63946";
-            return (
-              <div key={wt.w} style={{flex:1,padding:"8px 12px",textAlign:"center",
-                borderRight:i<weekTotals.length-1?"1px solid #111827":"none",
-                background:i===weekTotals.length-1?"#161d2e":"transparent"}}>
-                <div style={{fontSize:9,color:"#FFFFFF",fontWeight:700,marginBottom:2}}>{wl[wt.w]}</div>
-                <div style={{fontSize:16,fontWeight:800,color:rc,fontFamily:"'Inter',sans-serif"}}>{wt.rate!==null?wt.rate.toFixed(1)+"%":"—"}</div>
-                <div style={{fontSize:9,color:"#FFFFFF"}}>{wt.tgls}/{wt.calls}</div>
-              </div>
-            );
-          })}
-        </div>
-        <div style={{padding:"24px"}}>
-          {/* Metric Selector */}
-          <div style={{display:"flex",gap:8,marginBottom:24,flexWrap:"wrap"}}>
-            {Object.entries(metricLabel).map(([k,v])=>(
-              <button key={k} onClick={()=>setMetric(k)} style={{
-                padding:"8px 20px",borderRadius:8,border:"none",cursor:"pointer",fontSize:13,fontWeight:700,
-                background:metric===k?"#F5B324":"#111827",
-                color:metric===k?"#111827":"#FFFFFF",transition:"all 0.2s",fontFamily:"inherit"
-              }}>{v}</button>
+
+        <div style={{ padding: "16px 24px", display: "flex", flexDirection: "column", gap: 14 }}>
+
+          {/* Metric selector */}
+          <div style={{ display: "flex", gap: 7, flexWrap: "wrap", alignItems: "center" }}>
+            {metrics.map(m => (
+              <button key={m.id} onClick={() => setMetric(m.id)} style={{
+                padding: "7px 15px", borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
+                border: "1px solid " + (metric === m.id ? m.color : "#1e2d47"),
+                background: metric === m.id ? m.color + "22" : "transparent",
+                color: metric === m.id ? m.color : "#9fb3cc",
+              }}>{m.label}</button>
             ))}
+            <div style={{ flex: 1 }} />
+            <button onClick={() => setByTech(v => !v)} disabled={!perTechAvail} style={{
+              padding: "7px 15px", borderRadius: 8, fontSize: 11, fontWeight: 700, fontFamily: "inherit",
+              cursor: perTechAvail ? "pointer" : "not-allowed", opacity: perTechAvail ? 1 : 0.4,
+              border: "1px solid " + (byTech && perTechAvail ? "#F5B324" : "#1e2d47"),
+              background: byTech && perTechAvail ? "rgba(245,179,36,.15)" : "transparent",
+              color: byTech && perTechAvail ? "#F5B324" : "#9fb3cc",
+            }}>{byTech ? "👥 By Tech" : "🏢 Team Total"}</button>
           </div>
-          {/* Charts */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:24}}>
-            <div style={{background:"#161d2e",borderRadius:12,padding:20,border:"1px solid #1e2d47"}}>
-              <div style={{color:"#F5B324",fontSize:13,fontWeight:700,marginBottom:16,letterSpacing:1}}>WEEKLY {metricLabel[metric].toUpperCase()} BY TECH</div>
-              <svg width="100%" viewBox="0 0 520 220" style={{display:"block"}}>
-                {(()=>{
-                  const maxVal=Math.max(...weeks.map(w=>Math.max(...techs.map(t=>WEEKLY_DATA.techs[t][w][metric]))),1);
-                  const barW=8,gap=2,groupW=techs.length*(barW+gap),weekW=130,chartH=170,padL=30,padB=30;
-                  return weeks.map((w,wi)=>{
-                    const x0=padL+wi*weekW+(weekW-groupW)/2;
-                    return (
-                      <g key={w}>
-                        <text x={padL+wi*weekW+weekW/2} y={chartH+padB-2} textAnchor="middle" fill="#FFFFFF" fontSize="9">{wl[w]}</text>
-                        {techs.map((tech,ti)=>{
-                          const val=WEEKLY_DATA.techs[tech][w][metric];
-                          const bh=(val/maxVal)*chartH;
-                          return (
-                            <g key={tech}>
-                              <rect x={x0+ti*(barW+gap)} y={chartH-bh} width={barW} height={bh} fill={COLORS[ti%COLORS.length]} rx={2} opacity={0.85}/>
-                            </g>
-                          );
-                        })}
-                      </g>
-                    );
-                  });
-                })()}
-              </svg>
+
+          {/* WoW delta callout */}
+          {wow && !byTech && (
+            <div style={{ display: "flex", gap: 20, alignItems: "center", background: "#111827", border: "1px solid #1e2d47", borderRadius: 10, padding: "12px 18px", flexWrap: "wrap" }}>
+              <div style={{ fontSize: 10, color: "#6b7a99" }}>{wow.from} <span style={{ color: "#9fb3cc", fontWeight: 700 }}>{fmtV(wow.va)}</span></div>
+              <div style={{ fontSize: 20, color: "#6b7a99" }}>→</div>
+              <div style={{ fontSize: 10, color: "#6b7a99" }}>{wow.to} <span style={{ color: "#FFFFFF", fontWeight: 700 }}>{fmtV(wow.vb)}</span></div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: deltaColor }}>{(wow.delta > 0 ? "▲ +" : wow.delta < 0 ? "▼ " : "") + (M.kind === "pct" ? wow.delta + " pts" : M.kind === "money" ? fmtV(Math.abs(wow.delta)) : wow.delta)}</div>
+              <div style={{ fontSize: 10, color: "#6b7a99" }}>week over week</div>
             </div>
-            <div style={{background:"#161d2e",borderRadius:12,padding:20,border:"1px solid #1e2d47"}}>
-              <div style={{color:"#F5B324",fontSize:13,fontWeight:700,marginBottom:16,letterSpacing:1}}>WEEKLY TREND LINES</div>
-              <svg width="100%" viewBox="0 0 480 220" style={{display:"block"}}>
-                {(()=>{
-                  const allVals=techs.flatMap(t=>weeks.map(w=>WEEKLY_DATA.techs[t][w][metric]));
-                  const maxVal=Math.max(...allVals,1);
-                  const chartH=160,padL=30,padB=30,padR=10,chartW=480-padL-padR,xStep=chartW/(weeks.length-1);
-                  return techs.map((tech,ti)=>{
-                    const pts=weeks.map((w,i)=>{
-                      const val=WEEKLY_DATA.techs[tech][w][metric];
-                      return `${padL+i*xStep},${padB+chartH-(val/maxVal)*chartH}`;
-                    });
-                    return (
-                      <g key={tech}>
-                        <polyline points={pts.join(" ")} fill="none" stroke={COLORS[ti%COLORS.length]} strokeWidth="1.5" opacity="0.7"/>
-                        <circle cx={pts[pts.length-1].split(",")[0]} cy={pts[pts.length-1].split(",")[1]} r="3" fill={COLORS[ti%COLORS.length]}/>
-                      </g>
-                    );
-                  });
-                })()}
-                {weeks.map((w,i)=>(
-                  <text key={w} x={30+i*((480-40)/(weeks.length-1))} y={215} textAnchor="middle" fill="#FFFFFF" fontSize="8">{wl[w]}</text>
-                ))}
-              </svg>
+          )}
+
+          {/* Chart */}
+          <div style={{ background: "#111827", border: "1px solid #1e2d47", borderRadius: 12, padding: "16px 18px" }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", marginBottom: 2 }}>{M.label + (byTech && perTechAvail ? " · by SILO tech" : " · team total")}</div>
+            <div style={{ fontSize: 9.5, color: "#6b7a99", marginBottom: 10 }}>{byTech && perTechAvail ? "One line per SILO tech · click a name below to hide/show" : "Team total across all techs, week by week"}</div>
+            <div style={{ position: "relative", height: 360 }}>
+              {ready ? <canvas ref={canvasRef} /> : <div style={{ color: "#6b7a99", fontSize: 12, paddingTop: 40, textAlign: "center" }}>Loading chart…</div>}
             </div>
           </div>
-          {/* Table */}
-          <div style={{background:"#161d2e",borderRadius:12,border:"1px solid #1e2d47",overflow:"hidden"}}>
-            <div style={{padding:"14px 20px",borderBottom:"1px solid #1e2d47",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-              <span style={{color:"#F5B324",fontSize:13,fontWeight:700,letterSpacing:1}}>TECH WEEKLY BREAKDOWN — {metricLabel[metric].toUpperCase()}</span>
-              <span style={{color:"#FFFFFF",fontSize:11}}>▲▼ vs prev week</span>
+
+          {activeIdx.length < 2 && (
+            <div style={{ fontSize: 11, color: "#6b7a99", textAlign: "center", fontStyle: "italic" }}>
+              {"Only " + activeIdx.length + " week of " + (WC.month || "the month") + " has data so far — the trend fills in as the weeks come in."}
             </div>
-            <div style={{overflowX:"auto"}}>
-              <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead>
-                  <tr style={{background:"#111827"}}>
-                    <th style={{...thS,textAlign:"left",paddingLeft:20}}>TECHNICIAN</th>
-                    {weeks.map(w=>(
-                      <th key={w} style={{...thS,borderLeft:"1px solid #1e2d47"}}>
-                        <div>{wl[w]}</div>
-                        <div style={{display:"flex",justifyContent:"center",gap:8,marginTop:2,fontSize:9}}>
-                          <span style={{color:"#FFFFFF"}}>C</span>
-                          <span style={{color:"#F5B324"}}>T</span>
-                          <span style={{color:"#5BA4E6"}}>%</span>
-                        </div>
-                      </th>
-                    ))}
-                    <th style={thS}>TREND</th>
-                    <th style={thS}>MTD TOTAL</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {techs.map((tech,i)=>{
-                    const trend=getTrend(tech);
-                    const mtdTotal=metric==="rate"
-                      ? (()=>{const tc=weeks.reduce((a,w)=>a+WEEKLY_DATA.techs[tech][w].calls,0);const tt=weeks.reduce((a,w)=>a+WEEKLY_DATA.techs[tech][w].tgls,0);return tc>0?Math.round(tt/tc*1000)/10:0;})()
-                      : weeks.reduce((a,w)=>a+WEEKLY_DATA.techs[tech][w][metric],0);
-                    return (
-                      <tr key={tech} style={{background:i%2===0?"#111827":"#111827"}}>
-                        <td style={{...tdS(true),textAlign:"left",paddingLeft:20,color:"#FFFFFF"}}>{tech}</td>
-                        {weeks.map(w=>{
-                          const d=WEEKLY_DATA.techs[tech][w];
-                          const wr=d.calls>0?(d.tgls/d.calls*100).toFixed(0):"—";
-                          const rc=d.calls>0&&parseFloat(wr)>=50?"#5BA4E6":d.calls>0?"#E63946":"#FFFFFF";
-                          return (
-                            <td key={w} style={{...tdS(false),borderLeft:"1px solid #111827"}}>
-                              <div style={{display:"flex",gap:8,justifyContent:"center"}}>
-                                <span style={{color:"#FFFFFF"}}>{d.calls}</span>
-                                <span style={{color:"#F5B324"}}>{d.tgls}</span>
-                                <span style={{color:rc,fontWeight:700}}>{wr}{d.calls>0?"%":""}</span>
-                              </div>
-                            </td>
-                          );
-                        })}
-                        <td style={{...tdS(false),color:trend.color,fontSize:16}}>{trend.arrow}</td>
-                        <td style={{...tdS(true),color:"#F5B324"}}>{metric==="rate"?mtdTotal+"%":mtdTotal}</td>
-                      </tr>
-                    );
-                  })}
-                  <tr style={{background:"#111827"}}>
-                    <td style={{...tdS(true),textAlign:"left",paddingLeft:20,color:"#F5B324"}}>TEAM TOTAL</td>
-                    {weeks.map(w=>{
-                      const tc=techs.reduce((a,t)=>a+WEEKLY_DATA.techs[t][w].calls,0);
-                      const tt=techs.reduce((a,t)=>a+WEEKLY_DATA.techs[t][w].tgls,0);
-                      const wr=tc>0?(tt/tc*100).toFixed(0):"—";
-                      const rc=tc>0&&parseFloat(wr)>=50?"#5BA4E6":tc>0?"#E63946":"#FFFFFF";
-                      return (
-                        <td key={w} style={{...tdS(true),borderLeft:"1px solid #111827"}}>
-                          <div style={{display:"flex",gap:8,justifyContent:"center"}}>
-                            <span style={{color:"#FFFFFF"}}>{tc}</span>
-                            <span style={{color:"#F5B324"}}>{tt}</span>
-                            <span style={{color:rc,fontWeight:700}}>{wr}{tc>0?"%":""}</span>
-                          </div>
-                        </td>
-                      );
-                    })}
-                    <td style={tdS(false)}/>
-                    <td style={{...tdS(true),color:"#F5B324"}}>
-                      {metric==="rate"
-                        ?(()=>{const tc=techs.reduce((a,t)=>a+weeks.reduce((b,w)=>b+WEEKLY_DATA.techs[t][w].calls,0),0);const tt=techs.reduce((a,t)=>a+weeks.reduce((b,w)=>b+WEEKLY_DATA.techs[t][w].tgls,0),0);return tc>0?Math.round(tt/tc*1000)/10+"%":0;})()
-                        :techs.reduce((a,t)=>a+weeks.reduce((b,w)=>b+WEEKLY_DATA.techs[t][w][metric],0),0)}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     );
   }
-
 
   // ── Pace Report ────────────────────────────────────────────────────────────
   function PaceReport() {
@@ -2357,7 +2303,7 @@ function Root() {
     { id: "weeklyconv",       label: "📈 WEEKLY CONV",        sub: "Week by Week MTD" },
     { id: "revenue", label: "💰 REVENUE / SPLIT", sub: "Svc + Maint" },
     { id: "monthly_breakdown", label: "📆 MONTHLY",           sub: "Month by Month Detail" },
-    { id: "weekly",            label: "📊 WEEKLY TRENDS",    sub: "Week by Week" },
+    { id: "weekly",            label: "📈 WEEK OVER WEEK",   sub: "Interactive · by week" },
     { id: "pace",              label: "🎯 PACE REPORT",       sub: "$3.5M Annual Goal" },
     { id: "deptpace",          label: "🏆 DEPT PACE",          sub: "$30M Annual Goal" },,
     { id: "sameday",           label: "⚡ SAME-DAY",          sub: "Flip Rate" },

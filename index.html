@@ -355,6 +355,12 @@ const MONTHS = Object.keys(MONTHLY_DETAIL);
 const MONTH_SHORT = MONTHS.map(m => m.slice(0,3));
 const CUR_MONTH = MONTHS[MONTHS.length - 1];
 const CUR_ABBR = CUR_MONTH.slice(0,3);
+
+// SILO team = engine-maintained SILO_12 (14, incl. Juan/Rob) + Andrew Alonso.
+// Used to sort SILO techs first on every tab.
+const SILO_TEAM = new Set([...SILO_12, "Andrew Alonso"]);
+const siloRank = t => SILO_TEAM.has(t) ? 0 : 1;
+const DEPT_TECHS_SF = [...DEPT_TECHS.filter(t => SILO_TEAM.has(t)), ...DEPT_TECHS.filter(t => !SILO_TEAM.has(t))];
 const TECH_COLORS = ["#F5B324","#F5B324","#2E78C7","#F5B324","#F5B324","#5BA4E6","#F5B324","#2E78C7","#F5B324","#5BA4E6","#E63946","#2E78C7","#F5B324","#5BA4E6","#E63946","#F5B324","#2E78C7","#2E78C7","#F5B324","#F5B324","#5BA4E6","#F5B324","#5BA4E6","#F5B324"];
 
 const conv = (calls, tgls) => calls > 0 ? (tgls / calls) * 100 : null;
@@ -467,7 +473,7 @@ function PeriodTable({ period, data }) {
   const [sortBy, setSortBy] = useState("rate");
   const [sortDir, setSortDir] = useState("desc");
   const [filter, setFilter] = useState("ALL");
-  const [siloFirst, setSiloFirst] = useState(false);
+  const [siloFirst, setSiloFirst] = useState(true);
   const SILO_SET = new Set(["Alex - Oleksiy Yakovchuk", "Andrew Trujillo", "Cole Pantol", "Dustin Romine", "Francisco Valencia", "Joe Mendoza", "Mario Castro", "Nikko April", "Benjamin Wyllie", "Noah Weng", "Brandon Moreno", "Nathan Colquitt", "Andrew Alonso", "Juan Tlatenchi", "Robert Silinzy"]);
 
   const techStats = useMemo(() => Object.entries(data).map(([tech, d]) => {
@@ -679,7 +685,7 @@ function PeriodTable({ period, data }) {
                   <th key={h} style={{...thS,textAlign:i===0?"left":"center",paddingLeft:i===0?20:14}}>{h}</th>)}
               </tr></thead>
               <tbody>
-                {DEPT_TECHS.map((tech,i)=>{
+                {DEPT_TECHS_SF.map((tech,i)=>{
                   const d=CANCEL_DATA.ytd[tech];
                   const rate=d.scheduled>0?parseFloat((d.cancelled/d.scheduled*100).toFixed(1)):null;
                   const badge=cancelBadge(rate);
@@ -718,7 +724,7 @@ function PeriodTable({ period, data }) {
                   <th style={thS}>YTD</th>
                 </tr></thead>
                 <tbody>
-                  {DEPT_TECHS.map((tech,i)=>{
+                  {DEPT_TECHS_SF.map((tech,i)=>{
                     const ytd=CANCEL_DATA.ytd[tech];
                     const yr=ytd.scheduled>0?parseFloat((ytd.cancelled/ytd.scheduled*100).toFixed(1)):null;
                     return(
@@ -760,7 +766,7 @@ function PeriodTable({ period, data }) {
                   <th style={thS}>MTD</th>
                 </tr></thead>
                 <tbody>
-                  {DEPT_TECHS.map((tech,i)=>{
+                  {DEPT_TECHS_SF.map((tech,i)=>{
                     const may=CANCEL_DATA.monthly[tech].May;
                     const mr=may.scheduled>0?parseFloat((may.cancelled/may.scheduled*100).toFixed(1)):null;
                     return(
@@ -882,7 +888,7 @@ function PeriodTable({ period, data }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {DEPT_TECHS.map(function(tech,i){
+                  {DEPT_TECHS_SF.map(function(tech,i){
                     const ytd = SAMEDAY_DATA.ytd[tech]||{total:0,flipped:0,nextday:0};
                     const yr  = ytd.total>0?parseFloat((ytd.flipped/ytd.total*100).toFixed(1)):null;
                     const yrPN= ytd.total>0?parseFloat(((ytd.flipped+(ytd.nextday||0))/ytd.total*100).toFixed(1)):null;
@@ -951,7 +957,7 @@ function PeriodTable({ period, data }) {
   function WeeklyTrends() {
     const weeks = WEEKLY_DATA.weeks;
     const wl = WEEKLY_DATA.weekLabels;
-    const techs = Object.keys(WEEKLY_DATA.techs);
+    const techs = Object.keys(WEEKLY_DATA.techs).sort((a, b) => siloRank(a) - siloRank(b) || a.localeCompare(b));
     const [metric, setMetric] = React.useState("calls");
     const metricLabel = {calls:"Calls Ran", tgls:"TGLs Created", rate:"Conv %", revenue:"Revenue"};
     const fmt = (v, m) => m==="revenue" ? "$"+Number(v).toLocaleString() : m==="rate" ? v+"%" : v;
@@ -1275,7 +1281,7 @@ function RevenueTable({ data }) {
   const [period, setPeriod] = useState("ytd");
   const [sortBy, setSortBy] = useState("rate");
   const [sortDir, setSortDir] = useState("desc");
-  const [siloFirst, setSiloFirst] = React.useState(false);
+  const [siloFirst, setSiloFirst] = React.useState(true);
   const SILO_SET_R = new Set(["Alex - Oleksiy Yakovchuk", "Andrew Trujillo", "Cole Pantol", "Dustin Romine", "Francisco Valencia", "Joe Mendoza", "Mario Castro", "Nikko April", "Benjamin Wyllie", "Noah Weng", "Brandon Moreno", "Nathan Colquitt", "Andrew Alonso", "Juan Tlatenchi", "Robert Silinzy"]);
   const PLABELS = {ytd:"YTD (Jan–Jun 2026 · Current)",mtd:"MTD (June 2026)"};
 
@@ -1424,6 +1430,8 @@ function MonthlyBreakdown({ data }) {
   }).filter(r => r.total_tgls > 0 || r.calls > 0 || r.total_rev > 0);
 
   const sorted = [...rows].sort((a, b) => {
+    const sr = siloRank(a.tech) - siloRank(b.tech);   // SILO team first
+    if (sr !== 0) return sr;
     const av = a[sortBy] ?? (sortBy === "rate" ? -1 : 0);
     const bv = b[sortBy] ?? (sortBy === "rate" ? -1 : 0);
     if (av < bv) return sortDir === "asc" ? -1 : 1;
@@ -2188,7 +2196,7 @@ function WeeklyConvTab() {
   const weeks = d.weeks;
   const totals = d.team_totals;
   const techs = d.techs;
-  const techNames = Object.keys(techs).sort();
+  const techNames = Object.keys(techs).sort((a, b) => siloRank(a) - siloRank(b) || a.localeCompare(b));
 
   const rc = r => r === 0 ? "#6b7a99" : r >= 60 ? "#4ADE80" : r >= 45 ? "#F5B324" : "#E63946";
   const fmtR = v => v >= 1000000 ? "$" + (v/1000000).toFixed(2) + "M" : v >= 1000 ? "$" + Math.round(v/1000) + "k" : "$" + v;

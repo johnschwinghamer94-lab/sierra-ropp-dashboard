@@ -1407,8 +1407,8 @@ function RevenueTable({ data }) {
 
 // ── Monthly Breakdown Tab ─────────────────────────────────────────────────────
 function MonthlyBreakdown({ data }) {
-  const MONTHS_LIST = ["January","February","March","April","May","June"];
-  const [month, setMonth] = useState("June");
+  const MONTHS_LIST = Object.keys(MONTHLY_DETAIL);
+  const [month, setMonth] = useState(CUR_MONTH);
   const [sortBy, setSortBy] = useState("total_rev");
   const [sortDir, setSortDir] = useState("desc");
 
@@ -1454,6 +1454,15 @@ function MonthlyBreakdown({ data }) {
   const monthRate = conv(totals.calls, totals.total_tgls);
   const monthBadge = getBadge(monthRate);
 
+  // Monthly revenue bars (all months, summed from PACE_DATA)
+  const monthlyRevBars = MONTHS_LIST.map(m => {
+    let rev = 0;
+    Object.values(PACE_DATA).forEach(p => { const mm = (p.monthly || []).find(x => x.month === m); if (mm) rev += mm.revenue || 0; });
+    return { month: m, revenue: rev };
+  });
+  const revBarMax = Math.max(1, ...monthlyRevBars.map(b => b.revenue));
+  const fmtBar = v => v >= 1000000 ? "$" + (v/1000000).toFixed(2) + "M" : v >= 1000 ? "$" + Math.round(v/1000) + "k" : "—";
+
   return (
     <div>
       {/* Month selector */}
@@ -1486,6 +1495,25 @@ function MonthlyBreakdown({ data }) {
           <KPICard label="MAINT TGLs"      value={totals.maint_tgls}   color="#5BA4E6"/>
           <KPICard label="MAINT REVENUE"   value={"$"+Math.round(totals.maint_rev).toLocaleString()} color="#5BA4E6"/>
           <KPICard label="TECHS ACTIVE"    value={rows.length}         color="#FFFFFF"/>
+        </div>
+      </div>
+
+      {/* Monthly revenue bars */}
+      <div style={{padding:"16px 20px",background:"#0a0e1a",borderBottom:"1px solid #1e2d47"}}>
+        <div style={{fontSize:11,fontWeight:700,color:"#FFFFFF"}}>{"Total Revenue by Month"}</div>
+        <div style={{fontSize:9.5,color:"#6b7a99",marginBottom:12}}>{"TGL revenue · Jan – " + CUR_ABBR + " · selected month in gold"}</div>
+        <div style={{display:"flex",alignItems:"flex-end",gap:10,height:150}}>
+          {monthlyRevBars.map(b => {
+            const h = Math.max(2, (b.revenue / revBarMax) * 118);
+            const isCur = b.month === month;
+            return (
+              <div key={b.month} onClick={()=>setMonth(b.month)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:5,cursor:"pointer"}}>
+                <div style={{fontSize:9.5,color:isCur?"#F5B324":"#9fb3cc",fontWeight:700}}>{fmtBar(b.revenue)}</div>
+                <div style={{width:"100%",maxWidth:54,height:h,background:isCur?"#F5B324":"#2E78C7",borderRadius:"5px 5px 0 0",transition:"height .2s"}}/>
+                <div style={{fontSize:9.5,color:isCur?"#F5B324":"#6b7a99",fontWeight:isCur?700:400}}>{b.month.slice(0,3)}</div>
+              </div>
+            );
+          })}
         </div>
       </div>
 

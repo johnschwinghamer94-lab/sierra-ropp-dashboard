@@ -1,0 +1,4 @@
+# Never commit raw ServiceTitan exports or any spreadsheets — they stay local/private
+*.xlsx
+*.xls
+*.csv

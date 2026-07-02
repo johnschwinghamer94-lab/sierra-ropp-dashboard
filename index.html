@@ -8,6 +8,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="engine.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{background:#05080f;color:#e2e8f0;font-family:'DM Mono','Courier New',monospace;min-height:100vh;}
@@ -61,46 +63,107 @@ function ManagePanel({ data, setData, onClose }) {
   const [err, setErr] = useState("");
   const [pubMsg, setPubMsg] = useState("");
   const [pubBusy, setPubBusy] = useState(false);
+  const [rbFiles, setRbFiles] = useState({});
+  const [rbAsof, setRbAsof] = useState(new Date().toISOString().slice(0,10));
+  const [rbMonth, setRbMonth] = useState("June");
+  const [rbMsg, setRbMsg] = useState("");
+  const [rbBusy, setRbBusy] = useState(false);
   const MONTHS_LIST = ["January","February","March","April","May","June"];
   const PERIODS = ["ytd","mtd"];
 
-  // ── Publish to the live GitHub Pages site ──
-  const REPO = { owner: "johnschwinghamer94-lab", name: "sierra-ropp-dashboard", branch: "main", path: "data.json" };
-  const publish = async () => {
+  // ── GitHub helpers (token stored only in this browser) ──
+  const REPO = { owner: "johnschwinghamer94-lab", name: "sierra-ropp-dashboard", branch: "main", path: "index.html" };
+  const getToken = () => {
     let token = localStorage.getItem("gh_publish_token");
     if (!token) {
       token = window.prompt("Paste your GitHub token (starts with ghp_ or github_pat_).\n\nIt is saved ONLY in this browser and used to update the live site.");
-      if (!token) return;
+      if (!token) return null;
       token = token.trim();
       localStorage.setItem("gh_publish_token", token);
     }
+    return token;
+  };
+  const utf8ToB64 = (str) => {
+    const bytes = new TextEncoder().encode(str); let bin = "";
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return btoa(bin);
+  };
+  const b64ToUtf8 = (b64) => {
+    const bin = atob(b64.replace(/\n/g, "")); const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  };
+  const ghApi = () => "https://api.github.com/repos/" + REPO.owner + "/" + REPO.name + "/contents/" + REPO.path;
+  const ghGet = async (token) => {
+    const r = await fetch(ghApi() + "?ref=" + REPO.branch + "&t=" + Date.now(), { headers: { Authorization: "token " + token } });
+    if (r.status === 401 || r.status === 403) { localStorage.removeItem("gh_publish_token"); throw new Error("TOKEN_REJECTED"); }
+    if (!r.ok) throw new Error("Could not read the live file (HTTP " + r.status + ")");
+    const j = await r.json();
+    return { text: b64ToUtf8(j.content), sha: j.sha };
+  };
+  const ghPut = async (token, text, sha, message) => {
+    const r = await fetch(ghApi(), { method: "PUT",
+      headers: { Authorization: "token " + token, "Content-Type": "application/json" },
+      body: JSON.stringify({ message: message, content: utf8ToB64(text), sha: sha, branch: REPO.branch }) });
+    if (r.status === 401 || r.status === 403) { localStorage.removeItem("gh_publish_token"); throw new Error("TOKEN_REJECTED"); }
+    if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.message || ("HTTP " + r.status)); }
+    return true;
+  };
+
+  // ── Publish manual number edits (rewrites INITIAL_DATA inside index.html) ──
+  const publish = async () => {
+    const token = getToken(); if (!token) return;
     setPubBusy(true); setPubMsg("Publishing…");
     try {
-      const api = "https://api.github.com/repos/" + REPO.owner + "/" + REPO.name + "/contents/" + REPO.path;
-      let sha;
-      const getRes = await fetch(api + "?ref=" + REPO.branch + "&t=" + Date.now(), { headers: { Authorization: "token " + token } });
-      if (getRes.ok) { const j = await getRes.json(); sha = j.sha; }
-      const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-      const putRes = await fetch(api, {
-        method: "PUT",
-        headers: { Authorization: "token " + token, "Content-Type": "application/json" },
-        body: JSON.stringify({ message: "Update dashboard data", content: content, sha: sha, branch: REPO.branch })
-      });
-      if (putRes.status === 401 || putRes.status === 403 || putRes.status === 404) {
-        localStorage.removeItem("gh_publish_token");
-        setPubMsg("❌ Token was rejected. Click Publish again to re-enter a valid token.");
-      } else if (!putRes.ok) {
-        const e = await putRes.json().catch(() => ({}));
-        setPubMsg("❌ Failed: " + (e.message || ("HTTP " + putRes.status)));
-      } else {
-        setPubMsg("✅ Published! The live site updates for everyone in about 1 minute.");
-      }
+      const { text, sha } = await ghGet(token);
+      const newHtml = ROPPEngine.put(text, "INITIAL_DATA", data);
+      await ghPut(token, newHtml, sha, "Update dashboard numbers (manual edit)");
+      setPubMsg("✅ Published! The live site updates for everyone in about 1 minute.");
     } catch (err) {
-      setPubMsg("❌ Error: " + err.message);
+      setPubMsg(err.message === "TOKEN_REJECTED" ? "❌ Token was rejected. Click Publish again to re-enter a valid token." : "❌ " + err.message);
     }
     setPubBusy(false);
   };
-  const forgetToken = () => { localStorage.removeItem("gh_publish_token"); setPubMsg("Saved token cleared from this browser."); };
+  const forgetToken = () => { localStorage.removeItem("gh_publish_token"); setPubMsg("Saved token cleared from this browser."); setRbMsg(""); };
+
+  // ── Detect which uploaded file is which of the 4 ServiceTitan reports ──
+  const detectFiles = (fileList) => {
+    const map = {};
+    for (const f of fileList) {
+      const n = f.name.toLowerCase();
+      if (n.includes("revenue")) map.rev = f;
+      else if (n.includes("cancel")) map.cn = f;
+      else if (n.includes("scheduled") || n.includes("vs sold") || n.includes(" ran ") || n.includes("sched")) map.sr = f;
+      else if (n.includes("tgl")) map.tg = f;
+    }
+    setRbFiles(map); setRbMsg("");
+  };
+  const readWB = async (file) => XLSX.read(new Uint8Array(await file.arrayBuffer()), { type: "array" });
+
+  // ── Upload the 4 reports → rebuild the whole dashboard → publish ──
+  const rebuildAndPublish = async () => {
+    const need = ["rev","tg","cn","sr"]; const labels = {rev:"Revenue by Job Type",tg:"ROPP TGLs Created",cn:"ROPP Cancellations",sr:"Scheduled vs Ran"};
+    const missing = need.filter(k => !rbFiles[k]);
+    if (missing.length) { setRbMsg("❌ Missing: " + missing.map(k=>labels[k]).join(", ") + ". Select all 4 report files."); return; }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(rbAsof)) { setRbMsg("❌ Pick a valid 'as-of' date."); return; }
+    const token = getToken(); if (!token) return;
+    setRbBusy(true); setRbMsg("Reading files…");
+    try {
+      const [rev, tg, cn, sr] = await Promise.all([readWB(rbFiles.rev), readWB(rbFiles.tg), readWB(rbFiles.cn), readWB(rbFiles.sr)]);
+      setRbMsg("Fetching live dashboard…");
+      const { text, sha } = await ghGet(token);
+      setRbMsg("Rebuilding numbers…");
+      const res = ROPPEngine.rebuild(text, { rev, tg, cn, sr }, { asof: rbAsof, yesterday: rbAsof, reportingMonth: rbMonth });
+      const s = res.stats;
+      setRbMsg("Publishing… (DEPT YTD " + s.deptYtdCalls + "/" + s.deptYtdTgls + " · SILO " + s.reportingMonth + " " + s.siloMtdCalls + "/" + s.siloMtdTgls + " " + s.siloMtdRate + "%)");
+      await ghPut(token, res.html, sha, "Rebuild from uploaded reports (as-of " + rbAsof + ")");
+      try { setData(ROPPEngine.extract(res.html, "INITIAL_DATA").obj); } catch (e) {}
+      setRbMsg("✅ Published! DEPT YTD " + s.deptYtdCalls + "/" + s.deptYtdTgls + " · SILO " + s.reportingMonth + " " + s.siloMtdCalls + "/" + s.siloMtdTgls + " (" + s.siloMtdRate + "%). Reload in ~1 min to see every tab update.");
+    } catch (err) {
+      setRbMsg(err.message === "TOKEN_REJECTED" ? "❌ Token was rejected. Try again to re-enter a valid token." : "❌ " + err.message);
+    }
+    setRbBusy(false);
+  };
 
   const addTech = () => {
     const name = newName.trim();
@@ -163,6 +226,45 @@ function ManagePanel({ data, setData, onClose }) {
           </div>
           {pubMsg && <div style={{ fontSize: 11, color: "#FFFFFF", fontWeight: 700 }}>{pubMsg}</div>}
           <button onClick={forgetToken} style={{ marginLeft: "auto", background: "transparent", border: "1px solid #334155", color: "#94a3b8", borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontFamily: "inherit", fontSize: 10 }}>Forget saved token</button>
+        </div>
+
+        {/* Upload reports & rebuild */}
+        <div style={{ padding: "16px 24px", background: "#071426", borderBottom: "1px solid #1e293b" }}>
+          <div style={{ fontSize: 12, fontWeight: 800, color: "#F5B324", letterSpacing: "0.08em", marginBottom: 3 }}>⬆ UPLOAD REPORTS &amp; REBUILD EVERYTHING</div>
+          <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 12 }}>
+            Select your 4 ServiceTitan exports (Revenue by Job Type · ROPP TGLs Created · ROPP Cancellations · Scheduled vs Ran). Every tab is recomputed and published. Files are processed in your browser — they are never uploaded anywhere.
+          </div>
+          <div style={{ display: "flex", gap: 14, alignItems: "flex-end", flexWrap: "wrap" }}>
+            <label style={{ background: "#0d1f3c", border: "1px solid #1e3a5f", borderRadius: 8, padding: "10px 16px", cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#e2e8f0" }}>
+              📂 Choose 4 files
+              <input type="file" accept=".xlsx" multiple onChange={e => detectFiles(e.target.files)} style={{ display: "none" }} />
+            </label>
+            <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+              <span style={{ fontSize: 9, color: "#94a3b8", letterSpacing: "0.1em" }}>AS-OF DATE (latest data day)</span>
+              <input type="date" value={rbAsof} onChange={e => setRbAsof(e.target.value)}
+                style={{ background: "#0d1f3c", border: "1px solid #1e3a5f", color: "#FFFFFF", borderRadius: 6, padding: "7px 10px", fontSize: 12, fontFamily: "inherit" }} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+              <span style={{ fontSize: 9, color: "#94a3b8", letterSpacing: "0.1em" }}>REPORTING MONTH (MTD)</span>
+              <select value={rbMonth} onChange={e => setRbMonth(e.target.value)}
+                style={{ background: "#0d1f3c", border: "1px solid #1e3a5f", color: "#FFFFFF", borderRadius: 6, padding: "7px 10px", fontSize: 12, fontFamily: "inherit" }}>
+                {MONTHS_LIST.map(m => <option key={m} value={m}>{m}</option>)}
+              </select>
+            </div>
+            <button onClick={rebuildAndPublish} disabled={rbBusy}
+              style={{ background: rbBusy ? "#555" : "#F5B324", color: "#0A2540", border: "none", borderRadius: 8, padding: "11px 20px", cursor: rbBusy ? "default" : "pointer", fontFamily: "inherit", fontSize: 12, fontWeight: 800 }}>
+              {rbBusy ? "⏳ WORKING…" : "🔄 BUILD & PUBLISH"}
+            </button>
+          </div>
+          <div style={{ display: "flex", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
+            {[["rev","Revenue"],["tg","TGLs"],["cn","Cancellations"],["sr","Sched vs Ran"]].map(([k,lbl]) => (
+              <span key={k} style={{ fontSize: 10, padding: "3px 9px", borderRadius: 12, fontWeight: 700,
+                background: rbFiles[k] ? "#14532d" : "#1e293b", color: rbFiles[k] ? "#4ade80" : "#64748b" }}>
+                {rbFiles[k] ? "✓ " : "○ "}{lbl}
+              </span>
+            ))}
+          </div>
+          {rbMsg && <div style={{ fontSize: 12, color: "#FFFFFF", fontWeight: 700, marginTop: 10 }}>{rbMsg}</div>}
         </div>
 
         {/* Add tech */}
@@ -2151,14 +2253,6 @@ function Root() {
   const [tab, setTab] = useState("ytd");
   const [data, setData] = useState(INITIAL_DATA);
   const [showManage, setShowManage] = useState(false);
-
-  // Load the latest published data from data.json (falls back to built-in data)
-  useEffect(() => {
-    fetch("data.json?t=" + Date.now())
-      .then(r => (r.ok ? r.json() : null))
-      .then(j => { if (j && typeof j === "object" && Object.keys(j).length) setData(j); })
-      .catch(() => {});
-  }, []);
 
   const tabs = [
     { id: "ytd",     label: "📊 YTD",            sub: "Jan–Jun 2026 (Current)" },

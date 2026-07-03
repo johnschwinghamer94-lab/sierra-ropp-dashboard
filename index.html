@@ -34,6 +34,7 @@ body{background:#070b16;color:#eaf1fb;font-family:'Inter','Segoe UI',system-ui,s
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useMemo, useEffect } = React;
+const CLOSE_RATE_DATA = {"team_a":[],"team_b":[],"combined":[],"totals":{}};
 
 const KPI = 60;
 
@@ -2077,6 +2078,106 @@ function SiloOnlyTab() {
   );
 }
 
+function CACloseRateTab() {
+  const [view, setView] = React.useState("combined");
+  const D = CLOSE_RATE_DATA || {};
+  const groups = { team_a: D.team_a || [], team_b: D.team_b || [], combined: D.combined || [] };
+  const rows = groups[view] || [];
+  const fmtR = v => v>=1000000?"$"+(v/1000000).toFixed(2)+"M":v>=1000?"$"+Math.round(v/1000).toLocaleString()+"k":"$"+(v||0);
+  const closeCol = r => r>=50?"#22c55e":r>=30?"#F5B324":"#E63946";   // close-rate color
+  const tglCol   = r => r>=60?"#22c55e":r>=45?"#F5B324":"#E63946";   // conversion color
+  // ranks within the current group
+  const rankBy = key => { const s=[...rows].sort((a,b)=>b[key]-a[key]); const m={}; s.forEach((r,i)=>{m[r.name]=i+1;}); return m; };
+  const rkClose = rankBy("close_rate"), rkTgl = rankBy("tgl_pct"), rkPer = rankBy("per_ropp");
+  const sorted = [...rows].sort((a,b)=> b.close_rate - a.close_rate || b.sold - a.sold);
+  const tot = rows.reduce((a,r)=>({ropps:a.ropps+r.ropps,tgls:a.tgls+r.tgls,canceled:a.canceled+r.canceled,actual:a.actual+r.actual,sold:a.sold+r.sold,sales:a.sales+r.sales}),{ropps:0,tgls:0,canceled:0,actual:0,sold:0,sales:0});
+  const totClose = tot.actual? +(tot.sold/tot.actual*100).toFixed(1):0;
+  const totTgl   = tot.ropps? +(tot.actual/tot.ropps*100).toFixed(1):0;
+  const totPer   = tot.ropps? Math.round(tot.sales/tot.ropps):0;
+
+  const th = (t,al) => <th style={{padding:"9px 8px",fontSize:9,color:"#9fb3cc",fontWeight:700,letterSpacing:"0.05em",textAlign:al||"center",borderBottom:"2px solid #1e2d47",whiteSpace:"nowrap",position:"sticky",top:0,background:"#111827"}}>{t}</th>;
+  const td = (c,al,color,bold) => <td style={{padding:"7px 8px",fontSize:11,textAlign:al||"center",color:color||"#e6eefb",fontWeight:bold?800:500,whiteSpace:"nowrap"}}>{c}</td>;
+  const rankChip = n => <span style={{fontSize:8,color:"#6b7a99",marginLeft:4}}>#{n}</span>;
+
+  return (
+    <div style={{padding:"0 0 40px"}}>
+      {/* Header + view toggle */}
+      <div style={{padding:"14px 24px",background:"linear-gradient(135deg,#161d2e,#1e2d47)",borderBottom:"1px solid #1e2d47",display:"flex",gap:16,alignItems:"center",flexWrap:"wrap"}}>
+        <div style={{flex:1}}>
+          <div style={{fontSize:9,color:"#F5B324",fontWeight:700,letterSpacing:"0.2em"}}>💼 CA CLOSE RATE · SILO TECHS</div>
+          <div style={{fontSize:11,color:"#6b7a99",marginTop:2}}>YTD · Close Rate = Sold TGLs ÷ Actual TGLs (TGLs − canceled)</div>
+        </div>
+        <div style={{display:"flex",gap:8}}>
+          {[["combined","⚔ COMBINED"],["team_a","🔵 TEAM A"],["team_b","🟡 TEAM B"]].map(([v,l])=>(
+            <button key={v} onClick={()=>setView(v)} style={{padding:"7px 16px",border:"none",cursor:"pointer",fontSize:11,fontWeight:700,
+              fontFamily:"inherit",background:view===v?"#F5B324":"#111827",color:view===v?"#000":"#FFFFFF",
+              borderRadius:6,letterSpacing:"0.05em",transition:"all .15s"}}>{l}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Summary strip */}
+      <div style={{padding:"14px 24px 0",display:"flex",gap:12,flexWrap:"wrap"}}>
+        {[["CLOSE RATE",totClose+"%",closeCol(totClose)],["SOLD TGLs",tot.sold,"#5BA4E6"],["ACTUAL TGLs",tot.actual,"#e6eefb"],["CA SALES",fmtR(tot.sales),"#22c55e"],["$ / ROPP","$"+totPer.toLocaleString(),"#2E78C7"]].map(([l,v,c])=>(
+          <div key={l} style={{flex:1,minWidth:130,background:"#161d2e",border:"1px solid #1e2d47",borderRadius:12,padding:"12px 16px",textAlign:"center"}}>
+            <div style={{fontSize:8,color:"#6b7a99",letterSpacing:"0.12em",fontWeight:700}}>{l}</div>
+            <div style={{fontSize:22,fontWeight:900,color:c,marginTop:3}}>{v}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Table */}
+      <div style={{padding:"16px 24px 0"}}>
+        <div style={{background:"#161d2e",border:"1px solid #1e2d47",borderRadius:14,overflow:"auto"}}>
+          <table style={{width:"100%",borderCollapse:"collapse",fontFamily:"inherit"}}>
+            <thead>
+              <tr>
+                {th("Tech","left")}{th("ROPPs")}{th("TGLs")}{th("Cancel")}{th("Actual")}{th("% TGL")}{th("Sold")}{th("CA Close %")}{th("CA Sales $")}{th("$ / ROPP")}
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.length===0 && (
+                <tr><td colSpan={10} style={{padding:"22px",textAlign:"center",color:"#6b7a99",fontSize:12}}>No data yet — it will populate on the next daily rebuild.</td></tr>
+              )}
+              {sorted.map((r,i)=>(
+                <tr key={r.name} style={{background:i%2?"#141c2e":"transparent",borderTop:"1px solid #111827"}}>
+                  {td(r.name,"left","#FFFFFF",true)}
+                  {td(r.ropps)}
+                  {td(r.tgls)}
+                  {td(r.canceled,"center","#FF6B6B")}
+                  {td(r.actual)}
+                  {td(<span>{r.tgl_pct}%{rankChip(rkTgl[r.name])}</span>,"center",tglCol(r.tgl_pct),true)}
+                  {td(r.sold,"center","#5BA4E6",true)}
+                  {td(<span>{r.close_rate}%{rankChip(rkClose[r.name])}</span>,"center",closeCol(r.close_rate),true)}
+                  {td(fmtR(r.sales),"center","#22c55e")}
+                  {td(<span>${(r.per_ropp||0).toLocaleString()}{rankChip(rkPer[r.name])}</span>,"center","#2E78C7")}
+                </tr>
+              ))}
+            </tbody>
+            {sorted.length>0 && (
+              <tfoot>
+                <tr style={{borderTop:"2px solid #1e2d47",background:"#0f1626"}}>
+                  {td("TOTALS","left","#F5B324",true)}
+                  {td(tot.ropps,"center","#F5B324",true)}
+                  {td(tot.tgls,"center","#F5B324",true)}
+                  {td(tot.canceled,"center","#F5B324",true)}
+                  {td(tot.actual,"center","#F5B324",true)}
+                  {td(totTgl+"%","center",tglCol(totTgl),true)}
+                  {td(tot.sold,"center","#F5B324",true)}
+                  {td(totClose+"%","center",closeCol(totClose),true)}
+                  {td(fmtR(tot.sales),"center","#F5B324",true)}
+                  {td("$"+totPer.toLocaleString(),"center","#F5B324",true)}
+                </tr>
+              </tfoot>
+            )}
+          </table>
+        </div>
+        <div style={{fontSize:9,color:"#6b7a99",marginTop:8}}>Ranks (#) are within the selected group. Sold TGLs &amp; CA Sales from the Scheduled-vs-Ran-vs-Sold report (installed &gt; $0).</div>
+      </div>
+    </div>
+  );
+}
+
 function YesterdayTab() {
   const fmtR = v => v>=1000000?"$"+(v/1000000).toFixed(2)+"M":v>=1000?"$"+Math.round(v/1000)+"k":"$"+v;
   const rc = r => r>=60?"#22c55e":r>=45?"#F5B324":"#E63946";
@@ -2685,6 +2786,7 @@ function Root() {
     { id: "cancel",            label: "🚫 CANCELLATION",     sub: "Cancel Rate" },
     { id: "allteams",          label: "👥 ALL TEAMS",         sub: "Silo vs Others" },
     { id: "siloonly",           label: "🎯 SILO ONLY",          sub: "14 Techs · YTD/MTD/Split" },
+    { id: "caclose",            label: "💼 CA CLOSE RATE",       sub: "Sold ÷ Actual TGLs" },
     { id: "yesterday",          label: "📆 YESTERDAY",          sub: "Team A/B as of prior day" },
   ];
 
@@ -2779,6 +2881,7 @@ function Root() {
           {tab === "cancel" && <CancellationTab/>}
           {tab === "allteams" && <AllTeamsTab/>}
         {tab === "siloonly" && <SiloOnlyTab/>}
+        {tab === "caclose" && <CACloseRateTab/>}
         {tab === "yesterday" && <YesterdayTab/>}
       </div>
 

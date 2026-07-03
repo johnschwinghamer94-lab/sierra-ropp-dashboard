@@ -2102,7 +2102,7 @@ function CACloseRateTab() {
   const rankChip = n => <span style={{fontSize:8,color:"#6b7a99",marginLeft:4}}>#{n}</span>;
 
   return (
-    <div style={{padding:"0 0 40px"}}>
+    <div className="riseIn" style={{padding:"0 0 40px"}}>
       {/* Header + view toggle */}
       <div style={{padding:"14px 24px",background:"linear-gradient(135deg,#161d2e,#1e2d47)",borderBottom:"1px solid #1e2d47",display:"flex",gap:16,alignItems:"center",flexWrap:"wrap"}}>
         <div style={{flex:1}}>
@@ -2124,15 +2124,56 @@ function CACloseRateTab() {
         </div>
       </div>
 
-      {/* Summary strip */}
-      <div style={{padding:"14px 24px 0",display:"flex",gap:12,flexWrap:"wrap"}}>
-        {[["CLOSE RATE",totClose+"%",closeCol(totClose)],["SOLD TGLs",tot.sold,"#5BA4E6"],["ACTUAL TGLs",tot.actual,"#e6eefb"],["CA SALES",fmtR(tot.sales),"#22c55e"],["$ / ROPP","$"+totPer.toLocaleString(),"#2E78C7"]].map(([l,v,c])=>(
-          <div key={l} style={{flex:1,minWidth:130,background:"#161d2e",border:"1px solid #1e2d47",borderRadius:12,padding:"12px 16px",textAlign:"center"}}>
-            <div style={{fontSize:8,color:"#6b7a99",letterSpacing:"0.12em",fontWeight:700}}>{l}</div>
-            <div style={{fontSize:22,fontWeight:900,color:c,marginTop:3}}>{v}</div>
-          </div>
-        ))}
+      {/* KPI cards */}
+      <div style={{padding:"16px 24px 4px",display:"flex",gap:12,flexWrap:"wrap"}}>
+        <KPICard label="CA CLOSE RATE" value={totClose+"%"} color={closeCol(totClose)} big sub={tot.sold+" / "+tot.actual+" TGLs"} />
+        <KPICard label="SOLD TGLs" value={tot.sold} color="#5BA4E6" />
+        <KPICard label="ACTUAL TGLs" value={tot.actual} color="#FFFFFF" sub={tot.tgls+" − "+tot.canceled+" cxl"} />
+        <KPICard label="% TGL" value={totTgl+"%"} color={tglCol(totTgl)} />
+        <KPICard label="CA SALES" value={fmtR(tot.sales)} color="#22c55e" big />
+        <KPICard label="$ / ROPP" value={"$"+totPer.toLocaleString()} color="#2E78C7" />
       </div>
+
+      {/* Top closers ranking */}
+      {(()=>{ const rk=sorted.filter(r=>r.actual>0).slice(0,8); if(rk.length<3) return null;
+        const mx=Math.max(60,...rk.map(r=>r.close_rate),1);
+        return (
+        <div style={{padding:"12px 24px 4px"}}>
+          <div style={{fontSize:11,fontWeight:700,color:"#FFFFFF"}}>{"Top Closers · CA Close Rate"}</div>
+          <div style={{fontSize:9.5,color:"#6b7a99",marginBottom:10}}>{"green ≥ 50% · gold ≥ 30% · red below · "+(period==="ytd"?"YTD":(D.month||"MTD"))}</div>
+          <div style={{display:"flex",flexDirection:"column",gap:7,maxWidth:660}}>
+            {rk.map((r,i)=>(
+              <div key={r.name} style={{display:"flex",alignItems:"center",gap:10}}>
+                <div style={{width:130,fontSize:10.5,color:"#9fb3cc",textAlign:"right",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{r.name}</div>
+                <div style={{flex:1,background:"#0a1220",borderRadius:5,height:18,overflow:"hidden"}}>
+                  <div style={{width:Math.max(2,(r.close_rate/mx)*100)+"%",height:"100%",background:closeCol(r.close_rate),borderRadius:5,animation:"growW 1s cubic-bezier(.2,.7,.2,1) both",animationDelay:(i*0.07)+"s"}}/>
+                </div>
+                <div style={{width:92,fontSize:11,fontWeight:800,color:closeCol(r.close_rate),textAlign:"right"}}>{r.close_rate}% <span style={{color:"#6b7a99",fontWeight:600}}>{"("+r.sold+"/"+r.actual+")"}</span></div>
+              </div>
+            ))}
+          </div>
+        </div>);
+      })()}
+
+      {/* Team A vs Team B hero */}
+      {(()=>{ const TT=(D.totals&&D.totals[period])||{}; const A=TT.team_a||{}, B=TT.team_b||{};
+        const aC=A.close_rate||0, bC=B.close_rate||0, aS=A.sales||0, bS=B.sales||0, tS=(aS+bS)||1;
+        return (
+        <div style={{padding:"14px 24px 0"}}>
+          <div className="liftCard" style={{background:"#161d2e",border:"1px solid #1e2d47",borderRadius:18,padding:"16px 20px"}}>
+            <div style={{fontSize:13,fontWeight:800,color:"#FFFFFF"}}>{"Team A vs Team B"}</div>
+            <div style={{fontSize:10,color:"#6b7a99",marginBottom:14}}>{(period==="ytd"?"YTD":(D.month||"MTD"))+" · CA close rate · CA sales share"}</div>
+            <div style={{fontSize:10,color:"#9fb3cc",marginBottom:5}}>{"Close Rate — "}<b style={{color:"#5BA4E6"}}>{"Team A "+aC+"%"}</b>{" vs "}<b style={{color:"#F5B324"}}>{"Team B "+bC+"%"}</b></div>
+            <div style={{background:"#0a1220",borderRadius:5,height:16,marginBottom:6}}><div style={{width:Math.min(100,aC)+"%",height:"100%",borderRadius:5,background:"linear-gradient(90deg,#2E78C7,#5BA4E6)",animation:"growW 1.1s ease both"}}/></div>
+            <div style={{background:"#0a1220",borderRadius:5,height:16,marginBottom:16}}><div style={{width:Math.min(100,bC)+"%",height:"100%",borderRadius:5,background:"linear-gradient(90deg,#F5B324,#c98f14)",animation:"growW 1.3s ease both"}}/></div>
+            <div style={{fontSize:10,color:"#9fb3cc",marginBottom:5}}>{"CA Sales Share — "}<b style={{color:"#5BA4E6"}}>{"A "+fmtR(aS)+" ("+Math.round(aS/tS*100)+"%)"}</b>{" · "}<b style={{color:"#F5B324"}}>{"B "+fmtR(bS)}</b></div>
+            <div style={{display:"flex",height:20,borderRadius:6,overflow:"hidden",background:"#0a1220"}}>
+              <div style={{width:(aS/tS*100)+"%",background:"linear-gradient(90deg,#2E78C7,#5BA4E6)",animation:"growW 1.2s ease both",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"#fff"}}>{Math.round(aS/tS*100)+"%"}</div>
+              <div style={{width:(bS/tS*100)+"%",background:"linear-gradient(90deg,#F5B324,#c98f14)",animation:"growW 1.4s ease both",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"#0a0e1a"}}>{Math.round(bS/tS*100)+"%"}</div>
+            </div>
+          </div>
+        </div>);
+      })()}
 
       {/* Table */}
       <div style={{padding:"16px 24px 0"}}>
@@ -2147,20 +2188,24 @@ function CACloseRateTab() {
               {sorted.length===0 && (
                 <tr><td colSpan={10} style={{padding:"22px",textAlign:"center",color:"#6b7a99",fontSize:12}}>No data yet — it will populate on the next daily rebuild.</td></tr>
               )}
-              {sorted.map((r,i)=>(
-                <tr key={r.name} style={{background:i%2?"#141c2e":"transparent",borderTop:"1px solid #111827"}}>
-                  {td(r.name,"left","#FFFFFF",true)}
+              {sorted.map((r,i)=>{ const lead=i===0&&r.actual>0; const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
+                return (
+                <tr key={r.name} style={{background:lead?"rgba(245,179,36,.08)":(i%2?"#141c2e":"transparent"),borderTop:"1px solid #111827",borderLeft:lead?"3px solid #F5B324":"3px solid transparent"}}>
+                  {td(<span>{medal?<span style={{marginRight:5}}>{medal}</span>:null}{r.name}</span>,"left","#FFFFFF",true)}
                   {td(r.ropps)}
                   {td(r.tgls)}
                   {td(r.canceled,"center","#FF6B6B")}
                   {td(r.actual)}
                   {td(<span>{r.tgl_pct}%{rankChip(rkTgl[r.name])}</span>,"center",tglCol(r.tgl_pct),true)}
                   {td(r.sold,"center","#5BA4E6",true)}
-                  {td(<span>{r.close_rate}%{rankChip(rkClose[r.name])}</span>,"center",closeCol(r.close_rate),true)}
+                  <td style={{padding:"7px 8px",textAlign:"center",whiteSpace:"nowrap"}}>
+                    <div style={{fontSize:11,fontWeight:800,color:closeCol(r.close_rate)}}>{r.close_rate}%{rankChip(rkClose[r.name])}</div>
+                    <div style={{height:3,background:"#0a1220",borderRadius:2,marginTop:3,overflow:"hidden"}}><div style={{width:Math.min(100,r.close_rate)+"%",height:"100%",background:closeCol(r.close_rate),borderRadius:2,animation:"growW .9s ease both"}}/></div>
+                  </td>
                   {td(fmtR(r.sales),"center","#22c55e")}
                   {td(<span>${(r.per_ropp||0).toLocaleString()}{rankChip(rkPer[r.name])}</span>,"center","#2E78C7")}
-                </tr>
-              ))}
+                </tr>);
+              })}
             </tbody>
             {sorted.length>0 && (
               <tfoot>

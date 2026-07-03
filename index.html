@@ -489,8 +489,8 @@ function TechRow({ tech, d, period, idx, expanded, onToggle, isSilo }) {
         <div style={{ width: 200, flexShrink: 0, minWidth: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: expanded ? "#F5B324" : "#FFFFFF", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{tech}{isSilo && <span style={{marginLeft:6,fontSize:8,padding:"1px 5px",borderRadius:3,background:"rgba(245,179,36,.2)",color:"#F5B324",fontWeight:700,flexShrink:0}}>SILO</span>}</div>
         </div>
-        <div style={{ width: 260, flexShrink: 0, height: 8, background: "#0a1220", borderRadius: 4, overflow: "hidden" }}>
-          <div style={{ width: `${barW}%`, height: "100%", background: badge.color, borderRadius: 4, animation: "growW 0.9s cubic-bezier(.2,.7,.2,1) both" }} />
+        <div style={{ width: 360, flexShrink: 0, height: 10, background: "#0a1220", borderRadius: 5, overflow: "hidden" }}>
+          <div style={{ width: `${barW}%`, height: "100%", background: badge.color, borderRadius: 5, animation: "growW 0.9s cubic-bezier(.2,.7,.2,1) both" }} />
         </div>
         <div style={{ textAlign: "center", width: 64, flexShrink: 0 }}>
           <div style={{ fontSize: 18, fontWeight: 800, color: badge.color, fontFamily: "'Inter',sans-serif" }}>{fmtPct(rate)}</div>
@@ -1225,8 +1225,27 @@ function PeriodTable({ period, data }) {
     const tdS={padding:"10px 16px",textAlign:"center",fontSize:13,borderBottom:"1px solid #111827"};
     const maxRev=Math.max(...pd.monthly.map(m=>m.revenue),1);
     const barW=55,barGap=18,chartH=150,padL=44,padB=28;
+    const teamPace=techList.map(t=>({name:t,rev:PACE_DATA[t].ytd_revenue,goal:PACE_DATA[t].goal,exp:PACE_DATA[t].expected_pace})).sort((a,b)=>b.rev-a.rev);
+    const gMax=Math.max(...teamPace.map(t=>t.goal),1);
     return (
       <div style={{padding:"0 24px 40px"}}>
+        {/* Team pace hero */}
+        <div className="liftCard" style={{background:"#161d2e",border:"1px solid #1e2d47",borderRadius:18,padding:"16px 20px",margin:"18px 0 22px"}}>
+          <div style={{fontSize:13,fontWeight:800,color:"#FFFFFF"}}>{"Team Pace — YTD Revenue vs $3.5M Goal"}</div>
+          <div style={{fontSize:10,color:"#6b7a99",marginBottom:14}}>{"gold tick = expected by today · blue bar = on/ahead of pace · red = behind"}</div>
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {teamPace.map((t,i)=>{ const ok=t.rev>=t.exp; return (
+              <div key={t.name} style={{display:"flex",alignItems:"center",gap:12}}>
+                <div style={{width:150,fontSize:11,color:"#9fb3cc",textAlign:"right",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{t.name}</div>
+                <div style={{flex:1,maxWidth:900,background:"#0a1220",borderRadius:6,height:22,position:"relative",overflow:"hidden"}}>
+                  <div style={{width:Math.min(100,t.rev/gMax*100)+"%",height:"100%",borderRadius:6,background:ok?"linear-gradient(90deg,#2E78C7,#5BA4E6)":"linear-gradient(90deg,#E63946,#a3222d)",animation:"growW 1.1s cubic-bezier(.2,.7,.2,1) both",animationDelay:(i*0.05)+"s"}}/>
+                  <div style={{position:"absolute",top:-2,bottom:-2,left:(t.exp/gMax*100)+"%",width:2,background:"#F5B324",boxShadow:"0 0 6px #F5B324"}}/>
+                </div>
+                <div style={{width:78,fontSize:12,fontWeight:800,color:ok?"#5BA4E6":"#E63946",textAlign:"right"}}>{fmtK(t.rev)}</div>
+              </div>);
+            })}
+          </div>
+        </div>
         <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:24}}>
           {techList.map(t=>{
             const tp=PACE_DATA[t];
@@ -1922,6 +1941,25 @@ function SiloOnlyTab() {
         </div>
       </div>
 
+      {/* Team A vs B hero */}
+      {(()=>{ const aR=team_a.totals.rate, bR=team_b.totals.rate, aRev=team_a.totals.revenue, bRev=team_b.totals.revenue, totRev=(aRev+bRev)||1;
+        return (
+        <div style={{padding:"18px 24px 0"}}>
+          <div className="liftCard" style={{background:"#161d2e",border:"1px solid #1e2d47",borderRadius:18,padding:"16px 20px"}}>
+            <div style={{fontSize:13,fontWeight:800,color:"#FFFFFF"}}>{"Team A vs Team B"}</div>
+            <div style={{fontSize:10,color:"#6b7a99",marginBottom:14}}>{"YTD conversion rate · revenue share"}</div>
+            <div style={{fontSize:10,color:"#9fb3cc",marginBottom:5}}>{"Conversion — "}<b style={{color:"#5BA4E6"}}>{"Team A "+aR+"%"}</b>{" vs "}<b style={{color:"#F5B324"}}>{"Team B "+bR+"%"}</b></div>
+            <div style={{background:"#0a1220",borderRadius:5,height:16,marginBottom:6}}><div style={{width:Math.min(100,aR)+"%",height:"100%",borderRadius:5,background:"linear-gradient(90deg,#2E78C7,#5BA4E6)",animation:"growW 1.1s ease both"}}/></div>
+            <div style={{background:"#0a1220",borderRadius:5,height:16,marginBottom:16}}><div style={{width:Math.min(100,bR)+"%",height:"100%",borderRadius:5,background:"linear-gradient(90deg,#F5B324,#c98f14)",animation:"growW 1.3s ease both"}}/></div>
+            <div style={{fontSize:10,color:"#9fb3cc",marginBottom:5}}>{"Revenue Share — "}<b style={{color:"#5BA4E6"}}>{"A "+fmtR(aRev)+" ("+Math.round(aRev/totRev*100)+"%)"}</b>{" · "}<b style={{color:"#F5B324"}}>{"B "+fmtR(bRev)}</b></div>
+            <div style={{display:"flex",height:20,borderRadius:6,overflow:"hidden",background:"#0a1220"}}>
+              <div style={{width:(aRev/totRev*100)+"%",background:"linear-gradient(90deg,#2E78C7,#5BA4E6)",animation:"growW 1.2s ease both",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"#fff"}}>{Math.round(aRev/totRev*100)+"%"}</div>
+              <div style={{width:(bRev/totRev*100)+"%",background:"linear-gradient(90deg,#F5B324,#c98f14)",animation:"growW 1.4s ease both",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"#0a0e1a"}}>{Math.round(bRev/totRev*100)+"%"}</div>
+            </div>
+          </div>
+        </div>);
+      })()}
+
       {/* KPI bar */}
       {view !== "split" && (
         <div style={{padding:"12px 24px",background:"#111827",borderBottom:"1px solid #1e2d47",display:"flex",gap:12,flexWrap:"wrap",alignItems:"center"}}>
@@ -2081,6 +2119,29 @@ function YesterdayTab() {
         <div style={{flex:1}}>
           <div style={{fontSize:9,color:"#F5B324",fontWeight:700,letterSpacing:"0.2em"}}>📆 TEAM A / B · PREVIOUS DAY</div>
           <div style={{fontSize:11,color:"#6b7a99",marginTop:2}}>{fmtDate(date)} — single-day totals (not YTD)</div>
+        </div>
+      </div>
+
+      {/* Daily A vs B hero */}
+      <div style={{padding:"18px 24px 0"}}>
+        <div className="liftCard" style={{background:"#161d2e",border:"1px solid #1e2d47",borderRadius:18,padding:"16px 20px"}}>
+          <div style={{fontSize:13,fontWeight:800,color:"#FFFFFF"}}>{"Yesterday · Team A vs Team B"}</div>
+          <div style={{fontSize:10,color:"#6b7a99",marginBottom:14}}>{"🔵 Team A vs 🟡 Team B · calls, TGLs, conversion"}</div>
+          {[["Calls Ran",team_a.totals.calls,team_b.totals.calls],["TGLs",team_a.totals.tgls,team_b.totals.tgls],["Conversion %",team_a.totals.rate,team_b.totals.rate]].map(([lbl,av,bv])=>{ const mx=Math.max(av,bv,1); const pc=lbl==="Conversion %"?"%":"";
+            return (<div key={lbl} style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:"#9fb3cc",marginBottom:4}}>{lbl}</div>
+              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:4}}>
+                <div style={{width:56,fontSize:9,color:"#5BA4E6",textAlign:"right",fontWeight:700}}>{"TEAM A"}</div>
+                <div style={{flex:1,maxWidth:760,background:"#0a1220",borderRadius:5,height:16}}><div style={{width:(av/mx*100)+"%",height:"100%",borderRadius:5,background:"linear-gradient(90deg,#2E78C7,#5BA4E6)",animation:"growW 1.1s ease both"}}/></div>
+                <div style={{width:46,fontSize:12,fontWeight:800,color:"#5BA4E6"}}>{av+pc}</div>
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <div style={{width:56,fontSize:9,color:"#F5B324",textAlign:"right",fontWeight:700}}>{"TEAM B"}</div>
+                <div style={{flex:1,maxWidth:760,background:"#0a1220",borderRadius:5,height:16}}><div style={{width:(bv/mx*100)+"%",height:"100%",borderRadius:5,background:"linear-gradient(90deg,#F5B324,#c98f14)",animation:"growW 1.3s ease both"}}/></div>
+                <div style={{width:46,fontSize:12,fontWeight:800,color:"#F5B324"}}>{bv+pc}</div>
+              </div>
+            </div>);
+          })}
         </div>
       </div>
 
@@ -2693,7 +2754,7 @@ function Root() {
       </div>
 
       {/* Tab content */}
-      <div style={{ maxWidth: 1440, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1760, margin: "0 auto" }}>
         {tab === "overview" && <OverviewTab data={data} />}
         {tab === "ytd"     && <PeriodTable period="ytd"    data={data} />}
         {tab === "mtd"     && <PeriodTable period="mtd"    data={data} />}

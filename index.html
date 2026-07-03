@@ -219,7 +219,7 @@ function ManagePanel({ data, setData, onClose }) {
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", zIndex: 200, overflowY: "auto", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "32px 16px" }}>
-      <div style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 14, width: "100%", maxWidth: 900, overflow: "hidden" }}>
+      <div style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 18, width: "100%", maxWidth: 900, overflow: "hidden" }}>
         {/* Header */}
         <div style={{ padding: "18px 24px", background: "#111827", borderBottom: "1px solid #1e2d47", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
@@ -271,7 +271,7 @@ function ManagePanel({ data, setData, onClose }) {
           </div>
           <div style={{ display: "flex", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
             {[["rev","Revenue"],["tg","TGLs"],["cn","Cancellations"],["sr","Sched vs Ran"]].map(([k,lbl]) => (
-              <span key={k} style={{ fontSize: 10, padding: "3px 9px", borderRadius: 12, fontWeight: 700,
+              <span key={k} style={{ fontSize: 10, padding: "3px 9px", borderRadius: 16, fontWeight: 700,
                 background: rbFiles[k] ? "#14532d" : "#1e2d47", color: rbFiles[k] ? "#4ade80" : "#64748b" }}>
                 {rbFiles[k] ? "✓ " : "○ "}{lbl}
               </span>
@@ -387,7 +387,7 @@ const getBadge = (rate) => {
 // ── KPI Card ──────────────────────────────────────────────────────────────────
 function KPICard({ label, value, sub, color, big }) {
   return (
-    <div className="liftCard" style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 12, padding: big ? "14px 22px" : "11px 16px", minWidth: big ? 130 : 104, textAlign: "center" }}>
+    <div className="liftCard" style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 16, padding: big ? "14px 22px" : "11px 16px", minWidth: big ? 130 : 104, textAlign: "center" }}>
       <div style={{ fontSize: 9, letterSpacing: "0.12em", color: "#6b7a99", fontWeight: 700, marginBottom: 5 }}>{label}</div>
       <div style={{ fontSize: big ? 28 : 20, fontWeight: 800, color: color || "#FFFFFF", fontFamily: "'Inter',sans-serif" }}>{value}</div>
       {sub && <div style={{ fontSize: 9, color: "#6b7a99", marginTop: 3 }}>{sub}</div>}
@@ -431,12 +431,12 @@ function WeekChart({ labels, teamData, perTech, color, kind, title, sub, kpi }) 
     return () => { if (chartRef.current) { chartRef.current.destroy(); chartRef.current = null; } };
   }, [byTech, ready]);
   return (
-    <div style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 12, padding: "14px 18px" }}>
+    <div style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 16, padding: "14px 18px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 8 }}>
         <div><div style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF" }}>{title}</div><div style={{ fontSize: 9.5, color: "#6b7a99" }}>{sub}</div></div>
         {hasPerTech && <button onClick={() => setByTech(v => !v)} style={{ padding: "6px 13px", borderRadius: 8, fontSize: 10.5, fontWeight: 700, fontFamily: "inherit", cursor: "pointer", border: "1px solid " + (byTech ? "#F5B324" : "#1e2d47"), background: byTech ? "rgba(245,179,36,.15)" : "transparent", color: byTech ? "#F5B324" : "#9fb3cc" }}>{byTech ? "👥 By Tech" : "🏢 Team"}</button>}
       </div>
-      <div style={{ position: "relative", height: 300, marginTop: 10 }}>{ready ? <canvas ref={canvasRef} /> : <div style={{ color: "#6b7a99", fontSize: 12, paddingTop: 40, textAlign: "center" }}>Loading chart…</div>}</div>
+      <div style={{ position: "relative", height: 400, marginTop: 12 }}>{ready ? <canvas ref={canvasRef} /> : <div style={{ color: "#6b7a99", fontSize: 12, paddingTop: 40, textAlign: "center" }}>Loading chart…</div>}</div>
     </div>
   );
 }
@@ -470,6 +470,14 @@ function TechRow({ tech, d, period, idx, expanded, onToggle, isSilo }) {
   const color = TECH_COLORS[idx % TECH_COLORS.length];
   const barW = rate !== null ? Math.min(rate, 100) : 0;
 
+  // per-tech monthly conversion sparkline
+  const _mon = d.monthly || {};
+  const _sv = MONTHS.map(m => { const mm = _mon[m]; return (mm && mm.calls > 0) ? (mm.tgls / mm.calls * 100) : 0; });
+  const _hasSpark = MONTHS.some(m => { const mm = _mon[m]; return mm && mm.calls > 0; });
+  const _sw = 118, _sh = 26, _smax = Math.max(60, ..._sv, 1);
+  const _spts = _sv.map((v,i) => (i/(Math.max(1,_sv.length-1))*_sw).toFixed(1)+","+(_sh-(v/_smax)*_sh).toFixed(1)).join(" ");
+  const _s60 = (_sh-(60/_smax)*_sh).toFixed(1);
+
   return (
     <div style={{ borderBottom: "1px solid #111827" }}>
       <div onClick={onToggle} style={{
@@ -481,15 +489,25 @@ function TechRow({ tech, d, period, idx, expanded, onToggle, isSilo }) {
         <div style={{ width: 200, flexShrink: 0, minWidth: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: expanded ? "#F5B324" : "#FFFFFF", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{tech}{isSilo && <span style={{marginLeft:6,fontSize:8,padding:"1px 5px",borderRadius:3,background:"rgba(245,179,36,.2)",color:"#F5B324",fontWeight:700,flexShrink:0}}>SILO</span>}</div>
         </div>
-        <div style={{ width: 300, flexShrink: 0, height: 8, background: "#0a1220", borderRadius: 4, overflow: "hidden" }}>
+        <div style={{ width: 260, flexShrink: 0, height: 8, background: "#0a1220", borderRadius: 4, overflow: "hidden" }}>
           <div style={{ width: `${barW}%`, height: "100%", background: badge.color, borderRadius: 4, animation: "growW 0.9s cubic-bezier(.2,.7,.2,1) both" }} />
         </div>
-        <div style={{ textAlign: "center", minWidth: 64 }}>
+        <div style={{ textAlign: "center", width: 64, flexShrink: 0 }}>
           <div style={{ fontSize: 18, fontWeight: 800, color: badge.color, fontFamily: "'Inter',sans-serif" }}>{fmtPct(rate)}</div>
-          <div style={{ fontSize: 9, color: "#FFFFFF" }}>{data.tgls} / {data.calls}</div>
+          <div style={{ fontSize: 9, color: "#6b7a99" }}>{data.tgls} / {data.calls}</div>
         </div>
-        <span style={{ background: badge.bg, color: badge.color, border: `1px solid ${badge.color}55`, borderRadius: 4, padding: "2px 8px", fontSize: 9, fontWeight: 700, whiteSpace: "nowrap" }}>{badge.label}</span>
-        <span style={{ color: "#FFFFFF", fontSize: 14 }}>{expanded ? "▲" : "▼"}</span>
+        <span style={{ background: badge.bg, color: badge.color, border: `1px solid ${badge.color}55`, borderRadius: 4, padding: "2px 8px", fontSize: 9, fontWeight: 700, whiteSpace: "nowrap", flexShrink: 0 }}>{badge.label}</span>
+        <div style={{ flex: 1 }} />
+        {_hasSpark && (
+          <div style={{ flexShrink: 0, textAlign: "center" }}>
+            <svg width={_sw} height={_sh} style={{ display: "block" }}>
+              <line x1="0" y1={_s60} x2={_sw} y2={_s60} stroke="#F5B32455" strokeWidth="1" strokeDasharray="3 3" />
+              <polyline points={_spts} fill="none" stroke={badge.color} strokeWidth="2" style={{ animation: "riseIn .6s ease both" }} />
+            </svg>
+            <div style={{ fontSize: 7.5, color: "#6b7a99", letterSpacing: "0.08em", marginTop: 1 }}>MONTHLY TREND</div>
+          </div>
+        )}
+        <span style={{ color: "#6b7a99", fontSize: 14, flexShrink: 0 }}>{expanded ? "▲" : "▼"}</span>
       </div>
 
       {expanded && (
@@ -588,7 +606,7 @@ function PeriodTable({ period, data }) {
           <div style={{ fontSize: 9, color: "#F5B324", letterSpacing: "0.2em", fontWeight: 700 }}>{periodLabel}</div>
           <div style={{ fontSize: 11, color: "#FFFFFF", marginTop: 2 }}>KPI Target: <span style={{ color: "#2E78C7", fontWeight: 700 }}>60% Conversion</span></div>
         </div>
-        <div className="liftCard" style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 12, padding: "8px 16px 4px", textAlign: "center" }}>
+        <div className="liftCard" style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 16, padding: "8px 16px 4px", textAlign: "center" }}>
           <div style={{ fontSize: 9, letterSpacing: "0.12em", color: "#6b7a99", fontWeight: 700 }}>OVERALL CONV</div>
           <Gauge rate={overallRate} size={80} />
         </div>
@@ -1173,7 +1191,7 @@ function PeriodTable({ period, data }) {
           )}
 
           {/* Chart */}
-          <div style={{ background: "#111827", border: "1px solid #1e2d47", borderRadius: 12, padding: "16px 18px" }}>
+          <div style={{ background: "#111827", border: "1px solid #1e2d47", borderRadius: 16, padding: "16px 18px" }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", marginBottom: 2 }}>{M.label + (byTech && perTechAvail ? " · by SILO tech" : " · team total")}</div>
             <div style={{ fontSize: 9.5, color: "#6b7a99", marginBottom: 10 }}>{byTech && perTechAvail ? "One line per SILO tech · click a name below to hide/show" : "Team total across all techs, week by week"}</div>
             <div style={{ position: "relative", height: 360 }}>

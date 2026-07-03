@@ -387,7 +387,7 @@ const getBadge = (rate) => {
 // ── KPI Card ──────────────────────────────────────────────────────────────────
 function KPICard({ label, value, sub, color, big }) {
   return (
-    <div style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 12, padding: big ? "14px 22px" : "11px 16px", minWidth: big ? 130 : 104, textAlign: "center" }}>
+    <div className="liftCard" style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 12, padding: big ? "14px 22px" : "11px 16px", minWidth: big ? 130 : 104, textAlign: "center" }}>
       <div style={{ fontSize: 9, letterSpacing: "0.12em", color: "#6b7a99", fontWeight: 700, marginBottom: 5 }}>{label}</div>
       <div style={{ fontSize: big ? 28 : 20, fontWeight: 800, color: color || "#FFFFFF", fontFamily: "'Inter',sans-serif" }}>{value}</div>
       {sub && <div style={{ fontSize: 9, color: "#6b7a99", marginTop: 3 }}>{sub}</div>}
@@ -593,7 +593,10 @@ function PeriodTable({ period, data }) {
           <div style={{ fontSize: 9, color: "#F5B324", letterSpacing: "0.2em", fontWeight: 700 }}>{periodLabel}</div>
           <div style={{ fontSize: 11, color: "#FFFFFF", marginTop: 2 }}>KPI Target: <span style={{ color: "#2E78C7", fontWeight: 700 }}>60% Conversion</span></div>
         </div>
-        <KPICard label="OVERALL CONV RATE" value={fmtPct(overallRate)} color={overallBadge.color} big />
+        <div className="liftCard" style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 12, padding: "8px 16px 4px", textAlign: "center" }}>
+          <div style={{ fontSize: 9, letterSpacing: "0.12em", color: "#6b7a99", fontWeight: 700 }}>OVERALL CONV</div>
+          <Gauge rate={overallRate} size={80} />
+        </div>
         <KPICard label="TOTAL CALLS" value={totalCalls} color="#F5B324" />
         <KPICard label="TGLs GENERATED" value={totalTgls} color="#F5B324" />
         <KPICard label="YTD REVENUE" value={fmtRev(ytdRevenue)} color="#2E78C7" big />
@@ -1305,7 +1308,12 @@ function RevenueTable({ data }) {
   const [sortDir, setSortDir] = useState("desc");
   const [siloFirst, setSiloFirst] = React.useState(true);
   const SILO_SET_R = new Set(["Alex - Oleksiy Yakovchuk", "Andrew Trujillo", "Cole Pantol", "Dustin Romine", "Francisco Valencia", "Joe Mendoza", "Mario Castro", "Nikko April", "Benjamin Wyllie", "Noah Weng", "Brandon Moreno", "Nathan Colquitt", "Andrew Alonso", "Juan Tlatenchi", "Robert Silinzy"]);
-  const PLABELS = {ytd:"YTD (Jan–Jun 2026 · Current)",mtd:"MTD (June 2026)"};
+  const PLABELS = {ytd:"YTD (Jan–"+CUR_ABBR+" 2026 · Current)",mtd:"MTD ("+CUR_MONTH+" 2026)"};
+
+  // Interactive monthly revenue series
+  const revLabels = MONTHS.map(m=>m.slice(0,3));
+  const teamRev = MONTHS.map(m=>{ let r=0; Object.values(PACE_DATA).forEach(p=>{const mm=(p.monthly||[]).find(x=>x.month===m); if(mm) r+=mm.revenue||0;}); return r; });
+  const perTechRev = {}; Object.keys(PACE_DATA).filter(t=>SILO_TEAM.has(t)).forEach(t=>{ perTechRev[t]=MONTHS.map(m=>{const mm=(PACE_DATA[t].monthly||[]).find(x=>x.month===m); return mm?(mm.revenue||0):0;}); });
 
   const techStats = useMemo(() => Object.entries(data).map(([tech,d]) => {
     const pd = d[period];
@@ -1352,6 +1360,11 @@ function RevenueTable({ data }) {
           <KPICard label="MAINT CALLS" value={tot.maint_calls} color="#5BA4E6"/>
           <KPICard label="MAINT TGLs" value={tot.maint_tgls} color="#5BA4E6"/>
         </div>
+      </div>
+      {/* Interactive revenue-by-month chart */}
+      <div style={{padding:"18px 20px 4px"}}>
+        <WeekChart title={"Revenue by Month"} sub={"TGL revenue · hover for detail · toggle by SILO tech"}
+          labels={revLabels} teamData={teamRev} perTech={perTechRev} color={"#4ADE80"} kind={"money"} />
       </div>
       <div style={{padding:"8px 20px",background:"#111827",borderBottom:"1px solid #111827",display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
         <span style={{fontSize:9,color:"#FFFFFF"}}>SORT:</span>

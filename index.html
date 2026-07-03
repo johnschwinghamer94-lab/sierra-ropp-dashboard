@@ -478,16 +478,11 @@ function TechRow({ tech, d, period, idx, expanded, onToggle, isSilo }) {
         cursor: "pointer", transition: "background 0.15s"
       }}>
         <div style={{ width: 3, height: 32, background: color, borderRadius: 2, flexShrink: 0 }} />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: expanded ? "#F5B324" : "#FFFFFF", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{tech}{isSilo && <span style={{marginLeft:6,fontSize:8,padding:"1px 5px",borderRadius:3,background:"rgba(245,179,36,.2)",color:"#F5B324",fontWeight:700,flexShrink:0}}>SILO</span>}</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
-            <div style={{ flex: 1, maxWidth: 360, height: 6, background: "#0a1220", borderRadius: 3 }}>
-              <div style={{ width: `${barW}%`, height: "100%", background: badge.color, borderRadius: 3, animation: "growW 0.9s ease both" }} />
-            </div>
-            {rate !== null && <div style={{ width: 2, height: 14, background: "#F5B32466", opacity: 0.8, position: "relative" }}>
-              <div style={{ position: "absolute", top: -5, left: -0.5, width: 3, height: 24, background: "#F5B324", opacity: KPI/100 > 0 ? 0.7 : 0 }} />
-            </div>}
-          </div>
+        <div style={{ width: 200, flexShrink: 0, minWidth: 0 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: expanded ? "#F5B324" : "#FFFFFF", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{tech}{isSilo && <span style={{marginLeft:6,fontSize:8,padding:"1px 5px",borderRadius:3,background:"rgba(245,179,36,.2)",color:"#F5B324",fontWeight:700,flexShrink:0}}>SILO</span>}</div>
+        </div>
+        <div style={{ width: 300, flexShrink: 0, height: 8, background: "#0a1220", borderRadius: 4, overflow: "hidden" }}>
+          <div style={{ width: `${barW}%`, height: "100%", background: badge.color, borderRadius: 4, animation: "growW 0.9s cubic-bezier(.2,.7,.2,1) both" }} />
         </div>
         <div style={{ textAlign: "center", minWidth: 64 }}>
           <div style={{ fontSize: 18, fontWeight: 800, color: badge.color, fontFamily: "'Inter',sans-serif" }}>{fmtPct(rate)}</div>

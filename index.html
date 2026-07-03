@@ -2746,8 +2746,8 @@ function Root() {
           </div>
         </div>
 
-        {/* Tab bar — compact so all tabs fit; scrolls horizontally on narrow screens instead of clipping */}
-        <div style={{ display: "flex", gap: 0, marginTop: 16, overflowX: "auto", whiteSpace: "nowrap", scrollbarWidth: "thin" }}>
+        {/* Tab bar — wraps onto multiple rows so every tab is always visible (no horizontal scrolling) */}
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", rowGap: 2, columnGap: 2, marginTop: 16 }}>
           {tabs.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} style={{
               padding: "8px 11px", fontFamily: "'Inter',system-ui,sans-serif", fontSize: 10, fontWeight: 700,

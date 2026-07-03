@@ -505,6 +505,68 @@ function set_yesterday(html, rev, tg, day){
   return html.slice(0,ii) + JSON.stringify(YD) + html.slice(j+1);
 }
 
+// ------------------------- CA CLOSE RATE ----------------------------------
+// Sold TGLs / Actual TGLs per silo tech (YTD + MTD), from the Scheduled-vs-Ran-
+// vs-Sold report (installed > 0). Mirrors UPDATE_DASHBOARD.build_close_rate so a
+// browser "Build & Publish" produces the same CLOSE_RATE_DATA as the daily job.
+function close_rate_block(D, sr, rm){
+  const teamA = TEAM_A;
+  const teamB = TEAM_B.concat(["Andrew Alonso"]);
+  const combined = ["Alex - Oleksiy Yakovchuk"].concat(TEAM_A, TEAM_B, ["Andrew Alonso"]);
+  const siloSet = new Set(combined);
+  const rmNum = ALL_MONTHS.indexOf(rm) + 1;
+  const resolveSilo = field => {
+    const parts = String(field||"").split(",").map(s=>s.trim()).filter(Boolean);
+    for (const p of parts) if (siloSet.has(p)) return p;
+    return parts.length ? parts[0] : null;
+  };
+  const sold = {};   // name -> {yc,ya,mc,ma}
+  for (let i=1;i<sr.length;i++){
+    const r = sr[i];
+    if (!isjob(r[1])) continue;
+    const src = resolveSilo(r[4]); const cr = asdate(r[7]);
+    if (!src || !cr || cr.y !== 2026) continue;
+    const inst = num(r[8]);
+    if (inst <= 0) continue;
+    const e = sold[src] || (sold[src] = {yc:0,ya:0,mc:0,ma:0});
+    e.yc++; e.ya += inst;
+    if (cr.m === rmNum){ e.mc++; e.ma += inst; }
+  }
+  const sumv = o => Object.values(o).reduce((a,b)=>a+b,0);
+  const metrics = (n, period) => {
+    const d = D[n]; const s = sold[n] || {yc:0,ya:0,mc:0,ma:0};
+    let ropps, tgls, canceled, sc, sa;
+    if (period === "ytd"){
+      ropps = d?sumv(d.c):0; tgls = d?sumv(d.tg):0; canceled = d?(d.cy||0):0;
+      sc = s.yc; sa = pyround(s.ya);
+    } else {
+      ropps = d?(d.c[rm]||0):0; tgls = d?(d.tg[rm]||0):0; canceled = d?(d.cm[rm]||0):0;
+      sc = s.mc; sa = pyround(s.ma);
+    }
+    const actual = Math.max(tgls - canceled, 0);
+    return {ropps, tgls, canceled, actual, tgl_pct:r1(actual,ropps), sold:sc,
+            close_rate:r1(sc,actual), sales:sa, per_ropp:ropps?pyround(sa/ropps):0};
+  };
+  const row = n => ({name:n, ytd:metrics(n,"ytd"), mtd:metrics(n,"mtd")});
+  const tot = (rows, p) => {
+    const R=rows.reduce((a,x)=>a+x[p].ropps,0), A=rows.reduce((a,x)=>a+x[p].actual,0),
+          S=rows.reduce((a,x)=>a+x[p].sold,0), SL=rows.reduce((a,x)=>a+x[p].sales,0);
+    return {ropps:R, tgls:rows.reduce((a,x)=>a+x[p].tgls,0), canceled:rows.reduce((a,x)=>a+x[p].canceled,0),
+            actual:A, sold:S, close_rate:r1(S,A), tgl_pct:r1(A,R), sales:SL, per_ropp:R?pyround(SL/R):0};
+  };
+  const ta=teamA.map(row), tb=teamB.map(row), comb=combined.map(row);
+  return {month:rm, team_a:ta, team_b:tb, combined:comb,
+    totals:{ytd:{team_a:tot(ta,"ytd"),team_b:tot(tb,"ytd"),combined:tot(comb,"ytd")},
+            mtd:{team_a:tot(ta,"mtd"),team_b:tot(tb,"mtd"),combined:tot(comb,"mtd")}}};
+}
+function set_close_rate(html, obj){
+  const m = /const CLOSE_RATE_DATA = /.exec(html);
+  if(!m) return html;
+  let i=m.index+m[0].length, d=0, j=i;
+  while(j<html.length){ if(html[j]==="{")d++; else if(html[j]==="}"){d--; if(d===0)break;} j++; }
+  return html.slice(0,i) + JSON.stringify(obj) + html.slice(j+1);
+}
+
 // ------------------------- XLSX -> rows -----------------------------------
 function sheetToRows(workbook){
   DATE1904 = !!(workbook.Workbook && workbook.Workbook.WBProps && workbook.Workbook.WBProps.date1904);
@@ -529,6 +591,7 @@ function rebuild(templateHtml, sheets, opts){
   const {D, DEPT, aa} = build_dataset(rev, tg, cn, sr);
   let html = apply_all(templateHtml, D, DEPT, aa, asof, rm);
   html = set_yesterday(html, rev, tg, yday);
+  html = set_close_rate(html, close_rate_block(D, sr, rm));
   // summary stats
   const sumv = o => Object.values(o).reduce((a,b)=>a+b,0);
   const dycYTD = DEPT.reduce((a,t)=>a+sumv(D[t].c),0);

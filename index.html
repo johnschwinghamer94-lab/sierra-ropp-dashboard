@@ -376,10 +376,10 @@ const getBadge = (rate) => {
 // ── KPI Card ──────────────────────────────────────────────────────────────────
 function KPICard({ label, value, sub, color, big }) {
   return (
-    <div style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 10, padding: big ? "14px 22px" : "10px 16px", minWidth: big ? 130 : 100, textAlign: "center" }}>
-      <div style={{ fontSize: 9, letterSpacing: "0.18em", color: "#FFFFFF", fontWeight: 700, marginBottom: 4 }}>{label}</div>
+    <div style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 12, padding: big ? "14px 22px" : "11px 16px", minWidth: big ? 130 : 104, textAlign: "center" }}>
+      <div style={{ fontSize: 9, letterSpacing: "0.12em", color: "#6b7a99", fontWeight: 700, marginBottom: 5 }}>{label}</div>
       <div style={{ fontSize: big ? 28 : 20, fontWeight: 800, color: color || "#FFFFFF", fontFamily: "'Inter',sans-serif" }}>{value}</div>
-      {sub && <div style={{ fontSize: 9, color: "#FFFFFF", marginTop: 2 }}>{sub}</div>}
+      {sub && <div style={{ fontSize: 9, color: "#6b7a99", marginTop: 3 }}>{sub}</div>}
     </div>
   );
 }
@@ -539,9 +539,6 @@ function PeriodTable({ period, data }) {
         <KPICard label="OVERALL CONV RATE" value={fmtPct(overallRate)} color={overallBadge.color} big />
         <KPICard label="TOTAL CALLS" value={totalCalls} color="#F5B324" />
         <KPICard label="TGLs GENERATED" value={totalTgls} color="#F5B324" />
-        <KPICard label="AT/ABOVE KPI" value={techStats.filter(t => t.rate !== null && t.rate >= KPI).length} color="#2E78C7" />
-        <KPICard label="BELOW KPI" value={techStats.filter(t => t.rate !== null && t.rate < KPI).length} color="#E63946" />
-        <div style={{ width: 1, height: 40, background: "#1e2d47" }} />
         <KPICard label="YTD REVENUE" value={fmtRev(ytdRevenue)} color="#2E78C7" big />
         <KPICard label="MTD REVENUE" value={fmtRev(mtdRevenue)} color="#2E78C7" />
       </div>

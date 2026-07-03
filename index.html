@@ -166,7 +166,11 @@ function ManagePanel({ data, setData, onClose }) {
       setRbMsg("Fetching live dashboard…");
       const { text, sha } = await ghGet(token);
       setRbMsg("Rebuilding numbers…");
-      const res = ROPPEngine.rebuild(text, { rev, tg, cn, sr }, { asof: rbAsof, yesterday: rbAsof, reportingMonth: rbMonth });
+      // "Yesterday" tab shows the day BEFORE the as-of date (the last complete prior day),
+      // not the as-of day itself (which may be today / a partial day).
+      const _pd = new Date(rbAsof + "T00:00:00Z"); _pd.setUTCDate(_pd.getUTCDate() - 1);
+      const yesterdayISO = _pd.toISOString().slice(0, 10);
+      const res = ROPPEngine.rebuild(text, { rev, tg, cn, sr }, { asof: rbAsof, yesterday: yesterdayISO, reportingMonth: rbMonth });
       const s = res.stats;
       setRbMsg("Publishing… (DEPT YTD " + s.deptYtdCalls + "/" + s.deptYtdTgls + " · SILO " + s.reportingMonth + " " + s.siloMtdCalls + "/" + s.siloMtdTgls + " " + s.siloMtdRate + "%)");
       await ghPut(token, res.html, sha, "Rebuild from uploaded reports (as-of " + rbAsof + ")");

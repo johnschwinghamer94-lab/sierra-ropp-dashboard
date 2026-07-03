@@ -2291,13 +2291,166 @@ function WeeklyConvTab() {
 }
 
 
+// ── Overview (at-a-glance landing) ──────────────────────────────────────────
+function OverviewTab({ data }) {
+  const techs = Object.values(data);
+  const yc = techs.reduce((a,d)=>a+d.ytd.calls,0);
+  const yt = techs.reduce((a,d)=>a+d.ytd.tgls,0);
+  const yr = techs.reduce((a,d)=>a+(d.ytd.revenue||0),0);
+  const mc = techs.reduce((a,d)=>a+d.mtd.calls,0);
+  const mt = techs.reduce((a,d)=>a+d.mtd.tgls,0);
+  const ytdRate = conv(yc,yt), mtdRate = conv(mc,mt);
+  const dp = DEPT_PACE_DATA;
+  const fmtRevS = v => v>=1000000 ? "$"+(v/1000000).toFixed(2)+"M" : v>=1000 ? "$"+Math.round(v/1000)+"k" : "$"+v;
+
+  // Conversion trajectory (team, active weeks)
+  const act = WEEKLY_CONV_DATA.team_totals.filter(w=>w.calls>0);
+  const TW=300,TH=140,TPL=34,TPR=12,TPT=14,TPB=26,tyMax=80;
+  const tx=i=>TPL+(act.length<=1?0:i*(TW-TPL-TPR)/(act.length-1));
+  const ty=v=>(TH-TPB)-(v/tyMax)*(TH-TPT-TPB);
+  const tPts=act.map((w,i)=>tx(i)+","+ty(w.rate)).join(" ");
+
+  // Revenue by month
+  const monthRev = MONTHS.map(m=>{ let r=0; Object.values(PACE_DATA).forEach(p=>{const mm=(p.monthly||[]).find(x=>x.month===m); if(mm) r+=mm.revenue||0;}); return {month:m,revenue:r}; });
+  const revMax = Math.max(1,...monthRev.map(b=>b.revenue));
+
+  // Top techs YTD conversion
+  const stats = Object.entries(data).map(([t,d])=>({tech:t,calls:d.ytd.calls,rate:conv(d.ytd.calls,d.ytd.tgls)}));
+  const maxCalls = Math.max(1,...stats.map(s=>s.calls));
+  const minCalls = Math.max(5,Math.round(0.10*maxCalls));
+  const top = stats.filter(s=>s.calls>=minCalls&&s.rate!==null).sort((a,b)=>b.rate-a.rate).slice(0,6);
+  const topMax = Math.max(60,...top.map(t=>t.rate),1);
+  const tierCol = r => r>=60?"#2E78C7":r>=48?"#F5B324":"#E63946";
+
+  // Pace to $30M
+  const goalPct = Math.min(dp.ytd_revenue/dp.goal*100,100);
+  const expPct  = Math.min(dp.expected_pace/dp.goal*100,100);
+  const projPct = Math.min(dp.projected_eoy/dp.goal*100,100);
+  const paceOk  = dp.projected_eoy>=dp.goal;
+
+  const card = { background:"#161d2e", border:"1px solid #1e2d47", borderRadius:12, padding:"16px 18px" };
+  const cardTitle = { fontSize:12, fontWeight:700, color:"#FFFFFF" };
+  const cardSub = { fontSize:9.5, color:"#6b7a99", marginBottom:10 };
+
+  const KCard = ({label,value,color,sub}) => (
+    <div style={{background:"#161d2e",border:"1px solid #1e2d47",borderRadius:12,padding:"14px 16px",flex:1,minWidth:132}}>
+      <div style={{fontSize:9,letterSpacing:"0.12em",color:"#6b7a99",fontWeight:700}}>{label}</div>
+      <div style={{fontSize:26,fontWeight:800,color:color,marginTop:4,fontFamily:"'Inter',sans-serif"}}>{value}</div>
+      {sub && <div style={{fontSize:9.5,color:"#6b7a99",marginTop:2}}>{sub}</div>}
+    </div>
+  );
+
+  return (
+    <div style={{padding:"0 0 40px"}}>
+      <div style={{padding:"14px 24px 12px",background:"linear-gradient(135deg,#161d2e,#1e2d47)",borderBottom:"1px solid #1e2d47"}}>
+        <div style={{fontSize:9,color:"#F5B324",fontWeight:700,letterSpacing:"0.2em"}}>{"⌂ COMMAND OVERVIEW · " + (dp.days_elapsed?("Jan 1 – "+CUR_ABBR+" 2026"):"2026")}</div>
+        <div style={{fontSize:11,color:"#6b7a99",marginTop:2}}>{"At a glance · SILO Department · KPI 60% conversion · $30M revenue goal"}</div>
+      </div>
+
+      <div style={{padding:"18px 24px",display:"flex",flexDirection:"column",gap:16}}>
+
+        {/* KPI row */}
+        <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+          <KCard label="YTD CONVERSION" value={fmtPct(ytdRate)} color={ytdRate>=60?"#2E78C7":ytdRate>=48?"#F5B324":"#E63946"} sub={yc.toLocaleString()+" calls · "+yt.toLocaleString()+" TGLs"} />
+          <KCard label={CUR_MONTH.toUpperCase()+" (MTD)"} value={fmtPct(mtdRate)} color={mtdRate>=60?"#2E78C7":mtdRate>=48?"#F5B324":"#E63946"} sub={mc.toLocaleString()+" calls · "+mt.toLocaleString()+" TGLs"} />
+          <KCard label="YTD REVENUE" value={fmtRevS(yr)} color="#4ADE80" sub={"of $30M goal"} />
+          <KCard label="PACE" value={fmtPct(dp.pace_pct)} color={paceOk?"#4ADE80":"#F5B324"} sub={"projected "+fmtRevS(dp.projected_eoy)} />
+          <KCard label="AHEAD / BEHIND" value={(dp.ahead>=0?"+":"")+fmtRevS(Math.abs(dp.ahead))} color={dp.ahead>=0?"#4ADE80":"#E63946"} sub={"vs expected pace"} />
+        </div>
+
+        {/* Charts grid */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:14}}>
+
+          {/* Conversion trajectory */}
+          <div style={card}>
+            <div style={cardTitle}>{"Conversion Trajectory"}</div>
+            <div style={cardSub}>{"Team conv % by week vs 60% KPI"}</div>
+            {act.length>=1 ? (
+              <svg viewBox={"0 0 "+TW+" "+TH} width="100%" style={{display:"block"}}>
+                {[20,40,60].map(g=>(<g key={g}>
+                  <line x1={TPL} y1={ty(g)} x2={TW-TPR} y2={ty(g)} stroke={g===60?"#F5B324":"#1e2d47"} strokeDasharray={g===60?"5 5":""} opacity={g===60?0.85:0.5}/>
+                  <text x={TPL-5} y={ty(g)+3} fontSize="9" fill={g===60?"#F5B324":"#6b7a99"} textAnchor="end">{g+"%"}</text>
+                </g>))}
+                <line x1={TPL} y1={ty(0)} x2={TW-TPR} y2={ty(0)} stroke="#1e2d47"/>
+                <polyline points={tPts} fill="none" stroke="#F5B324" strokeWidth="2.5"/>
+                {act.map((w,i)=>(<g key={w.week}>
+                  <circle cx={tx(i)} cy={ty(w.rate)} r="4" fill={tierCol(w.rate)} stroke="#0a0e1a" strokeWidth="1.5"/>
+                  <text x={tx(i)} y={ty(w.rate)-8} fontSize="10" fill="#FFFFFF" fontWeight="700" textAnchor="middle">{w.rate+"%"}</text>
+                  <text x={tx(i)} y={TH-TPB+15} fontSize="8.5" fill="#6b7a99" textAnchor="middle">{w.week}</text>
+                </g>))}
+              </svg>
+            ) : <div style={{fontSize:11,color:"#6b7a99",padding:"20px 0",textAlign:"center"}}>No weekly data yet</div>}
+          </div>
+
+          {/* Revenue by month */}
+          <div style={card}>
+            <div style={cardTitle}>{"Revenue by Month"}</div>
+            <div style={cardSub}>{"TGL revenue · Jan – "+CUR_ABBR}</div>
+            <div style={{display:"flex",alignItems:"flex-end",gap:8,height:120}}>
+              {monthRev.map(b=>{
+                const h=Math.max(2,(b.revenue/revMax)*92);
+                return (
+                  <div key={b.month} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
+                    <div style={{fontSize:8.5,color:"#9fb3cc",fontWeight:700}}>{b.revenue>=1000000?"$"+(b.revenue/1000000).toFixed(1)+"M":b.revenue>=1000?"$"+Math.round(b.revenue/1000)+"k":"—"}</div>
+                    <div style={{width:"100%",maxWidth:40,height:h,background:"#2E78C7",borderRadius:"4px 4px 0 0"}}/>
+                    <div style={{fontSize:8.5,color:"#6b7a99"}}>{b.month.slice(0,3)}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Top techs */}
+          <div style={card}>
+            <div style={cardTitle}>{"Top Techs · YTD Conversion"}</div>
+            <div style={cardSub}>{"blue ≥ 60% · gold ≥ 48% · red below"}</div>
+            <div style={{display:"flex",flexDirection:"column",gap:6}}>
+              {top.map(t=>(
+                <div key={t.tech} style={{display:"flex",alignItems:"center",gap:8}}>
+                  <div style={{width:104,fontSize:10,color:"#9fb3cc",textAlign:"right",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{t.tech}</div>
+                  <div style={{flex:1,background:"#0a0e1a",borderRadius:4,height:15}}>
+                    <div style={{width:Math.max(2,(t.rate/topMax)*100)+"%",height:"100%",background:tierCol(t.rate),borderRadius:4}}/>
+                  </div>
+                  <div style={{width:42,fontSize:10.5,fontWeight:700,color:tierCol(t.rate),textAlign:"right"}}>{t.rate.toFixed(1)+"%"}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Pace to goal */}
+          <div style={card}>
+            <div style={cardTitle}>{"Pace to $30M"}</div>
+            <div style={cardSub}>{"Department revenue vs annual goal"}</div>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"#6b7a99",marginBottom:5}}>
+              <span>{"Earned "+fmtRevS(dp.ytd_revenue)}</span><span>{"Goal $30M"}</span>
+            </div>
+            <div style={{height:18,background:"#0a0e1a",borderRadius:6,position:"relative",overflow:"hidden"}}>
+              <div style={{height:"100%",width:goalPct+"%",background:"#2E78C7",borderRadius:6}}/>
+              <div style={{position:"absolute",top:0,bottom:0,left:expPct+"%",width:2,background:"#F5B324"}} title="Expected by today"/>
+            </div>
+            <div style={{fontSize:9,color:"#F5B324",marginTop:4}}>{"▲ gold line = expected by today ("+fmtRevS(dp.expected_pace)+")"}</div>
+            <div style={{display:"flex",gap:14,marginTop:12,flexWrap:"wrap"}}>
+              <div><div style={{fontSize:8.5,color:"#6b7a99",letterSpacing:"0.1em"}}>PROJECTED EOY</div><div style={{fontSize:17,fontWeight:800,color:paceOk?"#4ADE80":"#F5B324"}}>{fmtRevS(dp.projected_eoy)}</div></div>
+              <div><div style={{fontSize:8.5,color:"#6b7a99",letterSpacing:"0.1em"}}>PACE</div><div style={{fontSize:17,fontWeight:800,color:paceOk?"#4ADE80":"#F5B324"}}>{fmtPct(dp.pace_pct)}</div></div>
+              <div><div style={{fontSize:8.5,color:"#6b7a99",letterSpacing:"0.1em"}}>DAILY NEEDED</div><div style={{fontSize:17,fontWeight:800,color:"#FFFFFF"}}>{"$"+Number(dp.daily_needed).toLocaleString()}</div></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 // ── ROOT ──────────────────────────────────────────────────────────────────────
 function Root() {
-  const [tab, setTab] = useState("ytd");
+  const [tab, setTab] = useState("overview");
   const [data, setData] = useState(INITIAL_DATA);
   const [showManage, setShowManage] = useState(false);
 
   const tabs = [
+    { id: "overview", label: "⌂ OVERVIEW",       sub: "At a glance" },
     { id: "ytd",     label: "📊 YTD",            sub: "Jan–" + CUR_ABBR + " 2026 (Current)" },
     { id: "mtd",     label: "📅 MTD",            sub: CUR_MONTH + " 2026" },
     { id: "weeklyconv",       label: "📈 WEEKLY CONV",        sub: "Week by Week MTD" },
@@ -2391,6 +2544,7 @@ function Root() {
 
       {/* Tab content */}
       <div>
+        {tab === "overview" && <OverviewTab data={data} />}
         {tab === "ytd"     && <PeriodTable period="ytd"    data={data} />}
         {tab === "mtd"     && <PeriodTable period="mtd"    data={data} />}
         {tab === "weeklyconv" && <WeeklyConvTab/>}

@@ -13,10 +13,14 @@
 <script src="engine.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{background:#0a0e1a;color:#e8edf5;font-family:'Inter','Segoe UI',system-ui,sans-serif;min-height:100vh;}
-::-webkit-scrollbar{width:5px;height:5px;}
-::-webkit-scrollbar-track{background:#0a0e1a;}
+body{background:#070b16;color:#eaf1fb;font-family:'Inter','Segoe UI',system-ui,sans-serif;min-height:100vh;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:#070b16;}
 ::-webkit-scrollbar-thumb{background:#1e2d47;border-radius:3px;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px currentColor;}50%{opacity:.45;box-shadow:0 0 2px currentColor;}}
+@keyframes riseIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes growW{from{width:0;}}
+.riseIn{animation:riseIn .5s ease both;}
 </style>
 </head>
 <body>
@@ -2356,7 +2360,7 @@ function WeeklyConvTab() {
 }
 
 
-// ── Overview (at-a-glance landing) ──────────────────────────────────────────
+// ── Overview (bold command-center landing) ─────────────────────────────────
 function OverviewTab({ data }) {
   const techs = Object.values(data);
   const yc = techs.reduce((a,d)=>a+d.ytd.calls,0);
@@ -2366,141 +2370,132 @@ function OverviewTab({ data }) {
   const mt = techs.reduce((a,d)=>a+d.mtd.tgls,0);
   const ytdRate = conv(yc,yt), mtdRate = conv(mc,mt);
   const dp = DEPT_PACE_DATA;
+  const tierCol = r => r===null?"#7089ab":r>=60?"#2E78C7":r>=48?"#F5B324":"#E63946";
   const fmtRevS = v => v>=1000000 ? "$"+(v/1000000).toFixed(2)+"M" : v>=1000 ? "$"+Math.round(v/1000)+"k" : "$"+v;
 
-  // Conversion trajectory (team, active weeks)
-  const act = WEEKLY_CONV_DATA.team_totals.filter(w=>w.calls>0);
-  const TW=300,TH=140,TPL=34,TPR=12,TPT=14,TPB=26,tyMax=80;
-  const tx=i=>TPL+(act.length<=1?0:i*(TW-TPL-TPR)/(act.length-1));
-  const ty=v=>(TH-TPB)-(v/tyMax)*(TH-TPT-TPB);
-  const tPts=act.map((w,i)=>tx(i)+","+ty(w.rate)).join(" ");
+  // monthly totals for sparklines + bars
+  const monTotals = MONTHS.map(m=>{
+    let c=0,t=0,r=0;
+    techs.forEach(d=>{ const mm=d.monthly&&d.monthly[m]; if(mm){ c+=mm.calls||0; t+=mm.tgls||0; } });
+    Object.values(PACE_DATA).forEach(p=>{ const mm=(p.monthly||[]).find(x=>x.month===m); if(mm) r+=mm.revenue||0; });
+    return {m,c,t,r};
+  });
+  const revMax = Math.max(1,...monTotals.map(x=>x.r));
 
-  // Revenue by month
-  const monthRev = MONTHS.map(m=>{ let r=0; Object.values(PACE_DATA).forEach(p=>{const mm=(p.monthly||[]).find(x=>x.month===m); if(mm) r+=mm.revenue||0;}); return {month:m,revenue:r}; });
-  const revMax = Math.max(1,...monthRev.map(b=>b.revenue));
+  // gauge arc path (semicircle 0..100%)
+  const gaugeArc = frac => {
+    const R=62,cx=80,cy=98, a0=Math.PI, a1=Math.PI*(1-Math.max(0,Math.min(1,frac)));
+    const x0=cx+R*Math.cos(a0), y0=cy-R*Math.sin(a0), x1=cx+R*Math.cos(a1), y1=cy-R*Math.sin(a1);
+    return "M "+x0.toFixed(1)+" "+y0.toFixed(1)+" A "+R+" "+R+" 0 0 1 "+x1.toFixed(1)+" "+y1.toFixed(1);
+  };
+  const spark = (vals,w,h) => {
+    const mx=Math.max(...vals,1), mn=Math.min(...vals,0), rng=(mx-mn)||1;
+    return vals.map((v,i)=>((i/(Math.max(1,vals.length-1)))*w).toFixed(1)+","+(h-((v-mn)/rng)*h).toFixed(1)).join(" ");
+  };
 
-  // Top techs YTD conversion
+  // top techs
   const stats = Object.entries(data).map(([t,d])=>({tech:t,calls:d.ytd.calls,rate:conv(d.ytd.calls,d.ytd.tgls)}));
   const maxCalls = Math.max(1,...stats.map(s=>s.calls));
   const minCalls = Math.max(5,Math.round(0.10*maxCalls));
   const top = stats.filter(s=>s.calls>=minCalls&&s.rate!==null).sort((a,b)=>b.rate-a.rate).slice(0,6);
   const topMax = Math.max(60,...top.map(t=>t.rate),1);
-  const tierCol = r => r>=60?"#2E78C7":r>=48?"#F5B324":"#E63946";
+  const medals = ["🥇","🥈","🥉"];
 
-  // Pace to $30M
   const goalPct = Math.min(dp.ytd_revenue/dp.goal*100,100);
   const expPct  = Math.min(dp.expected_pace/dp.goal*100,100);
-  const projPct = Math.min(dp.projected_eoy/dp.goal*100,100);
   const paceOk  = dp.projected_eoy>=dp.goal;
 
-  const card = { background:"#161d2e", border:"1px solid #1e2d47", borderRadius:12, padding:"16px 18px" };
-  const cardTitle = { fontSize:12, fontWeight:700, color:"#FFFFFF" };
-  const cardSub = { fontSize:9.5, color:"#6b7a99", marginBottom:10 };
-
-  const KCard = ({label,value,color,sub}) => (
-    <div style={{background:"#161d2e",border:"1px solid #1e2d47",borderRadius:12,padding:"14px 16px",flex:1,minWidth:132}}>
-      <div style={{fontSize:9,letterSpacing:"0.12em",color:"#6b7a99",fontWeight:700}}>{label}</div>
-      <div style={{fontSize:26,fontWeight:800,color:color,marginTop:4,fontFamily:"'Inter',sans-serif"}}>{value}</div>
-      {sub && <div style={{fontSize:9.5,color:"#6b7a99",marginTop:2}}>{sub}</div>}
+  const tile = (label,value,color,accent,sparkVals) => (
+    <div className="riseIn" style={{background:"#131c30",border:"1px solid #1e2d47",borderLeft:"3px solid "+accent,borderRadius:13,padding:"13px 15px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}}>
+      <div><div style={{fontSize:9,color:"#7089ab",letterSpacing:"0.1em",fontWeight:700}}>{label}</div><div style={{fontSize:27,fontWeight:800,color:color||"#eaf1fb",marginTop:2}}>{value}</div></div>
+      {sparkVals && <svg width="70" height="34" style={{flex:"none"}}><polyline points={spark(sparkVals,66,30)} fill="none" stroke={accent} strokeWidth="2.5" transform="translate(2,2)"/></svg>}
     </div>
   );
 
   return (
-    <div style={{padding:"0 0 40px"}}>
-      <div style={{padding:"14px 24px 12px",background:"linear-gradient(135deg,#161d2e,#1e2d47)",borderBottom:"1px solid #1e2d47"}}>
-        <div style={{fontSize:9,color:"#F5B324",fontWeight:700,letterSpacing:"0.2em"}}>{"⌂ COMMAND OVERVIEW · " + (dp.days_elapsed?("Jan 1 – "+CUR_ABBR+" 2026"):"2026")}</div>
-        <div style={{fontSize:11,color:"#6b7a99",marginTop:2}}>{"At a glance · SILO Department · KPI 60% conversion · $30M revenue goal"}</div>
+    <div style={{background:"radial-gradient(1100px 380px at 15% -10%,rgba(245,179,36,.10),transparent),radial-gradient(900px 460px at 100% 0%,rgba(46,120,199,.13),transparent)",padding:"18px 24px 44px"}}>
+
+      {/* eyebrow */}
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,flexWrap:"wrap",gap:8}}>
+        <div>
+          <div style={{fontSize:9,color:"#F5B324",fontWeight:700,letterSpacing:"0.22em"}}>{"⌂ COMMAND OVERVIEW"}</div>
+          <div style={{fontSize:11,color:"#7089ab",marginTop:2}}>{"Jan 1 – "+CUR_ABBR+" 2026 · KPI 60% conversion · $30M goal"}</div>
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:7,fontSize:10,color:"#4ADE80",fontWeight:700}}><span style={{width:8,height:8,borderRadius:"50%",background:"#4ADE80",color:"#4ADE80",display:"inline-block",animation:"pulse 2s infinite"}}/>LIVE</div>
       </div>
 
-      <div style={{padding:"18px 24px",display:"flex",flexDirection:"column",gap:16}}>
-
-        {/* KPI row */}
-        <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
-          <KCard label="YTD CONVERSION" value={fmtPct(ytdRate)} color={ytdRate>=60?"#2E78C7":ytdRate>=48?"#F5B324":"#E63946"} sub={yc.toLocaleString()+" calls · "+yt.toLocaleString()+" TGLs"} />
-          <KCard label={CUR_MONTH.toUpperCase()+" (MTD)"} value={fmtPct(mtdRate)} color={mtdRate>=60?"#2E78C7":mtdRate>=48?"#F5B324":"#E63946"} sub={mc.toLocaleString()+" calls · "+mt.toLocaleString()+" TGLs"} />
-          <KCard label="YTD REVENUE" value={fmtRevS(yr)} color="#4ADE80" sub={"of $30M goal"} />
-          <KCard label="PACE" value={fmtPct(dp.pace_pct)} color={paceOk?"#4ADE80":"#F5B324"} sub={"projected "+fmtRevS(dp.projected_eoy)} />
-          <KCard label="AHEAD / BEHIND" value={(dp.ahead>=0?"+":"")+fmtRevS(Math.abs(dp.ahead))} color={dp.ahead>=0?"#4ADE80":"#E63946"} sub={"vs expected pace"} />
+      {/* hero: gauge + tiles */}
+      <div style={{display:"grid",gridTemplateColumns:"minmax(210px,240px) 1fr",gap:14,marginBottom:14}}>
+        <div className="riseIn" style={{background:"linear-gradient(160deg,#131c30,#0e1626)",border:"1px solid #1e2d47",borderRadius:16,padding:"16px",textAlign:"center"}}>
+          <div style={{fontSize:9,letterSpacing:"0.18em",color:"#7089ab",fontWeight:700}}>{"YTD CONVERSION"}</div>
+          <svg viewBox="0 0 160 118" width="100%" style={{marginTop:2}}>
+            <path d={gaugeArc(1)} fill="none" stroke="#22304d" strokeWidth="13" strokeLinecap="round"/>
+            <path d={gaugeArc((ytdRate||0)/100)} fill="none" stroke={tierCol(ytdRate)} strokeWidth="13" strokeLinecap="round"/>
+            <line x1={80+62*Math.cos(Math.PI*(1-0.6))} y1={98-62*Math.sin(Math.PI*(1-0.6))} x2={80+50*Math.cos(Math.PI*(1-0.6))} y2={98-50*Math.sin(Math.PI*(1-0.6))} stroke="#eaf1fb" strokeWidth="2"/>
+            <text x="80" y="84" textAnchor="middle" fontSize="34" fontWeight="800" fill={tierCol(ytdRate)}>{fmtPct(ytdRate)}</text>
+            <text x="80" y="104" textAnchor="middle" fontSize="9.5" fill="#7089ab">{"| tick = 60% KPI"}</text>
+          </svg>
+          <div style={{display:"flex",justifyContent:"center",gap:16,marginTop:4}}>
+            <div><div style={{fontSize:8,color:"#7089ab",letterSpacing:"0.1em"}}>{CUR_MONTH.slice(0,3).toUpperCase()+" MTD"}</div><div style={{fontSize:15,fontWeight:800,color:tierCol(mtdRate)}}>{fmtPct(mtdRate)}</div></div>
+            <div style={{width:1,background:"#1e2d47"}}/>
+            <div><div style={{fontSize:8,color:"#7089ab",letterSpacing:"0.1em"}}>{"GAP TO KPI"}</div><div style={{fontSize:15,fontWeight:800,color:"#F5B324"}}>{(ytdRate!==null?(ytdRate-60).toFixed(1):"—")}</div></div>
+          </div>
         </div>
-
-        {/* Charts grid */}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:14}}>
-
-          {/* Conversion trajectory */}
-          <div style={card}>
-            <div style={cardTitle}>{"Conversion Trajectory"}</div>
-            <div style={cardSub}>{"Team conv % by week vs 60% KPI"}</div>
-            {act.length>=1 ? (
-              <svg viewBox={"0 0 "+TW+" "+TH} width="100%" style={{display:"block"}}>
-                {[20,40,60].map(g=>(<g key={g}>
-                  <line x1={TPL} y1={ty(g)} x2={TW-TPR} y2={ty(g)} stroke={g===60?"#F5B324":"#1e2d47"} strokeDasharray={g===60?"5 5":""} opacity={g===60?0.85:0.5}/>
-                  <text x={TPL-5} y={ty(g)+3} fontSize="9" fill={g===60?"#F5B324":"#6b7a99"} textAnchor="end">{g+"%"}</text>
-                </g>))}
-                <line x1={TPL} y1={ty(0)} x2={TW-TPR} y2={ty(0)} stroke="#1e2d47"/>
-                <polyline points={tPts} fill="none" stroke="#F5B324" strokeWidth="2.5"/>
-                {act.map((w,i)=>(<g key={w.week}>
-                  <circle cx={tx(i)} cy={ty(w.rate)} r="4" fill={tierCol(w.rate)} stroke="#0a0e1a" strokeWidth="1.5"/>
-                  <text x={tx(i)} y={ty(w.rate)-8} fontSize="10" fill="#FFFFFF" fontWeight="700" textAnchor="middle">{w.rate+"%"}</text>
-                  <text x={tx(i)} y={TH-TPB+15} fontSize="8.5" fill="#6b7a99" textAnchor="middle">{w.week}</text>
-                </g>))}
-              </svg>
-            ) : <div style={{fontSize:11,color:"#6b7a99",padding:"20px 0",textAlign:"center"}}>No weekly data yet</div>}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          {tile("TOTAL CALLS", yc.toLocaleString(), "#eaf1fb", "#F5B324", monTotals.map(x=>x.c))}
+          {tile("TGLs GENERATED", yt.toLocaleString(), "#eaf1fb", "#2E78C7", monTotals.map(x=>x.t))}
+          {tile("YTD REVENUE", fmtRevS(yr), "#4ADE80", "#4ADE80", monTotals.map(x=>x.r))}
+          <div className="riseIn" style={{background:"#131c30",border:"1px solid #1e2d47",borderLeft:"3px solid "+(paceOk?"#4ADE80":"#F5B324"),borderRadius:13,padding:"13px 15px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div><div style={{fontSize:9,color:"#7089ab",letterSpacing:"0.1em",fontWeight:700}}>{"PACE"}</div><div style={{fontSize:27,fontWeight:800,color:paceOk?"#4ADE80":"#F5B324"}}>{fmtPct(dp.pace_pct)}</div></div>
+            <div style={{fontSize:9,color:dp.ahead>=0?"#4ADE80":"#E63946",fontWeight:700,textAlign:"right"}}>{(dp.ahead>=0?"▲ AHEAD":"▼ BEHIND")}<br/>{(dp.ahead>=0?"+":"-")+fmtRevS(Math.abs(dp.ahead))}</div>
           </div>
+        </div>
+      </div>
 
-          {/* Revenue by month */}
-          <div style={card}>
-            <div style={cardTitle}>{"Revenue by Month"}</div>
-            <div style={cardSub}>{"TGL revenue · Jan – "+CUR_ABBR}</div>
-            <div style={{display:"flex",alignItems:"flex-end",gap:8,height:120}}>
-              {monthRev.map(b=>{
-                const h=Math.max(2,(b.revenue/revMax)*92);
-                return (
-                  <div key={b.month} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
-                    <div style={{fontSize:8.5,color:"#9fb3cc",fontWeight:700}}>{b.revenue>=1000000?"$"+(b.revenue/1000000).toFixed(1)+"M":b.revenue>=1000?"$"+Math.round(b.revenue/1000)+"k":"—"}</div>
-                    <div style={{width:"100%",maxWidth:40,height:h,background:"#2E78C7",borderRadius:"4px 4px 0 0"}}/>
-                    <div style={{fontSize:8.5,color:"#6b7a99"}}>{b.month.slice(0,3)}</div>
-                  </div>
-                );
-              })}
-            </div>
+      {/* pace hero bar */}
+      <div className="riseIn" style={{background:"linear-gradient(120deg,rgba(46,120,199,.14),rgba(245,179,36,.06))",border:"1px solid #1e2d47",borderRadius:14,padding:"15px 18px",marginBottom:14}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:9,flexWrap:"wrap",gap:6}}>
+          <div style={{fontSize:12,fontWeight:800,letterSpacing:"0.04em"}}>{"PACE TO $30M ANNUAL GOAL"}</div>
+          <div style={{fontSize:10,color:"#7089ab"}}>{"Projected EOY "}<b style={{color:paceOk?"#4ADE80":"#F5B324",fontSize:14}}>{fmtRevS(dp.projected_eoy)}</b>{" · "}<span style={{color:paceOk?"#4ADE80":"#F5B324",fontWeight:700}}>{paceOk?"ON PACE":"BEHIND PACE"}</span></div>
+        </div>
+        <div style={{height:22,background:"#0a1220",borderRadius:8,position:"relative",overflow:"hidden"}}>
+          <div style={{height:"100%",width:goalPct+"%",background:"linear-gradient(90deg,#2E78C7,#5BA4E6)",borderRadius:8,boxShadow:"0 0 18px rgba(46,120,199,.5)"}}/>
+          <div style={{position:"absolute",top:-3,bottom:-3,left:expPct+"%",width:3,background:"#F5B324",boxShadow:"0 0 8px #F5B324"}}/>
+          <div style={{position:"absolute",left:10,top:4,fontSize:11,fontWeight:800,color:"#fff"}}>{fmtRevS(dp.ytd_revenue)+" earned"}</div>
+        </div>
+        <div style={{fontSize:9,color:"#F5B324",marginTop:5}}>{"▲ gold marker = expected by today ("+fmtRevS(dp.expected_pace)+")"}</div>
+      </div>
+
+      {/* two charts */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:12}}>
+        <div className="riseIn" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:14,padding:"14px 16px"}}>
+          <div style={{fontSize:12,fontWeight:700,color:"#fff"}}>{"Revenue by Month"}</div>
+          <div style={{fontSize:9,color:"#7089ab",marginBottom:10}}>{"TGL revenue · Jan – "+CUR_ABBR}</div>
+          <div style={{display:"flex",alignItems:"flex-end",gap:8,height:110}}>
+            {monTotals.map(b=>{ const h=Math.max(3,(b.r/revMax)*90); const isMax=b.r===revMax&&b.r>0;
+              return (<div key={b.m} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
+                <div style={{fontSize:8,color:isMax?"#F5B324":"#9fb3cc",fontWeight:700}}>{b.r>=1000000?"$"+(b.r/1000000).toFixed(1)+"M":b.r>=1000?"$"+Math.round(b.r/1000)+"k":"—"}</div>
+                <div style={{width:"100%",maxWidth:42,height:h,background:isMax?"linear-gradient(180deg,#F5B324,#c98f14)":"linear-gradient(180deg,#5BA4E6,#2E78C7)",borderRadius:"4px 4px 0 0",boxShadow:isMax?"0 0 12px rgba(245,179,36,.45)":"none"}}/>
+                <div style={{fontSize:8,color:isMax?"#F5B324":"#7089ab",fontWeight:isMax?700:400}}>{b.m.slice(0,3)}</div>
+              </div>);
+            })}
           </div>
-
-          {/* Top techs */}
-          <div style={card}>
-            <div style={cardTitle}>{"Top Techs · YTD Conversion"}</div>
-            <div style={cardSub}>{"blue ≥ 60% · gold ≥ 48% · red below"}</div>
-            <div style={{display:"flex",flexDirection:"column",gap:6}}>
-              {top.map(t=>(
-                <div key={t.tech} style={{display:"flex",alignItems:"center",gap:8}}>
-                  <div style={{width:104,fontSize:10,color:"#9fb3cc",textAlign:"right",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{t.tech}</div>
-                  <div style={{flex:1,background:"#0a0e1a",borderRadius:4,height:15}}>
-                    <div style={{width:Math.max(2,(t.rate/topMax)*100)+"%",height:"100%",background:tierCol(t.rate),borderRadius:4}}/>
-                  </div>
-                  <div style={{width:42,fontSize:10.5,fontWeight:700,color:tierCol(t.rate),textAlign:"right"}}>{t.rate.toFixed(1)+"%"}</div>
+        </div>
+        <div className="riseIn" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:14,padding:"14px 16px"}}>
+          <div style={{fontSize:12,fontWeight:700,color:"#fff"}}>{"Top Performers"}</div>
+          <div style={{fontSize:9,color:"#7089ab",marginBottom:10}}>{"YTD conversion leaders"}</div>
+          <div style={{display:"flex",flexDirection:"column",gap:7}}>
+            {top.map((t,i)=>(
+              <div key={t.tech} style={{display:"flex",alignItems:"center",gap:8}}>
+                <span style={{width:16,fontSize:12,textAlign:"center"}}>{medals[i]||""}</span>
+                <div style={{width:96,fontSize:10.5,color:"#cdd9ea",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{t.tech}</div>
+                <div style={{flex:1,background:"#0a1220",borderRadius:5,height:16,overflow:"hidden"}}>
+                  <div style={{width:Math.max(3,(t.rate/topMax)*100)+"%",height:"100%",borderRadius:5,background:t.rate>=60?"linear-gradient(90deg,#2E78C7,#5BA4E6)":t.rate>=48?"linear-gradient(90deg,#F5B324,#c98f14)":"linear-gradient(90deg,#E63946,#a3222d)"}}/>
                 </div>
-              ))}
-            </div>
+                <b style={{width:44,textAlign:"right",fontSize:11,color:tierCol(t.rate)}}>{t.rate.toFixed(1)+"%"}</b>
+              </div>
+            ))}
           </div>
-
-          {/* Pace to goal */}
-          <div style={card}>
-            <div style={cardTitle}>{"Pace to $30M"}</div>
-            <div style={cardSub}>{"Department revenue vs annual goal"}</div>
-            <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"#6b7a99",marginBottom:5}}>
-              <span>{"Earned "+fmtRevS(dp.ytd_revenue)}</span><span>{"Goal $30M"}</span>
-            </div>
-            <div style={{height:18,background:"#0a0e1a",borderRadius:6,position:"relative",overflow:"hidden"}}>
-              <div style={{height:"100%",width:goalPct+"%",background:"#2E78C7",borderRadius:6}}/>
-              <div style={{position:"absolute",top:0,bottom:0,left:expPct+"%",width:2,background:"#F5B324"}} title="Expected by today"/>
-            </div>
-            <div style={{fontSize:9,color:"#F5B324",marginTop:4}}>{"▲ gold line = expected by today ("+fmtRevS(dp.expected_pace)+")"}</div>
-            <div style={{display:"flex",gap:14,marginTop:12,flexWrap:"wrap"}}>
-              <div><div style={{fontSize:8.5,color:"#6b7a99",letterSpacing:"0.1em"}}>PROJECTED EOY</div><div style={{fontSize:17,fontWeight:800,color:paceOk?"#4ADE80":"#F5B324"}}>{fmtRevS(dp.projected_eoy)}</div></div>
-              <div><div style={{fontSize:8.5,color:"#6b7a99",letterSpacing:"0.1em"}}>PACE</div><div style={{fontSize:17,fontWeight:800,color:paceOk?"#4ADE80":"#F5B324"}}>{fmtPct(dp.pace_pct)}</div></div>
-              <div><div style={{fontSize:8.5,color:"#6b7a99",letterSpacing:"0.1em"}}>DAILY NEEDED</div><div style={{fontSize:17,fontWeight:800,color:"#FFFFFF"}}>{"$"+Number(dp.daily_needed).toLocaleString()}</div></div>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>

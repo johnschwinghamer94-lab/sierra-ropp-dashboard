@@ -80,6 +80,8 @@ function ManagePanel({ data, setData, onClose }) {
   const [rbMonth, setRbMonth] = useState(Object.keys(MONTHLY_DETAIL).slice(-1)[0]);
   const [rbMsg, setRbMsg] = useState("");
   const [rbBusy, setRbBusy] = useState(false);
+  // Flag the panel as open so the 30-min auto-refresh pauses and never interrupts an edit/rebuild.
+  useEffect(() => { window.__modalOpen = true; return () => { window.__modalOpen = false; }; }, []);
   const MONTHS_LIST = Object.keys(MONTHLY_DETAIL);                 // months that carry data (for the per-tech editor)
   const RPT_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const PERIODS = ["ytd","mtd"];
@@ -2789,6 +2791,23 @@ function Root() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<Root/>);
+
+// ── Auto-refresh every 30 minutes so a wall/monitor display stays current ──
+// Skips the reload while the Manage panel is open or a form field is focused,
+// so an in-progress edit or rebuild is never lost; it retries a minute later.
+(function () {
+  var EVERY = 30 * 60 * 1000; // 30 minutes
+  function busy() {
+    if (window.__modalOpen) return true;
+    var el = document.activeElement;
+    return !!(el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName));
+  }
+  function tick() {
+    if (busy()) { setTimeout(tick, 60 * 1000); return; }
+    window.location.reload();
+  }
+  setTimeout(tick, EVERY);
+})();
 </script>
 </body>
 </html>

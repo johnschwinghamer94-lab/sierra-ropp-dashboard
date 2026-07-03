@@ -2674,7 +2674,7 @@ function Root() {
     { id: "monthly_breakdown", label: "📆 MONTHLY",           sub: "Month by Month Detail" },
     { id: "weekly",            label: "📈 WEEK OVER WEEK",   sub: "Interactive · by week" },
     { id: "pace",              label: "🎯 PACE REPORT",       sub: "$3.5M Annual Goal" },
-    { id: "deptpace",          label: "🏆 DEPT PACE",          sub: "$30M Annual Goal" },,
+    { id: "deptpace",          label: "🏆 DEPT PACE",          sub: "$30M Annual Goal" },
     { id: "sameday",           label: "⚡ SAME-DAY",          sub: "Flip Rate" },
     { id: "cancel",            label: "🚫 CANCELLATION",     sub: "Cancel Rate" },
     { id: "allteams",          label: "👥 ALL TEAMS",         sub: "Silo vs Others" },
@@ -2742,17 +2742,17 @@ function Root() {
           </div>
         </div>
 
-        {/* Tab bar */}
-        <div style={{ display: "flex", gap: 0, marginTop: 16 }}>
+        {/* Tab bar — compact so all tabs fit; scrolls horizontally on narrow screens instead of clipping */}
+        <div style={{ display: "flex", gap: 0, marginTop: 16, overflowX: "auto", whiteSpace: "nowrap", scrollbarWidth: "thin" }}>
           {tabs.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} style={{
-              padding: "10px 20px", fontFamily: "'Inter',system-ui,sans-serif", fontSize: 11, fontWeight: 700,
-              letterSpacing: "0.08em", background: "transparent", border: "none",
+              padding: "8px 11px", fontFamily: "'Inter',system-ui,sans-serif", fontSize: 10, fontWeight: 700,
+              letterSpacing: "0.02em", background: "transparent", border: "none", flexShrink: 0, whiteSpace: "nowrap",
               borderBottom: `2px solid ${tab === t.id ? "#F5B324" : "transparent"}`,
               color: tab === t.id ? "#F5B324" : "#FFFFFF", cursor: "pointer", transition: "all 0.15s",
             }}>
               {t.label}
-              <div style={{ fontSize: 8, color: tab === t.id ? "#FFFFFF" : "#FFFFFF", marginTop: 2 }}>{t.sub}</div>
+              <div style={{ fontSize: 7, color: tab === t.id ? "#FFFFFF" : "#FFFFFF", marginTop: 1 }}>{t.sub}</div>
             </button>
           ))}
         </div>

@@ -384,6 +384,52 @@ function KPICard({ label, value, sub, color, big }) {
   );
 }
 
+// ── Reusable interactive weekly Chart.js chart (team + by-tech toggle) ─────────
+function WeekChart({ labels, teamData, perTech, color, kind, title, sub, kpi }) {
+  const canvasRef = React.useRef(null);
+  const chartRef = React.useRef(null);
+  const [byTech, setByTech] = React.useState(false);
+  const [ready, setReady] = React.useState(!!window.Chart);
+  React.useEffect(() => {
+    if (window.Chart) { setReady(true); return; }
+    let n = 0; const t = setInterval(() => { if (window.Chart) { setReady(true); clearInterval(t); } else if (++n > 60) clearInterval(t); }, 100);
+    return () => clearInterval(t);
+  }, []);
+  const hasPerTech = perTech && Object.keys(perTech).length > 0;
+  React.useEffect(() => {
+    if (!ready || !window.Chart || !canvasRef.current) return;
+    if (chartRef.current) { chartRef.current.destroy(); chartRef.current = null; }
+    const isPct = kind === "pct", isMoney = kind === "money";
+    let datasets;
+    if (byTech && hasPerTech) {
+      const pal = ["#F5B324","#2E78C7","#4ADE80","#E63946","#5BA4E6","#a78bfa","#fb923c","#ec4899","#22d3ee","#84cc16","#f472b6","#38bdf8","#fbbf24","#c084fc","#f87171"];
+      datasets = Object.keys(perTech).map((t, i) => ({ label: t, data: perTech[t], borderColor: pal[i % pal.length], backgroundColor: pal[i % pal.length], tension: 0.3, borderWidth: 2, pointRadius: 3, spanGaps: true }));
+    } else {
+      datasets = [{ label: title, data: teamData, borderColor: color, backgroundColor: kind === "count" ? color : (color + "26"), tension: 0.3, borderWidth: 3, pointRadius: 5, pointBackgroundColor: color, fill: false }];
+      if (kpi != null) datasets.push({ label: "KPI " + kpi + "%", data: labels.map(() => kpi), borderColor: "#6b7a99", borderDash: [6,6], borderWidth: 1.5, pointRadius: 0 });
+    }
+    chartRef.current = new window.Chart(canvasRef.current, {
+      type: (kind === "count" && !byTech) ? "bar" : "line",
+      data: { labels, datasets },
+      options: { responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+        plugins: { legend: { display: byTech && hasPerTech, position: "bottom", labels: { color: "#9fb3cc", boxWidth: 11, font: { size: 10 } } },
+          tooltip: { callbacks: { label: c => c.dataset.label + ": " + (isMoney ? "$" + Number(c.parsed.y).toLocaleString() : isPct ? c.parsed.y + "%" : c.parsed.y) } } },
+        scales: { x: { ticks: { color: "#9fb3cc" }, grid: { color: "#1e2d47" } },
+          y: { beginAtZero: true, ticks: { color: "#6b7a99", callback: v => isMoney ? "$" + Math.round(v/1000) + "k" : isPct ? v + "%" : v }, grid: { color: "#1e2d47" } } } },
+    });
+    return () => { if (chartRef.current) { chartRef.current.destroy(); chartRef.current = null; } };
+  }, [byTech, ready]);
+  return (
+    <div style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 12, padding: "14px 18px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 8 }}>
+        <div><div style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF" }}>{title}</div><div style={{ fontSize: 9.5, color: "#6b7a99" }}>{sub}</div></div>
+        {hasPerTech && <button onClick={() => setByTech(v => !v)} style={{ padding: "6px 13px", borderRadius: 8, fontSize: 10.5, fontWeight: 700, fontFamily: "inherit", cursor: "pointer", border: "1px solid " + (byTech ? "#F5B324" : "#1e2d47"), background: byTech ? "rgba(245,179,36,.15)" : "transparent", color: byTech ? "#F5B324" : "#9fb3cc" }}>{byTech ? "👥 By Tech" : "🏢 Team"}</button>}
+      </div>
+      <div style={{ position: "relative", height: 300, marginTop: 10 }}>{ready ? <canvas ref={canvasRef} /> : <div style={{ color: "#6b7a99", fontSize: 12, paddingTop: 40, textAlign: "center" }}>Loading chart…</div>}</div>
+    </div>
+  );
+}
+
 // ── Radial gauge ──────────────────────────────────────────────────────────────
 function Gauge({ rate, size = 72 }) {
   const pct = rate === null ? 0 : Math.min(rate, 100);
@@ -637,6 +683,11 @@ function PeriodTable({ period, data }) {
     const thS={padding:"10px 14px",textAlign:"center",fontSize:11,color:"#FFFFFF",borderBottom:"1px solid #1e2d47",fontWeight:700,letterSpacing:1};
     const tdS=(bold,color)=>({padding:"10px 14px",textAlign:"center",fontSize:12,color:color||(bold?"#FFFFFF":"#FFFFFF"),borderBottom:"1px solid #111827",fontWeight:bold?700:400});
 
+    // Interactive cancel-rate week-over-week series
+    const wkLabels = weeks.map(w => (wl && wl[w]) || w);
+    const teamCancel = weeks.map(w => { let s=0,c=0; DEPT_TECHS.forEach(t=>{const x=(CANCEL_DATA.weekly[t]||{})[w]; if(x){s+=x.scheduled;c+=x.cancelled;}}); return s>0?Math.round(c/s*1000)/10:0; });
+    const perTechCancel = {}; DEPT_TECHS.filter(t=>SILO_TEAM.has(t)).forEach(t=>{ perTechCancel[t]=weeks.map(w=>{const x=(CANCEL_DATA.weekly[t]||{})[w]; return x&&x.scheduled>0?Math.round(x.cancelled/x.scheduled*1000)/10:0;}); });
+
     return (
       <div>
         {/* KPI Bar */}
@@ -651,6 +702,12 @@ function PeriodTable({ period, data }) {
           <KPICard label="YTD SCHEDULED"   value={ytdSched}    color="#F5B324"/>
           <KPICard label="YTD RAN"         value={ytdRan}      color="#2E78C7"/>
           <KPICard label="YTD CANCELLED"   value={ytdCancelled} color="#E63946"/>
+        </div>
+
+        {/* Interactive cancel-rate trend */}
+        <div style={{padding:"18px 24px 4px"}}>
+          <WeekChart title={"Cancel Rate — Week over Week"} sub={"% of scheduled TGLs cancelled · lower is better · hover for detail"}
+            labels={wkLabels} teamData={teamCancel} perTech={perTechCancel} color={"#E63946"} kind={"pct"} />
         </div>
 
         {/* Weekly strip */}
@@ -851,6 +908,11 @@ function PeriodTable({ period, data }) {
       );
     }).filter(Boolean);
 
+    // Interactive same-day flip-rate week-over-week series
+    const wkLabelsSD = weeks.map(w => (wl && wl[w]) || w);
+    const teamFlip = weeks.map(w => { let tot=0,fl=0; DEPT_TECHS.forEach(t=>{const x=(SAMEDAY_DATA.weekly[t]||{})[w]; if(x){tot+=x.total;fl+=x.flipped;}}); return tot>0?Math.round(fl/tot*1000)/10:0; });
+    const perTechFlip = {}; DEPT_TECHS.filter(t=>SILO_TEAM.has(t)).forEach(t=>{ perTechFlip[t]=weeks.map(w=>{const x=(SAMEDAY_DATA.weekly[t]||{})[w]; return x&&x.total>0?Math.round(x.flipped/x.total*1000)/10:0;}); });
+
     return (
       <div>
         <div style={{padding:"16px 24px",background:"linear-gradient(135deg,#161d2e,#1e2d47)",borderBottom:"1px solid #1e2d47",display:"flex",gap:12,alignItems:"center",flexWrap:"wrap"}}>
@@ -864,6 +926,12 @@ function PeriodTable({ period, data }) {
           <KPICard label="YTD FLIPPED"             value={ytdFlipped+"/"+ytdTotal}                      color="#F5B324" big/>
           <KPICard label="YTD SAME+NEXT"           value={ytdRatePN!==null?ytdRatePN.toFixed(1)+"%":"—"} color="#5BA4E6" big/>
           <KPICard label={curMShort+" SAME+NEXT"}   value={mtdRatePN!==null?mtdRatePN.toFixed(1)+"%":"—"} color="#5BA4E6" big/>
+        </div>
+
+        {/* Interactive flip-rate trend */}
+        <div style={{padding:"18px 24px 4px"}}>
+          <WeekChart title={"Same-Day Flip Rate — Week over Week"} sub={"% of TGLs flipped same-day · higher is better · hover for detail"}
+            labels={wkLabelsSD} teamData={teamFlip} perTech={perTechFlip} color={"#2E78C7"} kind={"pct"} />
         </div>
 
         <div style={{padding:"12px 24px",display:"flex",gap:12,flexWrap:"wrap",borderBottom:"1px solid #1e2d47",background:"#111827"}}>

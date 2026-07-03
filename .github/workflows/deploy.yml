@@ -1,0 +1,73 @@
+name: Deploy dashboard to GitHub Pages
+
+# Runs on every push to main — including the commits the ⚙ MANAGE panel
+# makes when you Publish or Rebuild from reports — plus a manual button.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let publishes queue instead of cancelling each other.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+  # GitHub's Pages deploy step intermittently fails with "Deployment failed,
+  # try again later." These sequential, spaced retries ride that out so a
+  # publish reliably goes live without anyone re-triggering it by hand.
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.a1.outputs.page_url || steps.a2.outputs.page_url || steps.a3.outputs.page_url || steps.a4.outputs.page_url }}
+    steps:
+      - name: Deploy (attempt 1)
+        id: a1
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Wait before retry
+        if: steps.a1.outcome == 'failure'
+        run: sleep 20
+
+      - name: Deploy (attempt 2)
+        id: a2
+        if: steps.a1.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Wait before retry
+        if: steps.a1.outcome == 'failure' && steps.a2.outcome == 'failure'
+        run: sleep 40
+
+      - name: Deploy (attempt 3)
+        id: a3
+        if: steps.a1.outcome == 'failure' && steps.a2.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Wait before final attempt
+        if: steps.a1.outcome == 'failure' && steps.a2.outcome == 'failure' && steps.a3.outcome == 'failure'
+        run: sleep 60
+
+      # Final attempt — NOT continue-on-error, so a genuine outage still fails loudly.
+      - name: Deploy (attempt 4)
+        id: a4
+        if: steps.a1.outcome == 'failure' && steps.a2.outcome == 'failure' && steps.a3.outcome == 'failure'
+        uses: actions/deploy-pages@v4

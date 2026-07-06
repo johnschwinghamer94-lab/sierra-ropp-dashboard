@@ -2842,6 +2842,7 @@ function HourByHourTab({ hourly }) {
           <KPICard label="TODAY ROPPs" value={t.calls} color="#F5B324" big />
           <KPICard label="TODAY TGLs" value={t.tgls} color="#2E78C7" big />
           <KPICard label="TODAY CONVERSION" value={fmtPct(t.rate)} color={tierCol(t.rate)} big />
+          <KPICard label="TODAY TGL REVENUE" value={"$" + Number(t.rev || 0).toLocaleString()} color="#4ADE80" big />
         </div>
         {hrs.length >= 1 ? (
           <>
@@ -2875,7 +2876,7 @@ function HourByHourTab({ hourly }) {
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead><tr>
                     <th style={{ ...thS, textAlign: "left", paddingLeft: 20 }}>TECH</th>
-                    <th style={thS}>ROPPs</th><th style={thS}>TGLs</th><th style={thS}>CONV%</th>
+                    <th style={thS}>ROPPs</th><th style={thS}>TGLs</th><th style={thS}>CONV%</th><th style={thS}>TGL REV</th>
                   </tr></thead>
                   <tbody>
                     {t.techs.map(tc => (
@@ -2884,6 +2885,7 @@ function HourByHourTab({ hourly }) {
                         <td style={{ ...tdS, color: "#FFFFFF" }}>{tc.calls}</td>
                         <td style={{ ...tdS, color: "#F5B324" }}>{tc.tgls}</td>
                         <td style={{ ...tdS, color: tierCol(tc.rate), fontWeight: 700 }}>{fmtPct(tc.rate)}</td>
+                        <td style={{ ...tdS, color: "#4ADE80" }}>{"$" + Number(tc.rev || 0).toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>

@@ -2950,9 +2950,28 @@ function Root() {
   const [showManage, setShowManage] = useState(false);
   const [hourly, setHourly] = useState(null);
 
-  // Live hourly snapshots (published by hourly_capture.py). Refresh every few min.
+  // Live hourly snapshots (published by the cloud hourly pipeline). Refresh every few min.
+  // Morning reset: at/after 8 AM local, if the published data is still from a previous
+  // day (today's first report hasn't landed), show a clean slate — 0 calls/TGLs/rev,
+  // 0% conversion, empty Hour-by-Hour — instead of lingering on yesterday's numbers.
   useEffect(() => {
-    const load = () => fetch("hourly.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => { if (j) setHourly(j); }).catch(() => {});
+    const pad = n => String(n).padStart(2, "0");
+    const load = () => fetch("hourly.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
+      if (!j) return;
+      const now = new Date();
+      const today = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
+      if (j.date && j.date !== today && now.getHours() >= 8) {
+        const z = JSON.parse(JSON.stringify(j));
+        z.date = today; z.updated = "awaiting today's first report"; z.hours = [];
+        if (z.today) {
+          z.today.calls = 0; z.today.tgls = 0; z.today.rate = 0; z.today.rev = 0;
+          if (Array.isArray(z.today.techs)) z.today.techs = [];
+          if (z.today.sched) { const s = z.today.sched; s.ran = 0; s.same = 0; s.samePct = 0; s.sold = 0; s.soldrev = 0; s.closeRate = 0; if (Array.isArray(s.techs)) s.techs = []; }
+        }
+        j = z;
+      }
+      setHourly(j);
+    }).catch(() => {});
     load();
     const id = setInterval(load, 4 * 60 * 1000);
     return () => clearInterval(id);

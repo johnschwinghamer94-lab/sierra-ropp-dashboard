@@ -2653,7 +2653,7 @@ function CountUp({ value, decimals, prefix, suffix, dur }) {
 }
 
 // ── Overview (MAX command-center landing) ───────────────────────────────────
-function OverviewTab({ data }) {
+function OverviewTab({ data, hourly }) {
   const techs = Object.values(data);
   const yc = techs.reduce((a,d)=>a+d.ytd.calls,0);
   const yt = techs.reduce((a,d)=>a+d.ytd.tgls,0);
@@ -2758,6 +2758,7 @@ function OverviewTab({ data }) {
       <div style={{display:"flex",gap:14,flexWrap:"wrap",marginBottom:14,alignItems:"stretch"}}>
         {gaugeCard("YTD CONVERSION", ytdRate, yc, yt)}
         {gaugeCard(CUR_MONTH.toUpperCase()+" MTD", mtdRate, mc, mt)}
+        {gaugeCard("TODAY" + (hourly && hourly.updated ? " · " + hourly.updated : ""), hourly && hourly.today ? hourly.today.rate : null, hourly && hourly.today ? hourly.today.calls : 0, hourly && hourly.today ? hourly.today.tgls : 0)}
         <div style={{flex:"1.3 1 280px",minWidth:260,display:"flex",flexDirection:"column",gap:12}}>
           {tile("YTD REVENUE", <CountUp value={yr/1e6} decimals={2} prefix="$" suffix="M"/>, "#4ADE80", "#4ADE80", monTotals.map(x=>x.r))}
           <div className="riseIn liftCard" style={{flex:1,background:"#131c30",border:"1px solid #1e2d47",borderLeft:"3px solid "+(paceOk?"#4ADE80":"#F5B324"),borderRadius:13,padding:"13px 15px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -2820,13 +2821,83 @@ function OverviewTab({ data }) {
 
 
 // ── ROOT ──────────────────────────────────────────────────────────────────────
+// ── Hour by Hour (live today, from hourly.json) ─────────────────────────────
+function HourByHourTab({ hourly }) {
+  const fmtHour = h => { const n = +h; return (n % 12 || 12) + " " + (n < 12 ? "AM" : "PM"); };
+  const hrs = (hourly && hourly.hours) || [];
+  const t = (hourly && hourly.today) || { calls: 0, tgls: 0, rate: 0 };
+  const tierCol = r => r >= 60 ? "#2E78C7" : r >= 48 ? "#F5B324" : "#E63946";
+  const labels = hrs.map(x => fmtHour(x.hour));
+  const rateSeries = hrs.map(x => x.rate);
+  const thS = { padding: "9px 14px", textAlign: "center", fontSize: 10, color: "#9fb3cc", borderBottom: "1px solid #1e2d47", fontWeight: 700, letterSpacing: 1 };
+  const tdS = { padding: "9px 14px", textAlign: "center", fontSize: 12, borderBottom: "1px solid #111827" };
+  return (
+    <div className="riseIn" style={{ padding: "0 0 40px" }}>
+      <div style={{ padding: "14px 24px 12px", background: "linear-gradient(135deg,#161d2e,#1e2d47)", borderBottom: "1px solid #1e2d47" }}>
+        <div style={{ fontSize: 9, color: "#F5B324", fontWeight: 700, letterSpacing: "0.2em" }}>{"⏱ HOUR BY HOUR · TODAY"}</div>
+        <div style={{ fontSize: 11, color: "#6b7a99", marginTop: 2 }}>{hourly && hourly.date ? ("Live from ServiceTitan hourly reports · updated " + (hourly.updated || "")) : "Waiting for today's hourly reports"}</div>
+      </div>
+      <div style={{ padding: "18px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <KPICard label="TODAY ROPPs" value={t.calls} color="#F5B324" big />
+          <KPICard label="TODAY TGLs" value={t.tgls} color="#2E78C7" big />
+          <KPICard label="TODAY CONVERSION" value={fmtPct(t.rate)} color={tierCol(t.rate)} big />
+        </div>
+        {hrs.length >= 1 ? (
+          <>
+            <WeekChart title={"Conversion Through Today"} sub={"cumulative conversion % by hour vs 60% KPI · hover for detail"} labels={labels} teamData={rateSeries} perTech={null} color={"#F5B324"} kind={"pct"} kpi={60} />
+            <div style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 16, overflow: "hidden" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr>
+                  <th style={{ ...thS, textAlign: "left", paddingLeft: 20 }}>HOUR</th>
+                  <th style={thS}>ROPPs (cum)</th><th style={thS}>TGLs (cum)</th><th style={thS}>CONV%</th>
+                  <th style={thS}>+ROPPs</th><th style={thS}>+TGLs</th><th style={thS}>THIS HR %</th>
+                </tr></thead>
+                <tbody>
+                  {hrs.map(x => (
+                    <tr key={x.hour}>
+                      <td style={{ ...tdS, textAlign: "left", paddingLeft: 20, fontWeight: 700, color: "#FFFFFF" }}>{fmtHour(x.hour)}</td>
+                      <td style={{ ...tdS, color: "#FFFFFF" }}>{x.calls}</td>
+                      <td style={{ ...tdS, color: "#F5B324" }}>{x.tgls}</td>
+                      <td style={{ ...tdS, color: tierCol(x.rate), fontWeight: 700 }}>{fmtPct(x.rate)}</td>
+                      <td style={{ ...tdS, color: "#6b7a99" }}>{x.dcalls}</td>
+                      <td style={{ ...tdS, color: "#6b7a99" }}>{x.dtgls}</td>
+                      <td style={{ ...tdS, color: tierCol(x.drate) }}>{x.dcalls > 0 ? fmtPct(x.drate) : "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ) : (
+          <div style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 16, padding: "44px 20px", textAlign: "center", color: "#6b7a99" }}>
+            <div style={{ fontSize: 34, marginBottom: 10 }}>{"⏱"}</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#9fb3cc" }}>{"No hourly data yet today"}</div>
+            <div style={{ fontSize: 11, marginTop: 6 }}>{"Fills in automatically as today's hourly ServiceTitan reports arrive (9 AM–11 PM)."}</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Root() {
   const [tab, setTab] = useState("overview");
   const [data, setData] = useState(INITIAL_DATA);
   const [showManage, setShowManage] = useState(false);
+  const [hourly, setHourly] = useState(null);
+
+  // Live hourly snapshots (published by hourly_capture.py). Refresh every few min.
+  useEffect(() => {
+    const load = () => fetch("hourly.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => { if (j) setHourly(j); }).catch(() => {});
+    load();
+    const id = setInterval(load, 4 * 60 * 1000);
+    return () => clearInterval(id);
+  }, []);
 
   const tabs = [
     { id: "overview", label: "⌂ OVERVIEW",       sub: "At a glance" },
+    { id: "hourbyhour", label: "⏱ HOUR BY HOUR",  sub: "Today · live" },
     { id: "ytd",     label: "📊 YTD",            sub: "Jan–" + CUR_ABBR + " 2026 (Current)" },
     { id: "mtd",     label: "📅 MTD",            sub: CUR_MONTH + " 2026" },
     { id: "weeklyconv",       label: "📈 WEEKLY CONV",        sub: "Week by Week MTD" },
@@ -2921,7 +2992,8 @@ function Root() {
 
       {/* Tab content */}
       <div style={{ maxWidth: 1760, margin: "0 auto" }}>
-        {tab === "overview" && <OverviewTab data={data} />}
+        {tab === "overview" && <OverviewTab data={data} hourly={hourly} />}
+        {tab === "hourbyhour" && <HourByHourTab hourly={hourly} />}
         {tab === "ytd"     && <PeriodTable period="ytd"    data={data} />}
         {tab === "mtd"     && <PeriodTable period="mtd"    data={data} />}
         {tab === "weeklyconv" && <WeeklyConvTab/>}

@@ -2868,6 +2868,28 @@ function HourByHourTab({ hourly }) {
                 </tbody>
               </table>
             </div>
+            {(t.techs && t.techs.length) ? (
+              <div style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 16, overflow: "hidden" }}>
+                <div style={{ padding: "13px 20px 3px", fontSize: 9, color: "#F5B324", fontWeight: 700, letterSpacing: "0.2em" }}>{"BY TECHNICIAN · TODAY"}</div>
+                <div style={{ padding: "0 20px 8px", fontSize: 11, color: "#6b7a99" }}>{"Individual ROPPs / TGLs from today's reports"}</div>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead><tr>
+                    <th style={{ ...thS, textAlign: "left", paddingLeft: 20 }}>TECH</th>
+                    <th style={thS}>ROPPs</th><th style={thS}>TGLs</th><th style={thS}>CONV%</th>
+                  </tr></thead>
+                  <tbody>
+                    {t.techs.map(tc => (
+                      <tr key={tc.name}>
+                        <td style={{ ...tdS, textAlign: "left", paddingLeft: 20, fontWeight: 700, color: "#FFFFFF" }}>{tc.name}</td>
+                        <td style={{ ...tdS, color: "#FFFFFF" }}>{tc.calls}</td>
+                        <td style={{ ...tdS, color: "#F5B324" }}>{tc.tgls}</td>
+                        <td style={{ ...tdS, color: tierCol(tc.rate), fontWeight: 700 }}>{fmtPct(tc.rate)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : null}
           </>
         ) : (
           <div style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 16, padding: "44px 20px", textAlign: "center", color: "#6b7a99" }}>

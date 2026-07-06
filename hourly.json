@@ -1,1 +1,1 @@
-{"date": "2026-07-05", "updated": "6:01 PM", "today": {"calls": 0, "tgls": 0, "rate": 0.0}, "hours": [{"hour": "18", "calls": 0, "tgls": 0, "rate": 0.0, "dcalls": 0, "dtgls": 0, "drate": 0.0}]}
+{"date": "2026-07-05", "updated": "7:04 PM", "today": {"calls": 7, "tgls": 7, "rate": 100.0}, "hours": [{"hour": "18", "calls": 0, "tgls": 0, "rate": 0.0, "dcalls": 0, "dtgls": 0, "drate": 0.0}, {"hour": "19", "calls": 7, "tgls": 7, "rate": 100.0, "dcalls": 7, "dtgls": 7, "drate": 100.0}]}

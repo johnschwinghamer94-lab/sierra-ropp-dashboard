@@ -3892,12 +3892,16 @@ function PlumbingDash(){
 
 function GateLanding({ onEnter }){
   const PURL = "https://sierra-plumbing-dashboard.tdgsteeler07.workers.dev";
-  const gate = (num, title, desc, color, onClick, href) => {
+  const CR = (typeof CLOSE_RATE_DATA!=="undefined" && CLOSE_RATE_DATA.totals) ? CLOSE_RATE_DATA.totals : {ytd:{},mtd:{}};
+  const fmtM = v => v>=1000000 ? "$"+(v/1000000).toFixed(2)+"M" : v>=1000 ? "$"+Math.round(v/1000).toLocaleString()+"k" : "$"+(v||0);
+  const caY = (CR.ytd&&CR.ytd.combined)||{}, caM = (CR.mtd&&CR.mtd.combined)||{};
+  const gate = (num, title, desc, color, onClick, href, stat) => {
     const inner = (
       <React.Fragment>
         <div style={{fontSize:11,fontWeight:800,letterSpacing:"0.22em",color:color}}>{num}</div>
         <div style={{fontSize:30,fontWeight:900,color:"#fff",margin:"6px 0 8px",letterSpacing:"0.02em"}}>{title}</div>
         <div style={{fontSize:12.5,color:"#9fb3cc",lineHeight:1.5}}>{desc}</div>
+        {stat}
         <div style={{fontSize:12,fontWeight:800,color:color,marginTop:16,letterSpacing:"0.12em"}}>▸ ENTER{href?" ↗":""}</div>
       </React.Fragment>
     );
@@ -3924,7 +3928,11 @@ function GateLanding({ onEnter }){
       <div style={{fontSize:12,color:"#6b7a99",letterSpacing:"0.32em",marginTop:14,textAlign:"center"}}>THE GATE IS OPEN · CHOOSE YOUR DASHBOARD</div>
       {/* Gates */}
       <div style={{display:"flex",gap:18,flexWrap:"wrap",justifyContent:"center",marginTop:40,width:"100%",maxWidth:860}}>
-        {gate("GATE 01","HVAC · ROPP","TGL conversion · CA close rate · sold revenue · pace to goal",  "#F5B324", ()=>onEnter("hvac"))}
+        {gate("GATE 01","HVAC · ROPP","TGL conversion · CA close rate · sold revenue · pace to goal",  "#F5B324", ()=>onEnter("hvac"), null,
+          <div style={{display:"flex",gap:20,marginTop:16,paddingTop:14,borderTop:"1px solid #1e2d47"}}>
+            <div><div style={{fontSize:8.5,color:"#6b7a99",fontWeight:800,letterSpacing:"0.1em"}}>CA SALES · YTD</div><div style={{fontSize:24,fontWeight:900,color:"#22c55e",lineHeight:1.1}}>{fmtM(caY.sales||0)}</div></div>
+            <div><div style={{fontSize:8.5,color:"#6b7a99",fontWeight:800,letterSpacing:"0.1em"}}>CA SALES · MTD</div><div style={{fontSize:24,fontWeight:900,color:"#4ADE80",lineHeight:1.1}}>{fmtM(caM.sales||0)}</div></div>
+          </div>)}
         {gate("GATE 02","PLUMBING","Service · install · hour-by-hour — the Sierra Plumbing command deck", "#2E78C7", ()=>onEnter("plumbing"))}
       </div>
       <div style={{fontSize:10.5,color:"#3f4d64",letterSpacing:"0.28em",marginTop:44,textAlign:"center"}}>SIERRA AIR CONDITIONING &amp; PLUMBING · COMMAND DASHBOARDS</div>

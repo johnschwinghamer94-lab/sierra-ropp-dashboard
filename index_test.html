@@ -3427,7 +3427,7 @@ function HourByHourTab({ hourly }) {
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead><tr>
                   <th style={{ ...thS, textAlign: "left", paddingLeft: 20 }}>HOUR</th>
-                  <th style={thS}>ROPPs (cum)</th><th style={thS}>TGLs (cum)</th><th style={thS}>CONV%</th>
+                  <th style={thS}>ROPPs (total)</th><th style={thS}>TGLs (total)</th><th style={thS}>CONV%</th>
                   <th style={thS}>+ROPPs</th><th style={thS}>+TGLs</th><th style={thS}>THIS HR %</th>
                 </tr></thead>
                 <tbody>
@@ -3533,7 +3533,25 @@ function Root() {
   const loadHourly = React.useCallback(() => {
     setRefreshing(true);
     fetch("hourly.json?t=" + Date.now()).then(r => r.ok ? r.json() : null)
-      .then(j => { if (j) { setHourly(j); setLastUpdated(Date.now()); } })
+      .then(j => {
+        if (!j) return;
+        // 8 AM reset: if hourly.json is still from a prior day and it's past 8 AM, show a
+        // clean zeroed slate (TODAY gauge, revenue, Hour-by-Hour) until today's first report lands.
+        const pad = n => String(n).padStart(2, "0");
+        const now = new Date();
+        const today = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
+        if (j.date && j.date !== today && now.getHours() >= 8) {
+          const z = JSON.parse(JSON.stringify(j));
+          z.date = today; z.updated = "awaiting today's first report"; z.hours = [];
+          if (z.today) {
+            z.today.calls = 0; z.today.tgls = 0; z.today.rate = 0; z.today.rev = 0;
+            if (Array.isArray(z.today.techs)) z.today.techs = [];
+            if (z.today.sched) { const s = z.today.sched; s.ran = 0; s.same = 0; s.samePct = 0; s.sold = 0; s.soldrev = 0; s.closeRate = 0; if (Array.isArray(s.techs)) s.techs = []; }
+          }
+          j = z;
+        }
+        setHourly(j); setLastUpdated(Date.now());
+      })
       .catch(() => {})
       .finally(() => setRefreshing(false));
   }, []);

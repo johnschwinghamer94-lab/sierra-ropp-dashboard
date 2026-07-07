@@ -524,6 +524,10 @@ function close_rate_block(D, sr, rm){
   };
   const opp = {};    // name -> {yr,mr}    ran opportunities (close-rate denominator)
   const sold = {};   // name -> {yc,ya,mc,ma}
+  const NM = rmNum;  // current month number; monthly history spans months 1..NM
+  const tset = {team_a:new Set(teamA), team_b:new Set(teamB), combined:new Set(combined)};
+  const tmo = {team_a:[], team_b:[], combined:[]};
+  for (const k in tmo){ for(let mo=0;mo<NM;mo++) tmo[k].push({ran:0,sold:0,sales:0}); }
   for (let i=1;i<sr.length;i++){
     const r = sr[i];
     if (!isjob(r[1])) continue;
@@ -532,6 +536,7 @@ function close_rate_block(D, sr, rm){
     const o = opp[src] || (opp[src] = {yr:0,mr:0}); o.yr++;
     if (rd.m === rmNum) o.mr++;
     const soldAmt = num(r[10]);   // col 10 = Estimate Sales Subtotal = SOLD price
+    for (const k in tset){ if (rd.m<=NM && tset[k].has(src)){ const b=tmo[k][rd.m-1]; b.ran++; if(soldAmt>0){b.sold++; b.sales+=soldAmt;} } }
     if (soldAmt <= 0) continue;
     const e = sold[src] || (sold[src] = {yc:0,ya:0,mc:0,ma:0});
     e.yc++; e.ya += soldAmt;
@@ -561,7 +566,9 @@ function close_rate_block(D, sr, rm){
             actual:A, ran:RN, sold:S, close_rate:r1(S,RN), tgl_pct:r1(A,R), sales:SL, per_ropp:R?pyround(SL/R):0};
   };
   const ta=teamA.map(row), tb=teamB.map(row), comb=combined.map(row);
-  return {month:rm, team_a:ta, team_b:tb, combined:comb,
+  const moSeries = k => tmo[k].map((b,i)=>({month:ALL_MONTHS[i], ran:b.ran, sold:b.sold, cr:r1(b.sold,b.ran), sales:pyround(b.sales)}));
+  const monthly = {months:ALL_MONTHS.slice(0,NM), team_a:moSeries("team_a"), team_b:moSeries("team_b"), combined:moSeries("combined")};
+  return {month:rm, team_a:ta, team_b:tb, combined:comb, monthly:monthly,
     totals:{ytd:{team_a:tot(ta,"ytd"),team_b:tot(tb,"ytd"),combined:tot(comb,"ytd")},
             mtd:{team_a:tot(ta,"mtd"),team_b:tot(tb,"mtd"),combined:tot(comb,"mtd")}}};
 }

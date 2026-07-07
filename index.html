@@ -2897,6 +2897,40 @@ function HourByHourTab({ hourly }) {
                 </table>
               </div>
             ) : null}
+            {t.sched ? (
+              <div style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 16, overflow: "hidden" }}>
+                <div style={{ padding: "13px 20px 3px", fontSize: 9, color: "#F5B324", fontWeight: 700, letterSpacing: "0.2em" }}>{"SAME-DAY / SOLD · TODAY"}</div>
+                <div style={{ padding: "0 20px 10px", fontSize: 11, color: "#6b7a99" }}>{"TGLs that ran today · same-day = scheduled the same day it was created · sold = installed"}</div>
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", padding: "0 20px 14px" }}>
+                  {[["RAN TODAY", String(t.sched.ran), "#F5B324"],
+                    ["SAME-DAY", t.sched.same + " · " + fmtPct(t.sched.samePct), "#2E78C7"],
+                    ["SOLD", t.sched.sold + " · $" + Number(t.sched.soldrev || 0).toLocaleString(), "#4ADE80"]
+                  ].map(kv => (
+                    <div key={kv[0]} style={{ flex: "1 1 130px", background: "#0e1626", border: "1px solid #1e2d47", borderRadius: 12, padding: "12px 14px", textAlign: "center" }}>
+                      <div style={{ fontSize: 9, color: "#7089ab", letterSpacing: "0.12em", fontWeight: 700 }}>{kv[0]}</div>
+                      <div style={{ fontSize: 19, fontWeight: 800, color: kv[2], marginTop: 4 }}>{kv[1]}</div>
+                    </div>
+                  ))}
+                </div>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead><tr>
+                    <th style={{ ...thS, textAlign: "left", paddingLeft: 20 }}>TECH</th>
+                    <th style={thS}>RAN</th><th style={thS}>SAME-DAY</th><th style={thS}>SOLD</th><th style={thS}>SOLD $</th>
+                  </tr></thead>
+                  <tbody>
+                    {t.sched.techs.map(s => (
+                      <tr key={s.name}>
+                        <td style={{ ...tdS, textAlign: "left", paddingLeft: 20, fontWeight: 700, color: "#FFFFFF" }}>{s.name}</td>
+                        <td style={{ ...tdS, color: "#FFFFFF" }}>{s.ran}</td>
+                        <td style={{ ...tdS, color: "#2E78C7" }}>{s.same + " (" + fmtPct(s.samePct) + ")"}</td>
+                        <td style={{ ...tdS, color: "#4ADE80" }}>{s.sold}</td>
+                        <td style={{ ...tdS, color: "#4ADE80" }}>{"$" + Number(s.soldrev || 0).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : null}
           </>
         ) : (
           <div style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 16, padding: "44px 20px", textAlign: "center", color: "#6b7a99" }}>

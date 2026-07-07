@@ -1036,11 +1036,13 @@ function PeriodTable({ period, data }) {
                   <th style={{...thS,textAlign:"left",paddingLeft:20}}>TECHNICIAN</th>
                   {months.map(m=><th key={m} style={thS}>{m.slice(0,3).toUpperCase()}</th>)}
                   <th style={thS}>YTD</th>
+                  <th style={{...thS,color:"#5BA4E6"}}>TREND</th>
                 </tr></thead>
                 <tbody>
                   {DEPT_TECHS_SF.map((tech,i)=>{
                     const ytd=CANCEL_DATA.ytd[tech];
                     const yr=ytd.scheduled>0?parseFloat((ytd.cancelled/ytd.scheduled*100).toFixed(1)):null;
+                    const _cRates=months.map(m=>{const dd=CANCEL_DATA.monthly[tech][m]||{scheduled:0,cancelled:0}; return dd.scheduled>0?Math.round(dd.cancelled/dd.scheduled*1000)/10:0;});
                     return(
                       <tr key={tech} style={{background:i%2===0?"#111827":"#111827"}}>
                         <td style={{...tdS(true),textAlign:"left",color:"#FFFFFF",paddingLeft:20}}>{tech}</td>
@@ -1059,6 +1061,7 @@ function PeriodTable({ period, data }) {
                           <div>{yr!==null?yr+"%":"—"}</div>
                           <div style={{fontSize:9,color:"#FFFFFF"}}>{ytd.cancelled}/{ytd.scheduled}</div>
                         </td>
+                        <td style={{padding:"8px 10px",textAlign:"center"}}>{ytd.scheduled>0?<Spark data={_cRates} color={cancelBadge(yr).color} kpi={30} w={80} h={24}/>:<span style={{color:"#6b7a99",fontSize:10}}>{"—"}</span>}</td>
                       </tr>
                     );
                   })}

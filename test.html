@@ -3986,6 +3986,37 @@ function CASalesDash(){
       {body}
     </div></div>);
 
+  const caCol=r=>r>=50?"#22c55e":r>=30?"#F5B324":"#E63946";
+  const gArc=frac=>{const R=58,cx=80,cy=92,a0=Math.PI,a1=Math.PI*(1-Math.max(0,Math.min(1,frac)));
+    const x0=cx+R*Math.cos(a0),y0=cy-R*Math.sin(a0),x1=cx+R*Math.cos(a1),y1=cy-R*Math.sin(a1);
+    return "M "+x0.toFixed(1)+" "+y0.toFixed(1)+" A "+R+" "+R+" 0 "+(frac>0.5?1:0)+" 1 "+x1.toFixed(1)+" "+y1.toFixed(1);};
+  const gTick=frac=>{const R=58,cx=80,cy=92,a=Math.PI*(1-frac);
+    return {x1:(cx+(R-9)*Math.cos(a)).toFixed(1),y1:(cy-(R-9)*Math.sin(a)).toFixed(1),x2:(cx+(R+9)*Math.cos(a)).toFixed(1),y2:(cy-(R+9)*Math.sin(a)).toFixed(1)};};
+  const caGauge=(label,rate,bench,color)=>{const t=bench!=null?gTick(bench/100):null; return (
+    <div className="riseIn liftCard" style={{background:"linear-gradient(160deg,#131c30,#0e1626)",border:"1px solid #1e2d47",borderRadius:16,padding:"12px 10px",flex:"1 1 150px",minWidth:148,textAlign:"center"}}>
+      <div style={{fontSize:9,letterSpacing:"0.13em",color:"#7089ab",fontWeight:700}}>{label}</div>
+      <svg viewBox="0 0 160 104" width="100%">
+        <path d={gArc(1)} fill="none" stroke="#22304d" strokeWidth="12" strokeLinecap="round"/>
+        <path d={gArc((rate||0)/100)} fill="none" stroke={color} strokeWidth="12" strokeLinecap="round" style={{filter:"drop-shadow(0 0 5px "+color+"88)"}}/>
+        {t&&<line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke="#4ADE80" strokeWidth="2.5" strokeLinecap="round"/>}
+        <text x="80" y="84" textAnchor="middle" fontSize="27" fontWeight="900" fill={color}>{rate}%</text>
+      </svg>
+      {bench!=null && <div style={{fontSize:8,color:"#6b7a99",marginTop:-4}}>benchmark {bench}%</div>}
+    </div>);};
+  const caTile=(label,val,accent,sub)=>(
+    <div className="riseIn liftCard" style={{flex:"1 1 168px",background:"#131c30",border:"1px solid #1e2d47",borderLeft:"3px solid "+accent,borderRadius:13,padding:"13px 16px"}}>
+      <div style={{fontSize:9,color:"#7089ab",letterSpacing:"0.1em",fontWeight:700}}>{label}</div>
+      <div style={{fontSize:25,fontWeight:900,color:accent,marginTop:3}}>{val}</div>
+      {sub&&<div style={{fontSize:9,color:"#6b7a99",marginTop:2}}>{sub}</div>}
+    </div>);
+  const topCA=cas.length?[...cas].sort((a,b)=>b.total-a.total)[0]:{name:"—",total:0};
+  const tickerItems=[
+    {l:"TOTAL",v:fmt(D.total),c:"#22c55e"},{l:"MARKETING",v:fmt(D.mktTotal),c:"#5BA4E6"},
+    {l:"TECH-LEAD",v:fmt(D.tglTotal),c:"#F5B324"},{l:"AVG TICKET",v:fmt(D.avgAll),c:"#4ADE80"},
+    {l:"CAs",v:D.caCount,c:"#fff"},{l:"TGL CLOSE",v:D.tglCloseAll+"%",c:"#F5B324"},
+    {l:"MKT CLOSE",v:D.mktCloseAll+"%",c:"#5BA4E6"},{l:"TOP CA",v:topCA.name.split(" ")[0]+" "+fmt(topCA.total),c:"#22c55e"},
+  ];
+
   const TABS=[
     {id:"overview",icon:"📊",label:"OVERVIEW",sub:"Company KPIs"},
     {id:"board",icon:"🏆",label:"LEADERBOARD",sub:"All "+D.caCount+" CAs"},
@@ -4056,19 +4087,33 @@ function CASalesDash(){
 
         {tab==="overview" && (
           <React.Fragment>
-            <div style={{padding:"16px 24px 4px",display:"flex",gap:12,flexWrap:"wrap"}}>
-              {kpi("TOTAL SALES",fmt(D.total),GREEN,D.dateRange)}
-              {kpi("MARKETING",fmt(D.mktTotal),BLUE,mktPct+"% of total")}
-              {kpi("TECH-LEAD · TGL",fmt(D.tglTotal),GOLD,tglPct+"% of total")}
-              {kpi("AVG TICKET",fmt(D.avgAll),"#4ADE80","mkt "+fmt(D.mktAvgAll)+" · tgl "+fmt(D.tglAvgAll))}
-              {kpi("MKT CLOSE",D.mktCloseAll+"%",BLUE,"overall")}
-              {kpi("TGL CLOSE",D.tglCloseAll+"%",GOLD,"overall")}
+            <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",rowGap:6,padding:"9px 24px",background:"linear-gradient(90deg,#0b1810,#0e2a1c)",borderBottom:"1px solid #1e3d2c"}}>
+              {tickerItems.map((t,i)=>(<React.Fragment key={i}>
+                {i>0 && <span style={{color:"#2a4a38",margin:"0 12px"}}>◆</span>}
+                <span style={{fontSize:12.5,fontWeight:800,color:t.c}}>{t.v}</span>
+                <span style={{fontSize:8.5,color:"#6b7a99",marginLeft:5,letterSpacing:"0.08em"}}>{t.l}</span>
+              </React.Fragment>))}
             </div>
-            {card("Sales by Lead Source","Marketing "+fmt(D.mktTotal)+" · Tech-Lead "+fmt(D.tglTotal)+" · total "+fmt(D.total),
-              <div style={{display:"flex",height:28,borderRadius:8,overflow:"hidden",background:"#0a1220"}}>
-                <div style={{width:mktPct+"%",background:"linear-gradient(90deg,#2E78C7,#5BA4E6)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",animation:"growW 1s ease both"}}>Marketing {mktPct}%</div>
-                <div style={{width:tglPct+"%",background:"linear-gradient(90deg,#F5B324,#c98f14)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#0a0e1a",animation:"growW 1.15s ease both"}}>Tech-Lead {tglPct}%</div>
-              </div>)}
+            <div style={{padding:"16px 24px 0",display:"flex",gap:14,flexWrap:"wrap"}}>
+              <div className="riseIn liftCard" style={{flex:"2 1 340px",background:"linear-gradient(135deg,#0e2a1c,#0c1a2e)",border:"1px solid #1e3d2c",borderRadius:18,padding:"20px 24px",display:"flex",flexDirection:"column",justifyContent:"center"}}>
+                <div style={{fontSize:10,letterSpacing:"0.16em",color:"#22c55e",fontWeight:800}}>TOTAL CA SALES · {D.dateRange}</div>
+                <div style={{fontSize:52,fontWeight:900,color:"#fff",lineHeight:1.02,margin:"6px 0"}}>$<CountUp value={D.total/1000000} decimals={2}/>M</div>
+                <div style={{fontSize:11,color:"#9fb3cc",marginBottom:12}}>{D.caCount} comfort advisors · avg ticket {fmt(D.avgAll)} · top: {topCA.name} {fmt(topCA.total)}</div>
+                <div style={{display:"flex",height:22,borderRadius:7,overflow:"hidden",background:"#0a1220"}}>
+                  <div style={{width:mktPct+"%",background:"linear-gradient(90deg,#2E78C7,#5BA4E6)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff"}}>Marketing {mktPct}%</div>
+                  <div style={{width:tglPct+"%",background:"linear-gradient(90deg,#F5B324,#c98f14)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#0a0e1a"}}>Tech-Lead {tglPct}%</div>
+                </div>
+              </div>
+              {caGauge("TGL CLOSE RATE",D.tglCloseAll,50,caCol(D.tglCloseAll))}
+              {caGauge("MKT CLOSE RATE",D.mktCloseAll,30,caCol(D.mktCloseAll))}
+              {caGauge("TECH-LEAD SHARE",tglPct,50,"#F5B324")}
+            </div>
+            <div style={{padding:"14px 24px 0",display:"flex",gap:12,flexWrap:"wrap"}}>
+              {caTile("MARKETING SALES",fmt(D.mktTotal),"#5BA4E6",mktPct+"% · close "+D.mktCloseAll+"% · avg "+fmt(D.mktAvgAll))}
+              {caTile("TECH-LEAD SALES",fmt(D.tglTotal),"#F5B324",tglPct+"% · close "+D.tglCloseAll+"% · avg "+fmt(D.tglAvgAll))}
+              {caTile("AVG TICKET",fmt(D.avgAll),"#4ADE80","blended per sale")}
+              {caTile("TOP CA",topCA.name.split(" ")[0],"#22c55e",fmt(topCA.total)+" · #1 of "+D.caCount)}
+            </div>
             {card("Top CAs · Total Sales","top 15 · click a name for detail", barLeader("total",GREEN,c=>fmt(c.mkt)+" / "+fmt(c.tgl)))}
           </React.Fragment>)}
 

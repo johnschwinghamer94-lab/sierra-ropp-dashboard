@@ -3848,37 +3848,41 @@ function Root() {
   );
 }
 
-// ═══ MULTI-DASHBOARD SHELL (staging) ═══════════════════════════════════════
+// ═══ MULTI-DASHBOARD SHELL + SIERRA COMMAND GATE LANDING (staging) ═════════
 function PlumbingDash(){
   const PURL = "https://sierra-plumbing-dashboard.tdgsteeler07.workers.dev";
   const [embed, setEmbed] = React.useState(false);
+  const gate = (label, title, desc, color) => (
+    <a href={PURL} target="_blank" rel="noopener" className="liftCard" style={{textDecoration:"none",flex:"1 1 240px",background:"#131c30",
+      border:"1px solid #1e2d47",borderLeft:"4px solid "+color,borderRadius:14,padding:"18px 20px",display:"block"}}>
+      <div style={{fontSize:10,fontWeight:800,letterSpacing:"0.18em",color:color}}>{label}</div>
+      <div style={{fontSize:20,fontWeight:800,color:"#fff",margin:"6px 0 4px"}}>{title}</div>
+      <div style={{fontSize:11.5,color:"#9fb3cc"}}>{desc}</div>
+      <div style={{fontSize:11,fontWeight:800,color:color,marginTop:12,letterSpacing:"0.1em"}}>▸ OPEN ↗</div>
+    </a>
+  );
   return (
     <div className="riseIn" style={{padding:"0 0 40px"}}>
       <div style={{padding:"14px 24px",background:"linear-gradient(135deg,#0f1e38,#162849)",borderBottom:"1px solid #1e2d47"}}>
-        <div style={{fontSize:9,color:"#2E78C7",fontWeight:700,letterSpacing:"0.2em"}}>🔧 SIERRA PLUMBING DASHBOARD</div>
-        <div style={{fontSize:11,color:"#6b7a99",marginTop:2}}>Separate secured app · Cloudflare Access</div>
+        <div style={{fontSize:9,color:"#2E78C7",fontWeight:700,letterSpacing:"0.2em"}}>🔧 SIERRA PLUMBING · COMMAND DASHBOARDS</div>
+        <div style={{fontSize:11,color:"#6b7a99",marginTop:2}}>Secured app on Cloudflare Access · opens in its own tab</div>
       </div>
       {!embed ? (
-        <div style={{padding:"46px 24px",display:"flex",justifyContent:"center"}}>
-          <div className="liftCard" style={{maxWidth:540,background:"#161d2e",border:"1px solid #1e2d47",borderRadius:18,padding:"30px 32px",textAlign:"center"}}>
-            <div style={{fontSize:44,marginBottom:12}}>🔧</div>
-            <div style={{fontSize:19,fontWeight:800,color:"#fff"}}>Plumbing Dashboard</div>
-            <div style={{fontSize:12.5,color:"#9fb3cc",margin:"12px 0 22px",lineHeight:1.6}}>
-              This dashboard is hosted separately on Cloudflare and protected by a sign-in. It opens in its own tab.
-              To embed it fully inside this site (like the HVAC tabs), send me its HTML source and I'll host it here — no login wall, no framing limits.
-            </div>
-            <div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap"}}>
-              <a href={PURL} target="_blank" rel="noopener" style={{background:"#2E78C7",color:"#fff",textDecoration:"none",padding:"12px 22px",borderRadius:10,fontWeight:800,fontSize:13}}>Open Plumbing Dashboard ↗</a>
-              <button onClick={()=>setEmbed(true)} style={{background:"#0e1626",color:"#9fb3cc",border:"1px solid #1e2d47",padding:"12px 22px",borderRadius:10,fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"inherit"}}>Try inline embed</button>
-            </div>
+        <div style={{padding:"26px 24px"}}>
+          <div style={{display:"flex",gap:14,flexWrap:"wrap",maxWidth:900,margin:"0 auto"}}>
+            {gate("GATE 01","SERVICE","Sales opportunities · close rate · revenue","#5BA4E6")}
+            {gate("GATE 02","INSTALL","Completed revenue · jobs · recall rate","#F5B324")}
+            {gate("GATE 03","HOUR BY HOUR","Live hourly KPIs · typed by the team","#4ADE80")}
+          </div>
+          <div style={{textAlign:"center",marginTop:22,fontSize:11,color:"#6b7a99"}}>
+            To embed these fully inside this site (no login wall), send me the plumbing dashboard's HTML source.{" "}
+            <button onClick={()=>setEmbed(true)} style={{background:"none",border:"none",color:"#2E78C7",cursor:"pointer",fontFamily:"inherit",fontSize:11,textDecoration:"underline"}}>try inline embed</button>
           </div>
         </div>
       ) : (
         <div style={{padding:"12px 24px"}}>
-          <div style={{fontSize:10,color:"#6b7a99",marginBottom:8}}>
-            If this stays blank, the plumbing app blocks embedding — use “Open ↗”.{" "}
-            <button onClick={()=>setEmbed(false)} style={{background:"none",border:"none",color:"#2E78C7",cursor:"pointer",fontFamily:"inherit",fontSize:10,textDecoration:"underline"}}>back</button>
-          </div>
+          <div style={{fontSize:10,color:"#6b7a99",marginBottom:8}}>If blank, the app blocks embedding — use the gates above.{" "}
+            <button onClick={()=>setEmbed(false)} style={{background:"none",border:"none",color:"#2E78C7",cursor:"pointer",fontFamily:"inherit",fontSize:10,textDecoration:"underline"}}>back</button></div>
           <iframe src={PURL} title="Plumbing Dashboard" style={{width:"100%",height:"80vh",border:"1px solid #1e2d47",borderRadius:12,background:"#0e1626"}}/>
         </div>
       )}
@@ -3886,23 +3890,69 @@ function PlumbingDash(){
   );
 }
 
+function GateLanding({ onEnter }){
+  const PURL = "https://sierra-plumbing-dashboard.tdgsteeler07.workers.dev";
+  const gate = (num, title, desc, color, onClick, href) => {
+    const inner = (
+      <React.Fragment>
+        <div style={{fontSize:11,fontWeight:800,letterSpacing:"0.22em",color:color}}>{num}</div>
+        <div style={{fontSize:30,fontWeight:900,color:"#fff",margin:"6px 0 8px",letterSpacing:"0.02em"}}>{title}</div>
+        <div style={{fontSize:12.5,color:"#9fb3cc",lineHeight:1.5}}>{desc}</div>
+        <div style={{fontSize:12,fontWeight:800,color:color,marginTop:16,letterSpacing:"0.12em"}}>▸ ENTER{href?" ↗":""}</div>
+      </React.Fragment>
+    );
+    const style={flex:"1 1 300px",maxWidth:400,background:"linear-gradient(160deg,#101a2e,#0c1424)",
+      border:"1px solid #1e2d47",borderTop:"3px solid "+color,borderRadius:16,padding:"22px 24px",
+      cursor:"pointer",textDecoration:"none",display:"block",boxShadow:"0 0 0 transparent"};
+    return href
+      ? <a className="liftCard" href={href} target="_blank" rel="noopener" style={style}>{inner}</a>
+      : <div className="liftCard" onClick={onClick} style={style}>{inner}</div>;
+  };
+  return (
+    <div className="gridbg" style={{minHeight:"100vh",background:"radial-gradient(1200px 700px at 50% 8%,rgba(46,120,199,.14),transparent 60%),#080c16",
+      display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 20px 30px"}}>
+      {/* Emblem */}
+      <svg width="200" height="200" viewBox="0 0 200 200" style={{filter:"drop-shadow(0 0 26px rgba(46,120,199,.5))"}}>
+        <circle cx="100" cy="100" r="92" fill="none" stroke="#2E78C7" strokeWidth="1.5" opacity="0.55"/>
+        <circle cx="100" cy="100" r="80" fill="none" stroke="#2E78C7" strokeWidth="3" opacity="0.9"/>
+        <circle cx="100" cy="100" r="80" fill="none" stroke="#F5B324" strokeWidth="3" strokeDasharray="30 220" opacity="0.9"/>
+        <circle cx="100" cy="100" r="66" fill="none" stroke="#1e3a5f" strokeWidth="1"/>
+        <polygon points="100,58 136,79 136,121 100,142 64,121 64,79" fill="#F5B324"/>
+        <text x="100" y="112" fontSize="34" fontWeight="900" fill="#0a0e1a" textAnchor="middle" fontFamily="Inter,sans-serif">S</text>
+      </svg>
+      <div style={{fontSize:46,fontWeight:900,color:"#fff",letterSpacing:"0.14em",textAlign:"center",lineHeight:1.05,marginTop:8}}>SIERRA<br/>COMMAND</div>
+      <div style={{fontSize:12,color:"#6b7a99",letterSpacing:"0.32em",marginTop:14,textAlign:"center"}}>THE GATE IS OPEN · CHOOSE YOUR DASHBOARD</div>
+      {/* Gates */}
+      <div style={{display:"flex",gap:18,flexWrap:"wrap",justifyContent:"center",marginTop:40,width:"100%",maxWidth:860}}>
+        {gate("GATE 01","HVAC · ROPP","TGL conversion · CA close rate · sold revenue · pace to goal",  "#F5B324", ()=>onEnter("hvac"))}
+        {gate("GATE 02","PLUMBING","Service · install · hour-by-hour — the Sierra Plumbing command deck", "#2E78C7", ()=>onEnter("plumbing"))}
+      </div>
+      <div style={{fontSize:10.5,color:"#3f4d64",letterSpacing:"0.28em",marginTop:44,textAlign:"center"}}>SIERRA AIR CONDITIONING &amp; PLUMBING · COMMAND DASHBOARDS</div>
+      <div style={{fontSize:9,color:"#F5B32488",letterSpacing:"0.1em",marginTop:10,fontWeight:700}}>STAGING · test.html</div>
+    </div>
+  );
+}
+
 function Site(){
-  const [dash, setDash] = React.useState("hvac");
-  const btn = (id, emoji, label, color) => (
-    <button onClick={()=>setDash(id)} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 16px",border:"none",cursor:"pointer",
-      fontFamily:"inherit",fontSize:12.5,fontWeight:800,letterSpacing:"0.04em",borderRadius:10,
-      background: dash===id ? color : "#0e1626", color: dash===id ? "#070b16" : "#9fb3cc", transition:"all .15s"}}>
-      <span style={{fontSize:15}}>{emoji}</span>{label}</button>
+  const [entered, setEntered] = React.useState(null);   // null = gate landing
+  if (!entered) return <GateLanding onEnter={setEntered}/>;
+  const sw = (id, emoji, label, color) => (
+    <button onClick={()=>setEntered(id)} style={{display:"flex",alignItems:"center",gap:7,padding:"6px 14px",border:"none",cursor:"pointer",
+      fontFamily:"inherit",fontSize:12,fontWeight:800,letterSpacing:"0.04em",borderRadius:9,
+      background: entered===id ? color : "#0e1626", color: entered===id ? "#070b16" : "#9fb3cc", transition:"all .15s"}}>
+      <span style={{fontSize:14}}>{emoji}</span>{label}</button>
   );
   return (
     <div style={{minHeight:"100vh",background:"#0a0e1a"}}>
-      <div style={{display:"flex",gap:10,alignItems:"center",padding:"9px 20px",background:"linear-gradient(90deg,#0c1424,#111d33)",borderBottom:"1px solid #1e2d47",position:"sticky",top:0,zIndex:1000}}>
-        <span style={{fontSize:11,fontWeight:800,color:"#F5B324",letterSpacing:"0.14em",marginRight:4}}>SIERRA · DASHBOARDS</span>
-        {btn("hvac","🔥","HVAC · ROPP","#F5B324")}
-        {btn("plumbing","🔧","PLUMBING","#2E78C7")}
+      <div style={{display:"flex",gap:9,alignItems:"center",padding:"8px 18px",background:"linear-gradient(90deg,#0c1424,#111d33)",borderBottom:"1px solid #1e2d47",position:"sticky",top:0,zIndex:1000}}>
+        <button onClick={()=>setEntered(null)} style={{background:"none",border:"1px solid #1e2d47",color:"#9fb3cc",cursor:"pointer",fontFamily:"inherit",
+          fontSize:11,fontWeight:800,letterSpacing:"0.08em",borderRadius:9,padding:"6px 12px"}}>◀ SIERRA COMMAND</button>
+        <div style={{width:1,height:20,background:"#1e2d47",margin:"0 3px"}}/>
+        {sw("hvac","🔥","HVAC · ROPP","#F5B324")}
+        {sw("plumbing","🔧","PLUMBING","#2E78C7")}
         <span style={{marginLeft:"auto",fontSize:9,color:"#4a5a70",fontWeight:700,letterSpacing:"0.08em"}}>STAGING · test.html</span>
       </div>
-      {dash==="hvac" ? <Root/> : <PlumbingDash/>}
+      {entered==="hvac" ? <Root/> : <PlumbingDash/>}
     </div>
   );
 }

@@ -3989,7 +3989,7 @@ function CASalesDash(){
   const caCol=r=>r>=50?"#22c55e":r>=30?"#F5B324":"#E63946";
   const gArc=frac=>{const R=58,cx=80,cy=92,a0=Math.PI,a1=Math.PI*(1-Math.max(0,Math.min(1,frac)));
     const x0=cx+R*Math.cos(a0),y0=cy-R*Math.sin(a0),x1=cx+R*Math.cos(a1),y1=cy-R*Math.sin(a1);
-    return "M "+x0.toFixed(1)+" "+y0.toFixed(1)+" A "+R+" "+R+" 0 "+(frac>0.5?1:0)+" 1 "+x1.toFixed(1)+" "+y1.toFixed(1);};
+    return "M "+x0.toFixed(1)+" "+y0.toFixed(1)+" A "+R+" "+R+" 0 0 1 "+x1.toFixed(1)+" "+y1.toFixed(1);};
   const gTick=frac=>{const R=58,cx=80,cy=92,a=Math.PI*(1-frac);
     return {x1:(cx+(R-9)*Math.cos(a)).toFixed(1),y1:(cy-(R-9)*Math.sin(a)).toFixed(1),x2:(cx+(R+9)*Math.cos(a)).toFixed(1),y2:(cy-(R+9)*Math.sin(a)).toFixed(1)};};
   const caGauge=(label,rate,bench,color)=>{const t=bench!=null?gTick(bench/100):null; return (

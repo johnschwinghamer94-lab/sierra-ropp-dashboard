@@ -507,8 +507,10 @@ function set_yesterday(html, rev, tg, day){
 
 // ------------------------- CA CLOSE RATE ----------------------------------
 // Sold TGLs / Actual TGLs per silo tech (YTD + MTD), from the Scheduled-vs-Ran-
-// vs-Sold report (installed > 0). Mirrors UPDATE_DASHBOARD.build_close_rate so a
-// browser "Build & Publish" produces the same CLOSE_RATE_DATA as the daily job.
+// vs-Sold report. A TGL is SOLD when Estimate Sales Subtotal (col 10) > 0 -- verified
+// against ServiceTitan's export (Subtotal>0 == Closed=True). NOT "Installed"/col 8,
+// which is $0 until physically installed. Mirrors auto_update_dashboard.build_close_rate
+// so a browser "Build & Publish" produces the same CLOSE_RATE_DATA as the daily job.
 function close_rate_block(D, sr, rm){
   const teamA = TEAM_A;
   const teamB = TEAM_B.concat(["Andrew Alonso"]);
@@ -520,39 +522,43 @@ function close_rate_block(D, sr, rm){
     for (const p of parts) if (siloSet.has(p)) return p;
     return parts.length ? parts[0] : null;
   };
+  const opp = {};    // name -> {yr,mr}    ran opportunities (close-rate denominator)
   const sold = {};   // name -> {yc,ya,mc,ma}
   for (let i=1;i<sr.length;i++){
     const r = sr[i];
     if (!isjob(r[1])) continue;
-    const src = resolveSilo(r[4]); const cr = asdate(r[7]);
-    if (!src || !cr || cr.y !== 2026) continue;
-    const inst = num(r[8]);
-    if (inst <= 0) continue;
+    const src = resolveSilo(r[4]); const rd = asdate(r[6]);   // col 6 = Scheduled/Ran date = opportunity date
+    if (!src || !rd || rd.y !== 2026) continue;
+    const o = opp[src] || (opp[src] = {yr:0,mr:0}); o.yr++;
+    if (rd.m === rmNum) o.mr++;
+    const soldAmt = num(r[10]);   // col 10 = Estimate Sales Subtotal = SOLD price
+    if (soldAmt <= 0) continue;
     const e = sold[src] || (sold[src] = {yc:0,ya:0,mc:0,ma:0});
-    e.yc++; e.ya += inst;
-    if (cr.m === rmNum){ e.mc++; e.ma += inst; }
+    e.yc++; e.ya += soldAmt;
+    if (rd.m === rmNum){ e.mc++; e.ma += soldAmt; }
   }
   const sumv = o => Object.values(o).reduce((a,b)=>a+b,0);
   const metrics = (n, period) => {
-    const d = D[n]; const s = sold[n] || {yc:0,ya:0,mc:0,ma:0};
-    let ropps, tgls, canceled, sc, sa;
+    const d = D[n]; const s = sold[n] || {yc:0,ya:0,mc:0,ma:0}; const o = opp[n] || {yr:0,mr:0};
+    let ropps, tgls, canceled, sc, sa, ran;
     if (period === "ytd"){
       ropps = d?sumv(d.c):0; tgls = d?sumv(d.tg):0; canceled = d?(d.cy||0):0;
-      sc = s.yc; sa = pyround(s.ya);
+      sc = s.yc; sa = pyround(s.ya); ran = o.yr;
     } else {
       ropps = d?(d.c[rm]||0):0; tgls = d?(d.tg[rm]||0):0; canceled = d?(d.cm[rm]||0):0;
-      sc = s.mc; sa = pyround(s.ma);
+      sc = s.mc; sa = pyround(s.ma); ran = o.mr;
     }
     const actual = Math.max(tgls - canceled, 0);
-    return {ropps, tgls, canceled, actual, tgl_pct:r1(actual,ropps), sold:sc,
-            close_rate:r1(sc,actual), sales:sa, per_ropp:ropps?pyround(sa/ropps):0};
+    return {ropps, tgls, canceled, actual, tgl_pct:r1(actual,ropps), ran, sold:sc,
+            close_rate:r1(sc,ran), sales:sa, per_ropp:ropps?pyround(sa/ropps):0};
   };
   const row = n => ({name:n, ytd:metrics(n,"ytd"), mtd:metrics(n,"mtd")});
   const tot = (rows, p) => {
     const R=rows.reduce((a,x)=>a+x[p].ropps,0), A=rows.reduce((a,x)=>a+x[p].actual,0),
+          RN=rows.reduce((a,x)=>a+x[p].ran,0),
           S=rows.reduce((a,x)=>a+x[p].sold,0), SL=rows.reduce((a,x)=>a+x[p].sales,0);
     return {ropps:R, tgls:rows.reduce((a,x)=>a+x[p].tgls,0), canceled:rows.reduce((a,x)=>a+x[p].canceled,0),
-            actual:A, sold:S, close_rate:r1(S,A), tgl_pct:r1(A,R), sales:SL, per_ropp:R?pyround(SL/R):0};
+            actual:A, ran:RN, sold:S, close_rate:r1(S,RN), tgl_pct:r1(A,R), sales:SL, per_ropp:R?pyround(SL/R):0};
   };
   const ta=teamA.map(row), tb=teamB.map(row), comb=combined.map(row);
   return {month:rm, team_a:ta, team_b:tb, combined:comb,

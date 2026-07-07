@@ -3927,16 +3927,100 @@ function GateLanding({ onEnter }){
       <div style={{fontSize:46,fontWeight:900,color:"#fff",letterSpacing:"0.14em",textAlign:"center",lineHeight:1.05,marginTop:8}}>SIERRA<br/>COMMAND</div>
       <div style={{fontSize:12,color:"#6b7a99",letterSpacing:"0.32em",marginTop:14,textAlign:"center"}}>THE GATE IS OPEN · CHOOSE YOUR DASHBOARD</div>
       {/* Gates */}
-      <div style={{display:"flex",gap:18,flexWrap:"wrap",justifyContent:"center",marginTop:40,width:"100%",maxWidth:860}}>
-        {gate("GATE 01","HVAC · ROPP","TGL conversion · CA close rate · sold revenue · pace to goal",  "#F5B324", ()=>onEnter("hvac"), null,
-          <div style={{display:"flex",gap:20,marginTop:16,paddingTop:14,borderTop:"1px solid #1e2d47"}}>
-            <div><div style={{fontSize:8.5,color:"#6b7a99",fontWeight:800,letterSpacing:"0.1em"}}>CA SALES · YTD</div><div style={{fontSize:24,fontWeight:900,color:"#22c55e",lineHeight:1.1}}>{fmtM(caY.sales||0)}</div></div>
-            <div><div style={{fontSize:8.5,color:"#6b7a99",fontWeight:800,letterSpacing:"0.1em"}}>CA SALES · MTD</div><div style={{fontSize:24,fontWeight:900,color:"#4ADE80",lineHeight:1.1}}>{fmtM(caM.sales||0)}</div></div>
+      <div style={{display:"flex",gap:18,flexWrap:"wrap",justifyContent:"center",marginTop:40,width:"100%",maxWidth:1120}}>
+        {gate("GATE 01","HVAC · ROPP","TGL conversion · CA close rate · sold revenue · pace to goal", "#F5B324", ()=>onEnter("hvac"))}
+        {gate("GATE 02","CA SALES","Comfort-advisor sold revenue · close rate · leaderboard · monthly trend", "#22c55e", ()=>onEnter("casales"), null,
+          <div style={{display:"flex",gap:18,marginTop:16,paddingTop:14,borderTop:"1px solid #1e2d47"}}>
+            <div><div style={{fontSize:8.5,color:"#6b7a99",fontWeight:800,letterSpacing:"0.1em"}}>YTD</div><div style={{fontSize:22,fontWeight:900,color:"#22c55e",lineHeight:1.1}}>{fmtM(caY.sales||0)}</div></div>
+            <div><div style={{fontSize:8.5,color:"#6b7a99",fontWeight:800,letterSpacing:"0.1em"}}>MTD</div><div style={{fontSize:22,fontWeight:900,color:"#4ADE80",lineHeight:1.1}}>{fmtM(caM.sales||0)}</div></div>
+            <div><div style={{fontSize:8.5,color:"#6b7a99",fontWeight:800,letterSpacing:"0.1em"}}>CLOSE</div><div style={{fontSize:22,fontWeight:900,color:"#F5B324",lineHeight:1.1}}>{(caY.close_rate||0)}%</div></div>
           </div>)}
-        {gate("GATE 02","PLUMBING","Service · install · hour-by-hour — the Sierra Plumbing command deck", "#2E78C7", ()=>onEnter("plumbing"))}
+        {gate("GATE 03","PLUMBING","Service · install · hour-by-hour — the Sierra Plumbing command deck", "#2E78C7", ()=>onEnter("plumbing"))}
       </div>
       <div style={{fontSize:10.5,color:"#3f4d64",letterSpacing:"0.28em",marginTop:44,textAlign:"center"}}>SIERRA AIR CONDITIONING &amp; PLUMBING · COMMAND DASHBOARDS</div>
       <div style={{fontSize:9,color:"#F5B32488",letterSpacing:"0.1em",marginTop:10,fontWeight:700}}>STAGING · test.html</div>
+    </div>
+  );
+}
+
+// ═══ CA SALES · standalone command deck (staging) ══════════════════════════
+function CASalesDash(){
+  const D = (typeof CLOSE_RATE_DATA!=="undefined") ? CLOSE_RATE_DATA : {};
+  const [view,setView]=React.useState("combined");
+  const [period,setPeriod]=React.useState("ytd");
+  const rows=((D[view])||[]).map(r=>(r&&r[period])?{name:r.name,...r[period]}:r).filter(Boolean);
+  const T=(((D.totals||{})[period]||{})[view])||{ropps:0,sold:0,ran:0,sales:0,close_rate:0,per_ropp:0};
+  const fmt=v=>v>=1000000?"$"+(v/1000000).toFixed(2)+"M":v>=1000?"$"+Math.round(v/1000).toLocaleString()+"k":"$"+Math.round(v||0);
+  const avg=T.sold?fmt(Math.round(T.sales/T.sold)):"—";
+  const mo=((D.monthly||{})[view])||[];
+  const salesRows=[...rows].filter(r=>r.sales>0).sort((a,b)=>b.sales-a.sales);
+  const maxSales=Math.max(1,...salesRows.map(r=>r.sales));
+  const maxMo=Math.max(1,...mo.map(m=>m.sales));
+  const GREEN="#22c55e";
+  const tglabel=view==="team_a"?"Team A":view==="team_b"?"Team B":"Combined";
+  const kpi=(label,val,color,sub)=>(
+    <div className="liftCard kpi-card" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"13px 18px",minWidth:120,textAlign:"center"}}>
+      <div style={{fontSize:9,letterSpacing:"0.12em",color:"#6b7a99",fontWeight:700}}>{label}</div>
+      <div style={{fontSize:23,fontWeight:900,color:color,marginTop:4}}>{val}</div>
+      {sub&&<div style={{fontSize:9,color:"#6b7a99",marginTop:2}}>{sub}</div>}
+    </div>);
+  return (
+    <div className="riseIn" style={{padding:"0 0 40px"}}>
+      <div style={{padding:"14px 24px",background:"linear-gradient(135deg,#0e2a1c,#123a26)",borderBottom:"1px solid #1e3d2c",display:"flex",gap:16,alignItems:"center",flexWrap:"wrap"}}>
+        <div style={{flex:1}}>
+          <div style={{fontSize:9,color:"#22c55e",fontWeight:700,letterSpacing:"0.2em"}}>💰 CA SALES · COMMAND DECK</div>
+          <div style={{fontSize:11,color:"#7a8fa0",marginTop:2}}>{(period==="ytd"?"YTD":("MTD · "+(D.month||"")))} · {tglabel} · sold revenue (Estimate Subtotal &gt; $0)</div>
+        </div>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          {[["ytd","📊 YTD"],["mtd","📅 MTD"]].map(([p,l])=>(
+            <button key={p} onClick={()=>setPeriod(p)} style={{padding:"7px 14px",border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"inherit",background:period===p?"#22c55e":"#0e1626",color:period===p?"#04140a":"#cfeede",borderRadius:6}}>{l}</button>))}
+          <div style={{width:1,background:"#1e3d2c",margin:"2px"}}/>
+          {[["combined","⚔ COMBINED"],["team_a","🔵 TEAM A"],["team_b","🟡 TEAM B"]].map(([v,l])=>(
+            <button key={v} onClick={()=>setView(v)} style={{padding:"7px 14px",border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"inherit",background:view===v?"#F5B324":"#0e1626",color:view===v?"#000":"#cfeede",borderRadius:6}}>{l}</button>))}
+        </div>
+      </div>
+      <div style={{padding:"16px 24px 4px",display:"flex",gap:12,flexWrap:"wrap"}}>
+        {kpi("CA SALES",fmt(T.sales||0),GREEN,(period==="ytd"?"year to date":"month to date"))}
+        {kpi("SOLD TGLs",T.sold||0,"#5BA4E6")}
+        {kpi("CLOSE RATE",(T.close_rate||0)+"%","#F5B324",(T.sold||0)+" / "+(T.ran||0)+" ran")}
+        {kpi("AVG DEAL",avg,"#4ADE80","per sold TGL")}
+        {kpi("$ / ROPP","$"+(T.per_ropp||0).toLocaleString(),"#2E78C7")}
+      </div>
+      {mo.length>=2 && (
+        <div style={{padding:"14px 24px 0"}}>
+          <div className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+            <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>Monthly CA Sales</div>
+            <div style={{fontSize:10,color:"#6b7a99",marginBottom:14}}>{tglabel} · sold revenue by month</div>
+            <div style={{display:"flex",alignItems:"flex-end",gap:10,height:150}}>
+              {mo.map((m,i)=>(
+                <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-end",height:"100%"}}>
+                  <div style={{fontSize:9,fontWeight:800,color:GREEN,marginBottom:4}}>{fmt(m.sales)}</div>
+                  <div style={{width:"66%",background:"linear-gradient(180deg,#22c55e,#12833f)",borderRadius:"5px 5px 0 0",height:Math.max(2,(m.sales/maxMo)*112)+"px",transition:"height .8s ease"}}/>
+                  <div style={{fontSize:9,color:i===mo.length-1?"#F5B324":"#7089ab",marginTop:6}}>{m.month.slice(0,3)}{i===mo.length-1?"*":""}</div>
+                </div>))}
+            </div>
+            <div style={{fontSize:9,color:"#6b7a99",marginTop:8}}>*current month is month-to-date</div>
+          </div>
+        </div>)}
+      <div style={{padding:"14px 24px 0"}}>
+        <div className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+          <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>CA Sales Leaderboard</div>
+          <div style={{fontSize:10,color:"#6b7a99",marginBottom:14}}>{tglabel} · {period==="ytd"?"YTD":(D.month||"MTD")} · ranked by sold revenue</div>
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {salesRows.slice(0,12).map((r,i)=>(
+              <div key={r.name} style={{display:"flex",alignItems:"center",gap:10}}>
+                <div style={{width:20,fontSize:11,fontWeight:800,color:i<3?"#F5B324":"#6b7a99",textAlign:"right"}}>{i+1}</div>
+                <div style={{width:140,fontSize:11,color:"#cfeede",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{i===0?"🥇 ":i===1?"🥈 ":i===2?"🥉 ":""}{r.name}</div>
+                <div style={{flex:1,background:"#0a1220",borderRadius:5,height:16,overflow:"hidden"}}><div style={{width:Math.max(2,(r.sales/maxSales)*100)+"%",height:"100%",background:"linear-gradient(90deg,#22c55e,#12833f)",borderRadius:5,animation:"growW 1s ease both",animationDelay:(i*0.05)+"s"}}/></div>
+                <div style={{width:78,fontSize:11,fontWeight:800,color:GREEN,textAlign:"right"}}>{fmt(r.sales)}</div>
+                <div style={{width:60,fontSize:10,color:"#9fb3cc",textAlign:"right"}}>{r.sold} sold</div>
+                <div style={{width:50,fontSize:10,color:"#F5B324",textAlign:"right"}}>{r.close_rate}%</div>
+              </div>))}
+            {salesRows.length===0 && <div style={{fontSize:11,color:"#6b7a99",padding:"10px 0"}}>No CA sales in this period yet.</div>}
+          </div>
+        </div>
+      </div>
+      <div style={{fontSize:9,color:"#4a5a70",padding:"14px 24px 0"}}>Data from the Scheduled-vs-Ran-vs-Sold report (Estimate Subtotal &gt; $0 = sold). Attributed to the silo tech who generated the lead. Same source as the HVAC · CA Close Rate tab.</div>
     </div>
   );
 }
@@ -3957,10 +4041,11 @@ function Site(){
           fontSize:11,fontWeight:800,letterSpacing:"0.08em",borderRadius:9,padding:"6px 12px"}}>◀ SIERRA COMMAND</button>
         <div style={{width:1,height:20,background:"#1e2d47",margin:"0 3px"}}/>
         {sw("hvac","🔥","HVAC · ROPP","#F5B324")}
+        {sw("casales","💰","CA SALES","#22c55e")}
         {sw("plumbing","🔧","PLUMBING","#2E78C7")}
         <span style={{marginLeft:"auto",fontSize:9,color:"#4a5a70",fontWeight:700,letterSpacing:"0.08em"}}>STAGING · test.html</span>
       </div>
-      {entered==="hvac" ? <Root/> : <PlumbingDash/>}
+      {entered==="hvac" ? <Root/> : entered==="casales" ? <CASalesDash/> : <PlumbingDash/>}
     </div>
   );
 }

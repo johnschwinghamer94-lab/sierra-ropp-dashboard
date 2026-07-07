@@ -119,6 +119,16 @@ input[type=range].kpi-range::-webkit-slider-thumb{-webkit-appearance:none;width:
   .gauge-grid{grid-template-columns:1fr 1fr!important;}
   .ticker-bar{font-size:10px!important;}
   button[data-tab]{padding:6px 8px!important;font-size:9px!important;}
+  /* KPI cards go 2-up and shrink to fit narrow screens */
+  .kpi-card{min-width:0!important;flex:1 1 42%!important;padding:10px 8px!important;}
+  .kpi-card>div:nth-child(2){font-size:19px!important;}
+  /* Compact tables + let wide tables scroll horizontally inside their card */
+  table{font-size:10px!important;}
+  th,td{padding:6px 5px!important;}
+  /* Full-width filter / search inputs */
+  .tech-filter,.tab-search{width:100%!important;}
+  /* Trim heavy section padding so content isn't squeezed */
+  .sec-pad{padding-left:12px!important;padding-right:12px!important;}
 }
 
 /* ── Round 4 Global ─────────────────────────────────────────── */
@@ -549,7 +559,7 @@ const getBadge = (rate) => {
 // ── KPI Card ──────────────────────────────────────────────────────────────────
 function KPICard({ label, value, sub, color, big }) {
   return (
-    <div className="liftCard" style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 16, padding: big ? "14px 22px" : "11px 16px", minWidth: big ? 130 : 104, textAlign: "center" }}>
+    <div className="liftCard kpi-card" style={{ background: "#161d2e", border: "1px solid #1e2d47", borderRadius: 16, padding: big ? "14px 22px" : "11px 16px", minWidth: big ? 130 : 104, textAlign: "center" }}>
       <div style={{ fontSize: 9, letterSpacing: "0.12em", color: "#6b7a99", fontWeight: 700, marginBottom: 5 }}>{label}</div>
       <div style={{ fontSize: big ? 28 : 20, fontWeight: 800, color: color || "#FFFFFF", fontFamily: "'Inter',sans-serif" }}>{value}</div>
       {sub && <div style={{ fontSize: 9, color: "#6b7a99", marginTop: 3 }}>{sub}</div>}
@@ -2484,7 +2494,39 @@ function CACloseRateTab() {
         <KPICard label="ACTUAL TGLs" value={tot.actual} color="#9fb3cc" sub={tot.tgls+" − "+tot.canceled+" cxl"} />
         <KPICard label="% TGL" value={totTgl+"%"} color={tglCol(totTgl)} />
         <KPICard label="CA SALES" value={fmtR(tot.sales)} color="#22c55e" big />
+        <KPICard label="AVG DEAL" value={tot.sold?fmtR(Math.round(tot.sales/tot.sold)):"—"} color="#4ADE80" sub="per sold TGL" />
         <KPICard label="$ / ROPP" value={"$"+totPer.toLocaleString()} color="#2E78C7" />
+      </div>
+
+      {/* Conversion funnel — the full pipeline, ROPPs → Actual TGLs → Ran → Sold */}
+      <div style={{padding:"14px 24px 0"}}>
+        <div className="liftCard" style={{background:"#161d2e",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",flexWrap:"wrap",gap:8}}>
+            <div style={{fontSize:13,fontWeight:800,color:"#FFFFFF"}}>Conversion Funnel</div>
+            <div style={{fontSize:10,color:"#6b7a99"}}>ROPP&nbsp;→&nbsp;Sold&nbsp;·&nbsp;<b style={{color:"#22c55e"}}>{tot.ropps?(tot.sold/tot.ropps*100).toFixed(1):0}%</b>&nbsp;end-to-end&nbsp;·&nbsp;{(period==="ytd"?"YTD":(D.month||"MTD"))}</div>
+          </div>
+          <div style={{marginTop:12}}>
+            {(()=>{ const stages=[
+                {k:"ROPPs run",v:tot.ropps,c:"#2E78C7",note:"opportunities to generate a TGL"},
+                {k:"Actual TGLs",v:tot.actual,c:"#5BA4E6",note:"TGLs generated (− canceled)"},
+                {k:"Ran",v:tot.ran,c:"#F5B324",note:"TGL estimates that ran"},
+                {k:"Sold",v:tot.sold,c:"#22c55e",note:"estimates sold"} ];
+              const mx=Math.max(tot.ropps,1);
+              return stages.map((s,i)=>{ const prev=i>0?stages[i-1].v:null; const conv=prev?Math.round(s.v/prev*100):null;
+                return (
+                <div key={s.k} style={{marginBottom:i<3?10:2}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",fontSize:10.5,marginBottom:3}}>
+                    <span style={{color:"#c9d6ea",fontWeight:700}}>{s.k}<span style={{color:"#5a6b85",fontWeight:500,marginLeft:7,fontSize:9}}>{s.note}</span></span>
+                    <span style={{color:s.c,fontWeight:800,fontSize:12}}>{(s.v||0).toLocaleString()}{conv!==null&&<span style={{color:"#6b7a99",fontWeight:700,marginLeft:8,fontSize:9.5}}>{conv}% ↓</span>}</span>
+                  </div>
+                  <div style={{background:"#0a1220",borderRadius:6,height:17,overflow:"hidden"}}>
+                    <div style={{width:Math.max(3,(s.v/mx)*100)+"%",height:"100%",background:"linear-gradient(90deg,"+s.c+","+s.c+"cc)",borderRadius:6,animation:"growW 1s cubic-bezier(.2,.7,.2,1) both",animationDelay:(i*0.09)+"s"}}/>
+                  </div>
+                </div>);
+              });
+            })()}
+          </div>
+        </div>
       </div>
 
       {/* Top closers ranking */}

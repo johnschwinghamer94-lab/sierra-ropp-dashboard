@@ -3896,6 +3896,7 @@ function GateLanding({ onEnter }){
   const fmtM = v => v>=1000000 ? "$"+(v/1000000).toFixed(2)+"M" : v>=1000 ? "$"+Math.round(v/1000).toLocaleString()+"k" : "$"+(v||0);
   const caY = (CR.ytd&&CR.ytd.combined)||{}, caM = (CR.mtd&&CR.mtd.combined)||{};
   const CS = (typeof CA_SALES_DATA!=="undefined")?CA_SALES_DATA:{total:0,mktTotal:0,tglTotal:0};
+  const DP = (typeof DEPT_PACE_DATA!=="undefined")?DEPT_PACE_DATA:{};
   const gate = (num, title, desc, color, onClick, href, stat) => {
     const inner = (
       <React.Fragment>
@@ -3938,13 +3939,23 @@ function GateLanding({ onEnter }){
           </div>)}
         {gate("GATE 03","PLUMBING","Service · install · hour-by-hour — the Sierra Plumbing command deck", "#2E78C7", ()=>onEnter("plumbing"))}
       </div>
-      <div style={{fontSize:10.5,color:"#3f4d64",letterSpacing:"0.28em",marginTop:44,textAlign:"center"}}>SIERRA AIR CONDITIONING &amp; PLUMBING · COMMAND DASHBOARDS</div>
+      <div style={{marginTop:34,display:"flex",gap:14,flexWrap:"wrap",justifyContent:"center",width:"100%",maxWidth:820}}>
+        {[{k:"🔥 HVAC · ROPP",v:fmtM((DP.ytd_revenue)||0),s:((DP.pace_pct)||0)+"% pace to goal",c:"#F5B324"},
+          {k:"💰 CA SALES",v:fmtM((CS.total)||0),s:((CS.caCount)||0)+" CAs · sold YTD",c:"#22c55e"},
+          {k:"🔧 PLUMBING",v:"Secured",s:"Cloudflare app",c:"#2E78C7"}].map((x,i)=>(
+          <div key={i} style={{flex:"1 1 200px",maxWidth:250,background:"rgba(255,255,255,.03)",border:"1px solid #1e2d47",borderRadius:14,padding:"12px 16px",textAlign:"center"}}>
+            <div style={{fontSize:9,fontWeight:800,letterSpacing:"0.12em",color:x.c}}>{x.k}</div>
+            <div style={{fontSize:22,fontWeight:900,color:"#fff",marginTop:3}}>{x.v}</div>
+            <div style={{fontSize:9,color:"#6b7a99",marginTop:2}}>{x.s}</div>
+          </div>))}
+      </div>
+      <div style={{fontSize:10.5,color:"#3f4d64",letterSpacing:"0.28em",marginTop:34,textAlign:"center"}}>SIERRA AIR CONDITIONING &amp; PLUMBING · COMMAND DASHBOARDS</div>
       <div style={{fontSize:9,color:"#F5B32488",letterSpacing:"0.1em",marginTop:10,fontWeight:700}}>STAGING · test.html</div>
     </div>
   );
 }
 
-const CA_SALES_DATA = {"dateRange":"Jan 1 \u2013 Jul 8, 2026","total":21466334,"mktTotal":5432949,"tglTotal":16033385,"mktCloseAll":29.2,"tglCloseAll":50.2,"mktAvgAll":24583,"tglAvgAll":24404,"avgAll":24449,"caCount":10,"sameDayAll":58,"buCostco":3290896,"buReg":18154250,"goal":40000000,"elapsedFrac":0.522,"months":["January","February","March","April","May","June","July"],"monthly":[{"month":"January","mkt":719617,"tgl":1520663,"total":2240280},{"month":"February","mkt":565376,"tgl":1242398,"total":1807775},{"month":"March","mkt":1354730,"tgl":2721633,"total":4076363},{"month":"April","mkt":635424,"tgl":2726161,"total":3361585},{"month":"May","mkt":661526,"tgl":3310827,"total":3972353},{"month":"June","mkt":1312436,"tgl":3716440,"total":5028875},{"month":"July","mkt":183841,"tgl":774074,"total":957915}],"weekly":[{"label":"12/29","mkt":0,"tgl":173177,"total":173177},{"label":"1/5","mkt":229439,"tgl":335576,"total":565015},{"label":"1/12","mkt":196204,"tgl":381597,"total":577801},{"label":"1/19","mkt":217755,"tgl":464680,"total":682436},{"label":"1/26","mkt":76219,"tgl":181526,"total":257745},{"label":"2/2","mkt":178195,"tgl":356067,"total":534262},{"label":"2/9","mkt":107616,"tgl":187130,"total":294746},{"label":"2/16","mkt":42339,"tgl":367523,"total":409861},{"label":"2/23","mkt":255616,"tgl":352476,"total":608091},{"label":"3/2","mkt":112498,"tgl":389245,"total":501743},{"label":"3/9","mkt":319171,"tgl":314870,"total":634041},{"label":"3/16","mkt":376726,"tgl":991549,"total":1368275},{"label":"3/23","mkt":453017,"tgl":780262,"total":1233279},{"label":"3/30","mkt":235154,"tgl":598479,"total":833633},{"label":"4/6","mkt":199926,"tgl":923927,"total":1123853},{"label":"4/13","mkt":92602,"tgl":595799,"total":688401},{"label":"4/20","mkt":164461,"tgl":425251,"total":589712},{"label":"4/27","mkt":28031,"tgl":706741,"total":734771},{"label":"5/4","mkt":157502,"tgl":805010,"total":962512},{"label":"5/11","mkt":246855,"tgl":949191,"total":1196046},{"label":"5/18","mkt":156329,"tgl":673907,"total":830236},{"label":"5/25","mkt":91019,"tgl":567701,"total":658720},{"label":"6/1","mkt":203280,"tgl":810961,"total":1014241},{"label":"6/8","mkt":286369,"tgl":797287,"total":1083656},{"label":"6/15","mkt":408648,"tgl":957676,"total":1366325},{"label":"6/22","mkt":324572,"tgl":921718,"total":1246290},{"label":"6/29","mkt":210502,"tgl":577182,"total":787684},{"label":"7/6","mkt":62905,"tgl":425690,"total":488595}],"leadGen":[{"tech":"Francisco Valencia","sales":1726019,"sold":72},{"tech":"Alex - Oleksiy Yakovchuk","sales":1569605,"sold":66},{"tech":"AJ-Alejandro Ruiz Padilla","sales":1431313,"sold":61},{"tech":"Joe Mendoza","sales":1331069,"sold":53},{"tech":"Cole Pantol","sales":1314979,"sold":56},{"tech":"Nikko April","sales":1269304,"sold":55},{"tech":"Mario Castro","sales":1169161,"sold":44},{"tech":"Andrew Trujillo","sales":913441,"sold":32},{"tech":"Noah Weng","sales":885004,"sold":38},{"tech":"Francisco Arreola Jr.","sales":868482,"sold":30},{"tech":"Benjamin Wyllie","sales":814244,"sold":33},{"tech":"Dustin Romine","sales":594585,"sold":23},{"tech":"Ting Cheung","sales":517303,"sold":18},{"tech":"Brandon Moreno","sales":414967,"sold":20},{"tech":"Robert Silinzy","sales":184872,"sold":7}],"source":"ESTIMATE AC/TGLS report","cas":[{"name":"Jeremy Brackett","mkt":747908,"tgl":2574678,"total":3322586,"mktClose":34.0,"tglClose":54.9,"mktAvg":21997,"tglAvg":24062,"avg":23564,"mo":[231513,338383,665998,652721,717847,716124,0],"sameDay":42,"sold":141,"buCostco":391014,"buReg":2931573},{"name":"Jordan Dalrymple","mkt":335838,"tgl":2650052,"total":2985890,"mktClose":31.6,"tglClose":51.1,"mktAvg":18658,"tglAvg":23246,"avg":22620,"mo":[220266,353913,707025,612490,443812,530860,117525],"sameDay":58,"sold":132,"buCostco":88310,"buReg":2897580},{"name":"Shawn Brown","mkt":770288,"tgl":2204799,"total":2975087,"mktClose":29.2,"tglClose":48.1,"mktAvg":29626,"tglAvg":28634,"avg":28884,"mo":[192654,371867,499736,594208,513522,581054,222046],"sameDay":65,"sold":103,"buCostco":374135,"buReg":2600952},{"name":"Rob Dais","mkt":1062631,"tgl":1696897,"total":2759528,"mktClose":37.1,"tglClose":49.4,"mktAvg":27247,"tglAvg":22328,"avg":23996,"mo":[270509,191308,597572,315104,557975,635884,169989],"sameDay":51,"sold":115,"buCostco":963053,"buReg":1775287},{"name":"Daniel Muntifering","mkt":753860,"tgl":1612400,"total":2366260,"mktClose":29.1,"tglClose":45.4,"mktAvg":30154,"tglAvg":25194,"avg":26587,"mo":[496575,193235,331597,204896,367648,709101,63208],"sameDay":64,"sold":89,"buCostco":593364,"buReg":1772896},{"name":"Fernando Castillo","mkt":346338,"tgl":1694948,"total":2041286,"mktClose":19.6,"tglClose":47.3,"mktAvg":19241,"tglAvg":27338,"avg":25516,"mo":[289436,65787,194533,454958,363584,638795,34192],"sameDay":65,"sold":80,"buCostco":174495,"buReg":1866791},{"name":"Jose Valencia","mkt":420393,"tgl":1459631,"total":1880024,"mktClose":24.4,"tglClose":49.6,"mktAvg":20019,"tglAvg":22456,"avg":21861,"mo":[130733,149987,507916,228601,483319,277291,102177],"sameDay":70,"sold":86,"buCostco":158209,"buReg":1721815},{"name":"Derik King","mkt":624481,"tgl":1118059,"total":1742540,"mktClose":23.6,"tglClose":43.8,"mktAvg":29737,"tglAvg":24306,"avg":26008,"mo":[200733,100802,460316,112296,305088,462555,100749],"sameDay":51,"sold":67,"buCostco":332121,"buReg":1410419},{"name":"Ryan Hernlund-TECH","mkt":83266,"tgl":785143,"total":868409,"mktClose":100.0,"tglClose":87.2,"mktAvg":16653,"tglAvg":23092,"avg":22267,"mo":[207861,36482,111670,186312,120930,138986,66167],"sameDay":69,"sold":39,"buCostco":0,"buReg":868409},{"name":"AJ-Alejandro Ruiz Padilla","mkt":287946,"tgl":236778,"total":524724,"mktClose":28.6,"tglClose":40.0,"mktAvg":20568,"tglAvg":19732,"avg":20182,"mo":[0,6010,0,0,98628,338224,81862],"sameDay":62,"sold":26,"buCostco":216195,"buReg":308529}]};
+const CA_SALES_DATA = {"dateRange":"Jan 1 \u2013 Jul 8, 2026","total":21466334,"mktTotal":5432949,"tglTotal":16033385,"mktCloseAll":29.2,"tglCloseAll":50.2,"mktAvgAll":24583,"tglAvgAll":24404,"avgAll":24449,"caCount":10,"sameDayAll":58,"oppAll":2067,"perOppAll":10385,"buCostco":3290896,"buReg":18154250,"goal":40000000,"elapsedFrac":0.522,"dist":[{"label":"< $10k","count":43},{"label":"$10\u201320k","count":362},{"label":"$20\u201330k","count":278},{"label":"$30\u201340k","count":106},{"label":"$40k+","count":88}],"dow":[{"day":"Mon","total":4278722},{"day":"Tue","total":3309896},{"day":"Wed","total":3771642},{"day":"Thu","total":3682623},{"day":"Fri","total":3901949},{"day":"Sat","total":1443627},{"day":"Sun","total":1056688}],"months":["January","February","March","April","May","June","July"],"monthly":[{"month":"January","mkt":719617,"tgl":1520663,"total":2240280,"cr":39.4},{"month":"February","mkt":565376,"tgl":1242398,"total":1807775,"cr":38.9},{"month":"March","mkt":1354730,"tgl":2721633,"total":4076363,"cr":47.5},{"month":"April","mkt":635424,"tgl":2726161,"total":3361585,"cr":39.1},{"month":"May","mkt":661526,"tgl":3310827,"total":3972353,"cr":43.2},{"month":"June","mkt":1312436,"tgl":3716440,"total":5028875,"cr":42.9},{"month":"July","mkt":183841,"tgl":774074,"total":957915,"cr":43.5}],"weekly":[{"label":"12/29","total":173177},{"label":"1/5","total":565015},{"label":"1/12","total":577801},{"label":"1/19","total":682436},{"label":"1/26","total":257745},{"label":"2/2","total":534262},{"label":"2/9","total":294746},{"label":"2/16","total":409861},{"label":"2/23","total":608091},{"label":"3/2","total":501743},{"label":"3/9","total":634041},{"label":"3/16","total":1368275},{"label":"3/23","total":1233279},{"label":"3/30","total":833633},{"label":"4/6","total":1123853},{"label":"4/13","total":688401},{"label":"4/20","total":589712},{"label":"4/27","total":734771},{"label":"5/4","total":962512},{"label":"5/11","total":1196046},{"label":"5/18","total":830236},{"label":"5/25","total":658720},{"label":"6/1","total":1014241},{"label":"6/8","total":1083656},{"label":"6/15","total":1366325},{"label":"6/22","total":1246290},{"label":"6/29","total":787684},{"label":"7/6","total":488595}],"leadGen":[{"tech":"Francisco Valencia","sales":1726019,"sold":72},{"tech":"Alex - Oleksiy Yakovchuk","sales":1569605,"sold":66},{"tech":"AJ-Alejandro Ruiz Padilla","sales":1431313,"sold":61},{"tech":"Joe Mendoza","sales":1331069,"sold":53},{"tech":"Cole Pantol","sales":1314979,"sold":56},{"tech":"Nikko April","sales":1269304,"sold":55},{"tech":"Mario Castro","sales":1169161,"sold":44},{"tech":"Andrew Trujillo","sales":913441,"sold":32},{"tech":"Noah Weng","sales":885004,"sold":38},{"tech":"Francisco Arreola Jr.","sales":868482,"sold":30},{"tech":"Benjamin Wyllie","sales":814244,"sold":33},{"tech":"Dustin Romine","sales":594585,"sold":23},{"tech":"Ting Cheung","sales":517303,"sold":18},{"tech":"Brandon Moreno","sales":414967,"sold":20},{"tech":"Robert Silinzy","sales":184872,"sold":7}],"source":"ESTIMATE AC/TGLS report","cas":[{"name":"Jeremy Brackett","mkt":747908,"tgl":2574678,"total":3322586,"mktClose":34.0,"tglClose":54.9,"mktAvg":21997,"tglAvg":24062,"avg":23564,"mo":[231513,338383,665998,652721,717847,716124,0],"sameDay":42,"sold":141,"opp":295,"perOpp":11263,"buCostco":391014,"buReg":2931573},{"name":"Jordan Dalrymple","mkt":335838,"tgl":2650052,"total":2985890,"mktClose":31.6,"tglClose":51.1,"mktAvg":18658,"tglAvg":23246,"avg":22620,"mo":[220266,353913,707025,612490,443812,530860,117525],"sameDay":58,"sold":132,"opp":280,"perOpp":10664,"buCostco":88310,"buReg":2897580},{"name":"Shawn Brown","mkt":770288,"tgl":2204799,"total":2975087,"mktClose":29.2,"tglClose":48.1,"mktAvg":29626,"tglAvg":28634,"avg":28884,"mo":[192654,371867,499736,594208,513522,581054,222046],"sameDay":65,"sold":103,"opp":249,"perOpp":11948,"buCostco":374135,"buReg":2600952},{"name":"Rob Dais","mkt":1062631,"tgl":1696897,"total":2759528,"mktClose":37.1,"tglClose":49.4,"mktAvg":27247,"tglAvg":22328,"avg":23996,"mo":[270509,191308,597572,315104,557975,635884,169989],"sameDay":51,"sold":115,"opp":259,"perOpp":10655,"buCostco":963053,"buReg":1775287},{"name":"Daniel Muntifering","mkt":753860,"tgl":1612400,"total":2366260,"mktClose":29.1,"tglClose":45.4,"mktAvg":30154,"tglAvg":25194,"avg":26587,"mo":[496575,193235,331597,204896,367648,709101,63208],"sameDay":64,"sold":89,"opp":227,"perOpp":10424,"buCostco":593364,"buReg":1772896},{"name":"Fernando Castillo","mkt":346338,"tgl":1694948,"total":2041286,"mktClose":19.6,"tglClose":47.3,"mktAvg":19241,"tglAvg":27338,"avg":25516,"mo":[289436,65787,194533,454958,363584,638795,34192],"sameDay":65,"sold":80,"opp":223,"perOpp":9154,"buCostco":174495,"buReg":1866791},{"name":"Jose Valencia","mkt":420393,"tgl":1459631,"total":1880024,"mktClose":24.4,"tglClose":49.6,"mktAvg":20019,"tglAvg":22456,"avg":21861,"mo":[130733,149987,507916,228601,483319,277291,102177],"sameDay":70,"sold":86,"opp":217,"perOpp":8664,"buCostco":158209,"buReg":1721815},{"name":"Derik King","mkt":624481,"tgl":1118059,"total":1742540,"mktClose":23.6,"tglClose":43.8,"mktAvg":29737,"tglAvg":24306,"avg":26008,"mo":[200733,100802,460316,112296,305088,462555,100749],"sameDay":51,"sold":67,"opp":194,"perOpp":8982,"buCostco":332121,"buReg":1410419},{"name":"Ryan Hernlund-TECH","mkt":83266,"tgl":785143,"total":868409,"mktClose":100.0,"tglClose":87.2,"mktAvg":16653,"tglAvg":23092,"avg":22267,"mo":[207861,36482,111670,186312,120930,138986,66167],"sameDay":69,"sold":39,"opp":44,"perOpp":19737,"buCostco":0,"buReg":868409},{"name":"AJ-Alejandro Ruiz Padilla","mkt":287946,"tgl":236778,"total":524724,"mktClose":28.6,"tglClose":40.0,"mktAvg":20568,"tglAvg":19732,"avg":20182,"mo":[0,6010,0,0,98628,338224,81862],"sameDay":62,"sold":26,"opp":79,"perOpp":6642,"buCostco":216195,"buReg":308529}]};
 // ═══ CA SALES · standalone command deck (from ESTIMATE AC/TGLS report) ═══════
 function CASalesDash(){
   const D=(typeof CA_SALES_DATA!=="undefined")?CA_SALES_DATA:{cas:[],total:0,mktTotal:0,tglTotal:0,caCount:0,dateRange:"",mktCloseAll:0,tglCloseAll:0,avgAll:0,mktAvgAll:0,tglAvgAll:0,monthly:[],weekly:[],leadGen:[],months:[]};
@@ -3953,6 +3964,7 @@ function CASalesDash(){
   const [sortCol,setSortCol]=React.useState("total");
   const [search,setSearch]=React.useState("");
   const [trendMode,setTrendMode]=React.useState("month");
+  const [kiosk,setKiosk]=React.useState(false);
   const cas=D.cas||[]; const monthly=D.monthly||[]; const weekly=D.weekly||[];
   const [cmpA,setCmpA]=React.useState((cas[0]||{}).name||"");
   const [cmpB,setCmpB]=React.useState((cas[1]||{}).name||"");
@@ -4041,8 +4053,9 @@ function CASalesDash(){
     {id:"board",icon:"🏆",label:"LEADERBOARD",sub:"All "+D.caCount},
     {id:"tgl",icon:"🔧",label:"TECH LEADS",sub:"TGL + sources"},
     {id:"mkt",icon:"📣",label:"MARKETING",sub:"Marketed"},
-    {id:"analysis",icon:"🎯",label:"ANALYSIS",sub:"Mkt vs Tech"},
+    {id:"analysis",icon:"🎯",label:"ANALYTICS",sub:"Charts + insight"},
   ];
+  React.useEffect(()=>{ if(!kiosk) return; const ids=TABS.map(t=>t.id); const id=setInterval(()=>setTab(c=>ids[(ids.indexOf(c)+1)%ids.length]),9000); return ()=>clearInterval(id); },[kiosk]);
   const topCA=cas.length?[...cas].sort((a,b)=>b.total-a.total)[0]:{name:"—",total:0,mo:[]};
   const tickerItems=[
     {l:"TOTAL",v:fmt(D.total),c:"#22c55e"},{l:"MARKETING",v:fmt(D.mktTotal),c:"#5BA4E6"},
@@ -4059,6 +4072,13 @@ function CASalesDash(){
   const GOAL=D.goal||40000000; const expected=Math.round(GOAL*(D.elapsedFrac||0.5));
   const pacePct=expected?Math.round(ytd/expected*100):0; const projEOY=D.elapsedFrac?Math.round(ytd/D.elapsedFrac):0;
   const monGoal=Math.round(GOAL/12);
+  const goalPer=Math.round(GOAL/(D.caCount||1));
+  const caInsights=[
+    topCA&&{icon:"🏆",label:"TOP CA",value:topCA.name.split(" ")[0]+" · "+fmt(topCA.total),color:"#22c55e",sub:(topCA.total/D.total*100).toFixed(0)+"% of company"},
+    {icon:"🎯",label:"PACE TO $40M",value:pacePct+"%",color:pacePct>=100?"#4ADE80":"#F5B324",sub:"proj "+fmt(projEOY)},
+    {icon:"⚡",label:"SAME-DAY SOLD",value:D.sameDayAll+"%",color:"#4ADE80",sub:"ran & sold same day"},
+    {icon:"📈",label:"BEST MONTH",value:best.month.slice(0,3)+" "+fmt(best.total),color:"#F5B324",sub:"MoM "+(mom>=0?"+":"")+mom+"%"},
+  ];
   const buTot=(D.buCostco||0)+(D.buReg||0); const costcoPct=buTot?Math.round(D.buCostco/buTot*100):0;
   const csv=()=>{ const H=["CA","Total","Marketing","Tech-Lead","AvgTicket","MktClose%","TglClose%","SameDay%"];
     const rws=[...cas].sort((a,b)=>b.total-a.total).map(c=>[c.name,c.total,c.mkt,c.tgl,c.avg,c.mktClose,c.tglClose,c.sameDay]);
@@ -4111,9 +4131,12 @@ function CASalesDash(){
 
   return (
     <div className="riseIn" style={{padding:"0 0 40px"}}>
-      <div style={{padding:"14px 24px",background:"linear-gradient(135deg,#0e2a1c,#123a26)",borderBottom:"1px solid #1e3d2c"}}>
-        <div style={{fontSize:9,color:"#22c55e",fontWeight:700,letterSpacing:"0.2em"}}>💰 CA SALES · COMMAND DECK</div>
-        <div style={{fontSize:11,color:"#7a8fa0",marginTop:2}}>{D.dateRange} · {D.caCount} comfort advisors · Marketing + Tech-Lead sold revenue</div>
+      <div style={{padding:"14px 24px",background:"linear-gradient(135deg,#0e2a1c,#123a26)",borderBottom:"1px solid #1e3d2c",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}>
+        <div>
+          <div style={{fontSize:9,color:"#22c55e",fontWeight:700,letterSpacing:"0.2em"}}>💰 CA SALES · COMMAND DECK</div>
+          <div style={{fontSize:11,color:"#7a8fa0",marginTop:2}}>{D.dateRange} · {D.caCount} comfort advisors · Marketing + Tech-Lead sold revenue</div>
+        </div>
+        <button onClick={()=>setKiosk(k=>!k)} style={{background:kiosk?"#22c55e":"rgba(34,197,94,.1)",border:"1px solid #22c55e55",color:kiosk?"#04140a":"#22c55e",borderRadius:8,padding:"7px 14px",cursor:"pointer",fontFamily:"inherit",fontSize:11,fontWeight:800,letterSpacing:"0.06em"}}>{kiosk?"⏸ KIOSK ON":"▶ KIOSK"}</button>
       </div>
       <div style={{display:"flex",gap:8,flexWrap:"wrap",padding:"12px 24px",background:"#0c1626",borderBottom:"1px solid #1e2d47"}}>
         {TABS.map(t=>(
@@ -4135,6 +4158,7 @@ function CASalesDash(){
                 <span style={{fontSize:12.5,fontWeight:800,color:t.c}}>{t.v}</span><span style={{fontSize:8.5,color:"#6b7a99",marginLeft:5,letterSpacing:"0.08em"}}>{t.l}</span>
               </React.Fragment>))}
             </div>
+            <div style={{padding:"14px 24px 0"}}><InsightBar items={caInsights}/></div>
             <div style={{padding:"16px 24px 0",display:"flex",gap:14,flexWrap:"wrap"}}>
               <div className="riseIn liftCard" style={{flex:"2 1 340px",background:"linear-gradient(135deg,#0e2a1c,#0c1a2e)",border:"1px solid #1e3d2c",borderRadius:18,padding:"20px 24px",display:"flex",flexDirection:"column",justifyContent:"center"}}>
                 <div style={{fontSize:10,letterSpacing:"0.16em",color:"#22c55e",fontWeight:800}}>TOTAL CA SALES · {D.dateRange}</div>
@@ -4153,6 +4177,7 @@ function CASalesDash(){
               {caTile("MARKETING",fmt(D.mktTotal),"#5BA4E6",mktPct+"% · close "+D.mktCloseAll+"%")}
               {caTile("TECH-LEAD",fmt(D.tglTotal),"#F5B324",tglPct+"% · close "+D.tglCloseAll+"%")}
               {caTile("AVG TICKET",fmt(D.avgAll),"#4ADE80","per sale")}
+              {caTile("$ / OPP",fmt(D.perOppAll),"#2E78C7","per estimate ran")}
               {caTile("REGULAR HVAC",fmt(D.buReg),"#22c55e",(100-costcoPct)+"% of sales")}
               {caTile("COSTCO",fmt(D.buCostco),"#F5B324",costcoPct+"% of sales")}
             </div>
@@ -4199,6 +4224,23 @@ function CASalesDash(){
                       </div>);})}
                   </React.Fragment>);})()}
               </div>)}
+
+            {card("Per-CA Pace to "+fmt(goalPer),"projected year-end vs each CA's share of the $40M goal ("+fmt(goalPer)+" each) · dashed = goal · click for detail",
+              (()=>{ const list=[...cas].map(c=>{const proj=Math.round(c.total/(D.elapsedFrac||0.5)); return {...c,proj,pace:Math.round(proj/goalPer*100)};}).sort((a,b)=>b.proj-a.proj);
+                const mx=Math.max(goalPer,...list.map(c=>c.proj));
+                return (<div style={{display:"flex",flexDirection:"column",gap:8,marginTop:4}}>
+                  {list.map((c,i)=>(<div key={c.name} onClick={()=>setSel(c.name)} style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer"}}>
+                    <div style={{width:20,fontSize:11,fontWeight:800,color:i<3?"#F5B324":"#6b7a99",textAlign:"right"}}>{i+1}</div>
+                    <div style={{width:150,fontSize:11,color:"#cfeede",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name}</div>
+                    <div style={{flex:1,position:"relative",background:"#0a1220",borderRadius:5,height:18,overflow:"hidden"}}>
+                      <div style={{width:Math.min(100,c.proj/mx*100)+"%",height:"100%",borderRadius:5,background:c.pace>=100?"linear-gradient(90deg,#22c55e,#12833f)":c.pace>=85?"linear-gradient(90deg,#F5B324,#c98f14)":"linear-gradient(90deg,#E63946,#a11)"}}/>
+                      <div style={{position:"absolute",top:0,bottom:0,left:Math.min(100,goalPer/mx*100)+"%",borderLeft:"2px dashed rgba(255,255,255,.55)"}}/>
+                    </div>
+                    <div style={{width:74,fontSize:11,fontWeight:800,color:"#22c55e",textAlign:"right"}}>{fmt(c.proj)}</div>
+                    <div style={{width:52,fontSize:11,fontWeight:800,color:c.pace>=100?"#4ADE80":c.pace>=85?"#F5B324":"#E63946",textAlign:"right"}}>{c.pace}%</div>
+                  </div>))}
+                </div>);})())}
+
           </React.Fragment>)}
 
         {tab==="compare" && (
@@ -4279,7 +4321,7 @@ function CASalesDash(){
             {card("Marketing Leaderboard","top 15 CAs by marketing sold · click for detail", barLeader("mkt",BLUE,c=>"close "+c.mktClose+"%"))}
           </React.Fragment>)}
 
-        {tab==="analysis" && card("Marketing vs Tech-Lead — by CA","each dot = a CA · above the dashed line = tech-lead heavy · click a dot",
+        {tab==="analysis" && (<React.Fragment>{card("Marketing vs Tech-Lead — by CA","each dot = a CA · above the dashed line = tech-lead heavy · click a dot",
           <svg viewBox={"0 0 "+SW+" "+SH} style={{width:"100%",height:"auto",overflow:"visible"}}>
             {[0,0.5,1].map((f,i)=>(<g key={i}>
               <line x1={pL} y1={sy(maxAxis*f)} x2={SW-pR} y2={sy(maxAxis*f)} stroke="#1e2d47" strokeWidth="1"/>
@@ -4295,6 +4337,36 @@ function CASalesDash(){
                 {big && <text x={sx(c.mkt)+8} y={sy(c.tgl)+3} fontSize="8.5" fill="#cfeede">{c.name.split(" ")[0]}</text>}
               </g>);})}
           </svg>)}
+
+        {card("Close Rate by Month","sold ÷ estimates ran, per month",
+          (()=>{ const mo=monthly; const W=760,H=160,pL=34,pB=22,pT=16,pR=12; const mx=Math.max(60,...mo.map(m=>m.cr));
+            const X=i=>pL+i*(W-pL-pR)/(mo.length-1), Y=v=>pT+(1-v/mx)*(H-pT-pB);
+            const line=mo.map((m,i)=>(i?"L":"M")+X(i).toFixed(1)+" "+Y(m.cr).toFixed(1)).join(" ");
+            return (<svg viewBox={"0 0 "+W+" "+H} style={{width:"100%",height:"auto",overflow:"visible",marginTop:10}}>
+              {[0,25,50].map((g,i)=>(<g key={i}><line x1={pL} y1={Y(g)} x2={W-pR} y2={Y(g)} stroke="#1e2d47"/><text x={pL-5} y={Y(g)+3} fontSize="8" fill="#4a5a70" textAnchor="end">{g}</text></g>))}
+              <path d={line} fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinejoin="round"/>
+              {mo.map((m,i)=>(<g key={i}><circle cx={X(i)} cy={Y(m.cr)} r="3.4" fill="#22c55e"/><text x={X(i)} y={Y(m.cr)-8} fontSize="9" fontWeight="700" fill="#22c55e" textAnchor="middle">{m.cr}%</text><text x={X(i)} y={H-5} fontSize="8.5" fill="#7089ab" textAnchor="middle">{m.month.slice(0,3)}</text></g>))}
+            </svg>);})())}
+        {card("Deal-Size Distribution","count of sold estimates by ticket size",
+          (()=>{ const d=D.dist||[]; const mx=Math.max(1,...d.map(x=>x.count)); const tot=d.reduce((a,x)=>a+x.count,0)||1;
+            return (<div style={{display:"flex",flexDirection:"column",gap:9,marginTop:10}}>
+              {d.map((x,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:10}}>
+                <div style={{width:72,fontSize:11,color:"#cfeede",textAlign:"right"}}>{x.label}</div>
+                <div style={{flex:1,background:"#0a1220",borderRadius:5,height:18,overflow:"hidden"}}><div style={{width:Math.max(2,x.count/mx*100)+"%",height:"100%",borderRadius:5,background:"linear-gradient(90deg,#22c55e,#12833f)"}}/></div>
+                <div style={{width:92,fontSize:11,fontWeight:800,color:"#22c55e",textAlign:"right"}}>{x.count} <span style={{color:"#6b7a99",fontWeight:600}}>{Math.round(x.count/tot*100)}%</span></div>
+              </div>))}
+            </div>);})())}
+        {card("Best Day of Week","sold revenue by weekday (top day highlighted)",
+          (()=>{ const d=D.dow||[]; const mx=Math.max(1,...d.map(x=>x.total));
+            return (<div style={{display:"flex",alignItems:"flex-end",gap:12,height:150,marginTop:12}}>
+              {d.map((x,i)=>(<div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-end",height:"100%"}}>
+                <div style={{fontSize:9,fontWeight:800,color:"#22c55e",marginBottom:4}}>{fmt(x.total)}</div>
+                <div style={{width:"58%",height:Math.max(3,x.total/mx*110)+"px",borderRadius:"5px 5px 0 0",background:x.total===mx?"linear-gradient(180deg,#F5B324,#c98f14)":"linear-gradient(180deg,#22c55e,#12833f)"}}/>
+                <div style={{fontSize:9,color:"#7089ab",marginTop:6}}>{x.day}</div>
+              </div>))}
+            </div>);})())}
+
+        </React.Fragment>)}
       </div>
 
       <div style={{fontSize:9,color:"#4a5a70",padding:"16px 24px 0",lineHeight:1.5}}>Source: {D.source} ({D.dateRange}) · BU HVAC-Sales(NR)+Costco · lead source = Marketed vs technician-generated (TGL). Close rate = sold ÷ estimates ran · same-day = ran &amp; sold same day. *current period partial.</div>

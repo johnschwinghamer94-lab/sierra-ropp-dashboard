@@ -84,6 +84,9 @@ function isjob(v){
   return false;
 }
 function jk(v){ return (typeof v === "number") ? String(Math.trunc(v)) : String(v).trim(); }
+// TGL revenue = sold Estimate Subtotal (col 10) per lead-source job # (col 5) from the Scheduled report,
+// joined to TGLs-Created Job#. Replaces "Sales from Leads Created" so revenue = sold estimate value.
+function subBySrcJob(sr){ const d={}; if(!sr) return d; for(let i=1;i<sr.length;i++){ const r=sr[i]; if(!r||!isjob(r[1])) continue; const k=jk(r[5]); if(k) d[k]=(d[k]||0)+num(r[10]); } return d; }
 function wk(d){
   if (d.m === LM) return d.d<=7?"W1":d.d<=14?"W2":d.d<=21?"W3":d.d<=28?"W4":null;
   return null;
@@ -140,6 +143,7 @@ function newrec(){
 const inc = (o,k,by)=>{ o[k]=(o[k]||0)+by; };
 
 function build_dataset(rev, tg, cn, sr){
+  const SUB = subBySrcJob(sr);
   const job_bu = {};
   for (const r of rev){
     if (isjob(r[3])){
@@ -168,7 +172,7 @@ function build_dataset(rev, tg, cn, sr){
     const sd = asdate(r[5]);
     if (!sd || sd.y!==2026 || sd.m > LM || !isjob(r[1])) continue;
     const t = resolve_dept(r[3]); if (!t) continue;
-    const R = rec(t); const mo = MONTHS[sd.m-1]; const rv = num(r[8]);
+    const R = rec(t); const mo = MONTHS[sd.m-1]; const rv = (SUB[jk(r[1])]||0);
     inc(R.tg,mo,1); inc(R.rv,mo,rv);
     const w = wk(sd); if (w){ inc(R.wt,w,1); inc(R.wr,w,rv); }
     if (sd.m === LM){
@@ -212,7 +216,7 @@ function build_dataset(rev, tg, cn, sr){
   for (const r of tg){
     const sd = asdate(r[5]);
     if (sd && sd.y===2026 && sd.m <= LM && dCmp(sd,ALONSO_START)>=0 && isjob(r[1]) && resolve_aa(r[3])==="Andrew Alonso"){
-      aa.yt++; aa.yr += num(r[8]);
+      aa.yt++; aa.yr += (SUB[jk(r[1])]||0);
     }
   }
   for (let idx=1; idx<sr.length; idx++){
@@ -469,13 +473,14 @@ function apply_all(html, D, DEPT, aa, asof, reporting_month){
 }
 
 // -------------------------- YESTERDAY -------------------------------------
-function set_yesterday(html, rev, tg, day){
+function set_yesterday(html, rev, tg, day, sr){
   const resA = field => {
     const parts = splitParts(field);
     for (const p of parts) if (S14.has(p)) return p;
     return parts.includes("Andrew Alonso") ? "Andrew Alonso" : null;
   };
   const ca={}, ta={}, rvv={};
+  const SUB = subBySrcJob(sr);
   const eqd = (a,b)=> a&&b&&a.y===b.y&&a.m===b.m&&a.d===b.d;
   for (const r of rev){
     if (eqd(asdate(r[4]), day)){
@@ -487,7 +492,7 @@ function set_yesterday(html, rev, tg, day){
   }
   for (const r of tg){
     if (eqd(asdate(r[5]), day) && isjob(r[1])){
-      const t = resA(r[3]); if (t){ inc(ta,t,1); inc(rvv,t,num(r[8])); }
+      const t = resA(r[3]); if (t){ inc(ta,t,1); inc(rvv,t,(SUB[jk(r[1])]||0)); }
     }
   }
   const TA_L = TEAM_A;
@@ -603,7 +608,7 @@ function rebuild(templateHtml, sheets, opts){
   setReportingMonth(rm);                       // drives MONTHS / LM / week labels
   const {D, DEPT, aa} = build_dataset(rev, tg, cn, sr);
   let html = apply_all(templateHtml, D, DEPT, aa, asof, rm);
-  html = set_yesterday(html, rev, tg, yday);
+  html = set_yesterday(html, rev, tg, yday, sr);
   html = set_close_rate(html, close_rate_block(D, sr, rm));
   // summary stats
   const sumv = o => Object.values(o).reduce((a,b)=>a+b,0);

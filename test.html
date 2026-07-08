@@ -3930,7 +3930,12 @@ function GateLanding({ onEnter }){
       <div style={{fontSize:12,color:"#6b7a99",letterSpacing:"0.32em",marginTop:14,textAlign:"center"}}>THE GATE IS OPEN · CHOOSE YOUR DASHBOARD</div>
       {/* Gates */}
       <div style={{display:"flex",gap:18,flexWrap:"wrap",justifyContent:"center",marginTop:40,width:"100%",maxWidth:1120}}>
-        {gate("GATE 01","HVAC · ROPP","TGL conversion · CA close rate · sold revenue · pace to goal", "#F5B324", ()=>onEnter("hvac"))}
+        {gate("GATE 01","HVAC · ROPP","TGL conversion · CA close rate · sold revenue · pace to goal", "#F5B324", ()=>onEnter("hvac"), null,
+          <div style={{display:"flex",gap:16,marginTop:16,paddingTop:14,borderTop:"1px solid #1e2d47"}}>
+            <div><div style={{fontSize:8.5,color:"#6b7a99",fontWeight:800,letterSpacing:"0.1em"}}>YTD REV</div><div style={{fontSize:22,fontWeight:900,color:"#22c55e",lineHeight:1.1}}>{fmtM(DP.ytd_revenue||0)}</div></div>
+            <div><div style={{fontSize:8.5,color:"#6b7a99",fontWeight:800,letterSpacing:"0.1em"}}>CONVERSION</div><div style={{fontSize:22,fontWeight:900,color:"#5BA4E6",lineHeight:1.1}}>{(DP.conv_rate||0)}%</div></div>
+            <div><div style={{fontSize:8.5,color:"#6b7a99",fontWeight:800,letterSpacing:"0.1em"}}>PACE</div><div style={{fontSize:22,fontWeight:900,color:(DP.pace_pct>=100?"#4ADE80":"#F5B324"),lineHeight:1.1}}>{(DP.pace_pct||0)}%</div></div>
+          </div>)}
         {gate("GATE 02","CA SALES","Marketing + tech-lead sold revenue · close rate · CA leaderboard", "#22c55e", ()=>onEnter("casales"), null,
           <div style={{display:"flex",gap:16,marginTop:16,paddingTop:14,borderTop:"1px solid #1e2d47"}}>
             <div><div style={{fontSize:8.5,color:"#6b7a99",fontWeight:800,letterSpacing:"0.1em"}}>TOTAL</div><div style={{fontSize:22,fontWeight:900,color:"#22c55e",lineHeight:1.1}}>{fmtM(CS.total||0)}</div></div>

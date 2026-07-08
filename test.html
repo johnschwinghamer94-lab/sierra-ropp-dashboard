@@ -3944,7 +3944,7 @@ function GateLanding({ onEnter }){
   );
 }
 
-const CA_SALES_DATA = {"dateRange":"Jan 1 \u2013 Jul 7, 2026","total":21318331,"mktTotal":5495022,"tglTotal":15823309,"mktCloseAll":31.5,"tglCloseAll":51.7,"mktAvgAll":24401,"tglAvgAll":24729,"avgAll":24644,"caCount":10,"mktBU":"All","tglBU":"HVAC - Sales (NR), HVAC - Sales Costco (NR)","cas":[{"name":"Jeremy Brackett","mkt":747908,"tgl":2574678,"total":3322586,"mktClose":37.4,"tglClose":56.4,"mktAvg":21997,"tglAvg":24289,"avg":23773},{"name":"Jordan Dalrymple","mkt":335838,"tgl":2627321,"total":2963159,"mktClose":34.6,"tglClose":52.9,"mktAvg":18658,"tglAvg":23669,"avg":23101},{"name":"Shawn Brown","mkt":770288,"tgl":2151736,"total":2922024,"mktClose":34.7,"tglClose":49.0,"mktAvg":29626,"tglAvg":28690,"avg":28937},{"name":"Rob Dais","mkt":1062631,"tgl":1632079,"total":2694710,"mktClose":40.2,"tglClose":50.3,"mktAvg":27247,"tglAvg":22055,"avg":24102},{"name":"Daniel Muntifering","mkt":753860,"tgl":1591402,"total":2345262,"mktClose":32.1,"tglClose":46.6,"mktAvg":30154,"tglAvg":25668,"avg":27110},{"name":"Fernando Castillo","mkt":366440,"tgl":1677712,"total":2044152,"mktClose":25.7,"tglClose":47.3,"mktAvg":19286,"tglAvg":27503,"avg":26030},{"name":"Jose Valencia","mkt":420393,"tgl":1459631,"total":1880024,"mktClose":31.3,"tglClose":51.2,"mktAvg":20019,"tglAvg":22456,"avg":21911},{"name":"Derik King","mkt":624481,"tgl":1118059,"total":1742540,"mktClose":26.9,"tglClose":46.0,"mktAvg":29737,"tglAvg":24306,"avg":26252},{"name":"Ryan Hernlund-TECH","mkt":83266,"tgl":753913,"total":837179,"mktClose":100.0,"tglClose":100.0,"mktAvg":16653,"tglAvg":22846,"avg":22230},{"name":"AJ-Alejandro Ruiz Padilla","mkt":329917,"tgl":236778,"total":566695,"mktClose":26.7,"tglClose":44.4,"mktAvg":4305,"tglAvg":19731,"avg":10751}]};
+const CA_SALES_DATA = {"dateRange":"Jan 1 \u2013 Jul 8, 2026","total":21466334,"mktTotal":5432949,"tglTotal":16033385,"mktCloseAll":29.2,"tglCloseAll":50.2,"mktAvgAll":24583,"tglAvgAll":24404,"avgAll":24449,"caCount":10,"mktBU":"HVAC - Sales (NR), HVAC - Sales Costco (NR)","tglBU":"HVAC - Sales (NR), HVAC - Sales Costco (NR)","source":"ESTIMATE AC/TGLS report","monthly":[{"month":"January","mkt":719617,"tgl":1520663,"total":2240280},{"month":"February","mkt":565376,"tgl":1242398,"total":1807775},{"month":"March","mkt":1354730,"tgl":2721633,"total":4076363},{"month":"April","mkt":635424,"tgl":2726161,"total":3361585},{"month":"May","mkt":661526,"tgl":3310827,"total":3972353},{"month":"June","mkt":1312436,"tgl":3716440,"total":5028875},{"month":"July","mkt":183841,"tgl":774074,"total":957915}],"cas":[{"name":"Jeremy Brackett","mkt":747908,"tgl":2574678,"total":3322586,"mktClose":34.0,"tglClose":54.9,"mktAvg":21997,"tglAvg":24062,"avg":23564},{"name":"Jordan Dalrymple","mkt":335838,"tgl":2650052,"total":2985890,"mktClose":31.6,"tglClose":51.1,"mktAvg":18658,"tglAvg":23246,"avg":22620},{"name":"Shawn Brown","mkt":770288,"tgl":2204799,"total":2975087,"mktClose":29.2,"tglClose":48.1,"mktAvg":29626,"tglAvg":28634,"avg":28884},{"name":"Rob Dais","mkt":1062631,"tgl":1696897,"total":2759528,"mktClose":37.1,"tglClose":49.4,"mktAvg":27247,"tglAvg":22328,"avg":23996},{"name":"Daniel Muntifering","mkt":753860,"tgl":1612400,"total":2366260,"mktClose":29.1,"tglClose":45.4,"mktAvg":30154,"tglAvg":25194,"avg":26587},{"name":"Fernando Castillo","mkt":346338,"tgl":1694948,"total":2041286,"mktClose":19.6,"tglClose":47.3,"mktAvg":19241,"tglAvg":27338,"avg":25516},{"name":"Jose Valencia","mkt":420393,"tgl":1459631,"total":1880024,"mktClose":24.4,"tglClose":49.6,"mktAvg":20019,"tglAvg":22456,"avg":21861},{"name":"Derik King","mkt":624481,"tgl":1118059,"total":1742540,"mktClose":23.6,"tglClose":43.8,"mktAvg":29737,"tglAvg":24306,"avg":26008},{"name":"Ryan Hernlund-TECH","mkt":83266,"tgl":785143,"total":868409,"mktClose":100.0,"tglClose":87.2,"mktAvg":16653,"tglAvg":23092,"avg":22267},{"name":"AJ-Alejandro Ruiz Padilla","mkt":287946,"tgl":236778,"total":524724,"mktClose":28.6,"tglClose":40.0,"mktAvg":20568,"tglAvg":19732,"avg":20182}]};
 // ═══ CA SALES · standalone command deck (from Marketing + Tech-Lead reports) ══
 function CASalesDash(){
   const D=(typeof CA_SALES_DATA!=="undefined")?CA_SALES_DATA:{cas:[],total:0,mktTotal:0,tglTotal:0,caCount:0,dateRange:"",mktCloseAll:0,tglCloseAll:0,avgAll:0,mktAvgAll:0,tglAvgAll:0};
@@ -4114,6 +4114,27 @@ function CASalesDash(){
               {caTile("AVG TICKET",fmt(D.avgAll),"#4ADE80","blended per sale")}
               {caTile("TOP CA",topCA.name.split(" ")[0],"#22c55e",fmt(topCA.total)+" · #1 of "+D.caCount)}
             </div>
+            {(()=>{ const mo=D.monthly||[]; if(mo.length<2) return null;
+              const mx=Math.max(1,...mo.map(m=>m.total));
+              return (
+              <div style={{padding:"14px 24px 0"}}><div className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",flexWrap:"wrap",gap:6}}>
+                  <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>Monthly CA Sales</div>
+                  <div style={{fontSize:9.5,color:"#6b7a99"}}><span style={{color:"#5BA4E6"}}>▬</span> Marketing&nbsp;&nbsp;<span style={{color:"#F5B324"}}>▬</span> Tech-Lead · *Jul partial</div>
+                </div>
+                <div style={{display:"flex",alignItems:"flex-end",gap:12,height:170,marginTop:12}}>
+                  {mo.map((m,i)=>(
+                    <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-end",height:"100%"}}>
+                      <div style={{fontSize:9,fontWeight:800,color:"#22c55e",marginBottom:4}}>{fmt(m.total)}</div>
+                      <div title={m.month+": mkt "+fmt(m.mkt)+" · tgl "+fmt(m.tgl)} style={{width:"62%",display:"flex",flexDirection:"column",justifyContent:"flex-end",height:Math.max(3,(m.total/mx*132))+"px",borderRadius:"5px 5px 0 0",overflow:"hidden"}}>
+                        <div style={{height:(m.total?m.tgl/m.total*100:0)+"%",background:"linear-gradient(180deg,#F5B324,#c98f14)"}}/>
+                        <div style={{height:(m.total?m.mkt/m.total*100:0)+"%",background:"linear-gradient(180deg,#5BA4E6,#2E78C7)"}}/>
+                      </div>
+                      <div style={{fontSize:9,color:i===mo.length-1?"#F5B324":"#7089ab",marginTop:6}}>{m.month.slice(0,3)}{i===mo.length-1?"*":""}</div>
+                    </div>))}
+                </div>
+              </div></div>);
+            })()}
             {card("Top CAs · Total Sales","top 15 · click a name for detail", barLeader("total",GREEN,c=>fmt(c.mkt)+" / "+fmt(c.tgl)))}
           </React.Fragment>)}
 

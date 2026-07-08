@@ -3267,6 +3267,8 @@ function OverviewTab({ data, hourly, kpiVal, setKpiVal }) {
         <path d={gaugeArc(1)} fill="none" stroke="#22304d" strokeWidth="13" strokeLinecap="round"/>
         {/* Value fill */}
         <path d={gaugeArc((rate||0)/100)} fill="none" stroke={tierCol(rate)} strokeWidth="13" strokeLinecap="round" style={{filter:"drop-shadow(0 0 5px "+tierCol(rate)+"88)",animation:"glowPulse 2.8s ease infinite"}}/>
+        {/* KPI target line */}
+        {(()=>{const tk=tick(kpi100,"#2E78C7");return <line x1={tk.x1} y1={tk.y1} x2={tk.x2} y2={tk.y2} stroke="#eaf1fb" strokeWidth="2.5" strokeLinecap="round" opacity=".95"/>;})()}
         {/* Big rate number */}
         <text x="80" y="84" textAnchor="middle" fontSize="33" fontWeight="800" fill={tierCol(rate)} stroke="#0a1120" strokeWidth="5" paintOrder="stroke" style={{fontFamily:"'Inter',sans-serif"}}>{rate !== null ? rate.toFixed(1)+"%" : "—"}</text>
         {/* Delta vs KPI */}

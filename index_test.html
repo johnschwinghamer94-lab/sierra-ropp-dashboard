@@ -3222,14 +3222,7 @@ function OverviewTab({ data, hourly, kpiVal, setKpiVal }) {
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,flexWrap:"wrap",gap:8}}>
         <div>
           <div style={{fontSize:9,color:"#F5B324",fontWeight:700,letterSpacing:"0.22em"}}>{"⌂ COMMAND OVERVIEW"}</div>
-          <div style={{fontSize:11,color:"#7089ab",marginTop:2}}>{"Jan 1 – "+CUR_ABBR+" 2026 · $30M goal"}
-          <div className="kpi-slider-wrap" style={{marginTop:5}}>
-            <span>KPI:</span>
-            <input type="range" className="kpi-range" min="40" max="80" step="1"
-              value={kpiVal} onChange={e=>setKpiVal(+e.target.value)}
-              title="Drag to adjust the KPI conversion target" />
-            <span style={{color:"#F5B324",fontWeight:700}}>{kpiVal}%</span>
-          </div></div>
+          <div style={{fontSize:11,color:"#7089ab",marginTop:2}}>{"Jan 1 – "+CUR_ABBR+" 2026 · $30M goal"}</div>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:7,fontSize:10,color:"#4ADE80",fontWeight:700}}><span style={{width:8,height:8,borderRadius:"50%",background:"#4ADE80",color:"#4ADE80",display:"inline-block",animation:"pulse 2s infinite"}}/>LIVE</div>
       </div>

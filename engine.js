@@ -86,7 +86,29 @@ function isjob(v){
 function jk(v){ return (typeof v === "number") ? String(Math.trunc(v)) : String(v).trim(); }
 // TGL revenue = sold Estimate Subtotal (col 10) per lead-source job # (col 5) from the Scheduled report,
 // joined to TGLs-Created Job#. Replaces "Sales from Leads Created" so revenue = sold estimate value.
-function subBySrcJob(sr){ const d={}; if(!sr) return d; for(let i=1;i<sr.length;i++){ const r=sr[i]; if(!r||!isjob(r[1])) continue; const k=jk(r[5]); if(k) d[k]=(d[k]||0)+num(r[10]); } return d; }
+function _estcol(hdr,name,dflt){ for(let i=0;i<hdr.length;i++) if(hdr[i].includes(name)) return i; return dflt; }
+function subBySrcJob(est, sr){
+  const d={};
+  if(est && est.length>1){
+    const hdr=est[0].map(c=>String(c==null?"":c).trim().toLowerCase());
+    const cj=_estcol(hdr,"source job number",4), cs=_estcol(hdr,"estimate sales subtotal",8), cjob=_estcol(hdr,"job #",0);
+    for(let i=1;i<est.length;i++){ const r=est[i]; if(!r||!isjob(r[cjob])) continue; const k=jk(r[cj]); if(k) d[k]=(d[k]||0)+num(r[cs]); }
+    if(Object.keys(d).length) return d;
+  }
+  if(sr) for(let i=1;i<sr.length;i++){ const r=sr[i]; if(!r||!isjob(r[1])) continue; const k=jk(r[5]); if(k) d[k]=(d[k]||0)+num(r[10]); }
+  return d;
+}
+function tglEstRows(est, sr){
+  const out=[];
+  if(est && est.length>1){
+    const hdr=est[0].map(c=>String(c==null?"":c).trim().toLowerCase());
+    const cjob=_estcol(hdr,"job #",0), csrc=_estcol(hdr,"source technician",3), csch=_estcol(hdr,"scheduled date",5), csub=_estcol(hdr,"estimate sales subtotal",8);
+    for(let i=1;i<est.length;i++){ const r=est[i]; if(!r||!isjob(r[cjob])) continue; out.push({src:r[csrc], sched:asdate(r[csch]), sub:num(r[csub])}); }
+    if(out.length) return out;
+  }
+  if(sr) for(let i=1;i<sr.length;i++){ const r=sr[i]; if(!r||!isjob(r[1])) continue; out.push({src:r[4], sched:asdate(r[6]), sub:num(r[10])}); }
+  return out;
+}
 function wk(d){
   if (d.m === LM) return d.d<=7?"W1":d.d<=14?"W2":d.d<=21?"W3":d.d<=28?"W4":null;
   return null;
@@ -142,8 +164,8 @@ function newrec(){
 }
 const inc = (o,k,by)=>{ o[k]=(o[k]||0)+by; };
 
-function build_dataset(rev, tg, cn, sr){
-  const SUB = subBySrcJob(sr);
+function build_dataset(rev, tg, cn, sr, est){
+  const SUB = subBySrcJob(est, sr);
   const job_bu = {};
   for (const r of rev){
     if (isjob(r[3])){
@@ -473,14 +495,14 @@ function apply_all(html, D, DEPT, aa, asof, reporting_month){
 }
 
 // -------------------------- YESTERDAY -------------------------------------
-function set_yesterday(html, rev, tg, day, sr){
+function set_yesterday(html, rev, tg, day, sr, est){
   const resA = field => {
     const parts = splitParts(field);
     for (const p of parts) if (S14.has(p)) return p;
     return parts.includes("Andrew Alonso") ? "Andrew Alonso" : null;
   };
   const ca={}, ta={}, rvv={};
-  const SUB = subBySrcJob(sr);
+  const SUB = subBySrcJob(est, sr);
   const eqd = (a,b)=> a&&b&&a.y===b.y&&a.m===b.m&&a.d===b.d;
   for (const r of rev){
     if (eqd(asdate(r[4]), day)){
@@ -516,7 +538,7 @@ function set_yesterday(html, rev, tg, day, sr){
 // against ServiceTitan's export (Subtotal>0 == Closed=True). NOT "Installed"/col 8,
 // which is $0 until physically installed. Mirrors auto_update_dashboard.build_close_rate
 // so a browser "Build & Publish" produces the same CLOSE_RATE_DATA as the daily job.
-function close_rate_block(D, sr, rm){
+function close_rate_block(D, sr, rm, est){
   const teamA = TEAM_A;
   const teamB = TEAM_B.concat(["Andrew Alonso"]);
   const combined = ["Alex - Oleksiy Yakovchuk"].concat(TEAM_A, TEAM_B, ["Andrew Alonso"]);
@@ -533,14 +555,12 @@ function close_rate_block(D, sr, rm){
   const tset = {team_a:new Set(teamA), team_b:new Set(teamB), combined:new Set(combined)};
   const tmo = {team_a:[], team_b:[], combined:[]};
   for (const k in tmo){ for(let mo=0;mo<NM;mo++) tmo[k].push({ran:0,sold:0,sales:0}); }
-  for (let i=1;i<sr.length;i++){
-    const r = sr[i];
-    if (!isjob(r[1])) continue;
-    const src = resolveSilo(r[4]); const rd = asdate(r[6]);   // col 6 = Scheduled/Ran date = opportunity date
+  for (const row of tglEstRows(est, sr)){
+    const src = resolveSilo(row.src); const rd = row.sched;
     if (!src || !rd || rd.y !== 2026) continue;
     const o = opp[src] || (opp[src] = {yr:0,mr:0}); o.yr++;
     if (rd.m === rmNum) o.mr++;
-    const soldAmt = num(r[10]);   // col 10 = Estimate Sales Subtotal = SOLD price
+    const soldAmt = row.sub;   // Estimate Sales Subtotal = SOLD price
     for (const k in tset){ if (rd.m<=NM && tset[k].has(src)){ const b=tmo[k][rd.m-1]; b.ran++; if(soldAmt>0){b.sold++; b.sales+=soldAmt;} } }
     if (soldAmt <= 0) continue;
     const e = sold[src] || (sold[src] = {yc:0,ya:0,mc:0,ma:0});
@@ -601,15 +621,16 @@ function rebuild(templateHtml, sheets, opts){
   const tg  = sheetToRows(sheets.tg);
   const cn  = sheetToRows(sheets.cn);
   const sr  = sheetToRows(sheets.sr);
+  const est = sheets.est ? sheetToRows(sheets.est) : null;
   const parseISO = s => ({y:+s.slice(0,4), m:+s.slice(5,7), d:+s.slice(8,10)});
   const asof = parseISO(opts.asof);
   const yday = opts.yesterday ? parseISO(opts.yesterday) : asof;
   const rm = opts.reportingMonth || "June";
   setReportingMonth(rm);                       // drives MONTHS / LM / week labels
-  const {D, DEPT, aa} = build_dataset(rev, tg, cn, sr);
+  const {D, DEPT, aa} = build_dataset(rev, tg, cn, sr, est);
   let html = apply_all(templateHtml, D, DEPT, aa, asof, rm);
-  html = set_yesterday(html, rev, tg, yday, sr);
-  html = set_close_rate(html, close_rate_block(D, sr, rm));
+  html = set_yesterday(html, rev, tg, yday, sr, est);
+  html = set_close_rate(html, close_rate_block(D, sr, rm, est));
   // summary stats
   const sumv = o => Object.values(o).reduce((a,b)=>a+b,0);
   const dycYTD = DEPT.reduce((a,t)=>a+sumv(D[t].c),0);

@@ -4008,7 +4008,7 @@ function CASalesDash(){
           <div style={{fontSize:9,color:last?"#F5B324":"#7089ab",marginTop:6}}>{m.month.slice(0,3)}{last?"*":""}</div>
         </div>);})}
     </div>);};
-  const weeklyChart=()=>{ const wk=weekly; if(wk.length<2) return null;
+  const weeklyChart=()=>{ const wk=weekly.slice(-13); if(wk.length<2) return null;
     const W=780,H=190,pL=44,pB=24,pT=14,pR=12; const mx=Math.max(1,...wk.map(w=>w.total));
     const X=i=>pL+i*(W-pL-pR)/(wk.length-1), Y=v=>pT+(1-v/mx)*(H-pT-pB);
     const line=wk.map((w,i)=>(i?"L":"M")+X(i).toFixed(1)+" "+Y(w.total).toFixed(1)).join(" ");
@@ -4172,7 +4172,7 @@ function CASalesDash(){
               </div>
             </div>
             {trendMode==="month" ? card("Monthly CA Sales — month-over-month",<span><span style={{color:"#5BA4E6"}}>▬</span> Marketing&nbsp;<span style={{color:"#F5B324"}}>▬</span> Tech-Lead</span>, monthlyBars(m=>({total:m.total,mkt:m.mkt,tgl:m.tgl}),null,true))
-                                  : card("Weekly CA Sales","total sold revenue by week · "+weekly.length+" weeks", weeklyChart())}
+                                  : card("Weekly CA Sales","total sold revenue · last "+Math.min(13,weekly.length)+" weeks", weeklyChart())}
           </React.Fragment>)}
 
         {tab==="pace" && (
@@ -4182,7 +4182,7 @@ function CASalesDash(){
                 {caTile("YTD SALES",fmt(ytd),"#22c55e",D.dateRange)}
                 {caTile("EXPECTED BY NOW",fmt(expected),"#9fb3cc",Math.round(D.elapsedFrac*100)+"% of year")}
                 {caTile("PROJECTED EOY",fmt(projEOY),projEOY>=GOAL?"#4ADE80":"#F5B324","at current run-rate")}
-                {caTile("GOAL",fmt(GOAL),"#F5B324","annual · placeholder")}
+                {caTile("GOAL",fmt(GOAL),"#F5B324","annual target")}
               </div>
               {caGauge("PACE TO GOAL",pacePct,100,pacePct>=100?"#22c55e":pacePct>=85?"#F5B324":"#E63946")}
             </div>
@@ -4199,7 +4199,6 @@ function CASalesDash(){
                       </div>);})}
                   </React.Fragment>);})()}
               </div>)}
-            <div style={{fontSize:9,color:"#F5B324",padding:"10px 24px 0"}}>⚠ Goal is a placeholder ({fmt(GOAL)}/yr). Tell me your real annual or monthly CA sales target and I'll wire it in.</div>
           </React.Fragment>)}
 
         {tab==="compare" && (

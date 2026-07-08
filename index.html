@@ -3165,7 +3165,7 @@ function CountUp({ value, decimals, prefix, suffix, dur }) {
 }
 
 // ── Overview (MAX command-center landing) ───────────────────────────────────
-function OverviewTab({ data, hourly, kpiVal }) {
+function OverviewTab({ data, hourly, kpiVal, setKpiVal }) {
   const techs = Object.values(data);
   // Confetti when TODAY hits KPI
   React.useEffect(() => {
@@ -3822,7 +3822,7 @@ function Root() {
 
       {/* Tab content */}
       <div key={tab} className="tab-fade" style={{ maxWidth: 1760, margin: "0 auto" }}>
-        {tab === "overview" && <OverviewTab data={data} hourly={hourly} kpiVal={kpiVal} />}
+        {tab === "overview" && <OverviewTab data={data} hourly={hourly} kpiVal={kpiVal} setKpiVal={setKpiVal} />}
         {tab === "hourbyhour" && <HourByHourTab hourly={hourly} />}
         {tab === "ytd"     && <PeriodTable period="ytd"    data={data} />}
         {tab === "mtd"     && <PeriodTable period="mtd"    data={data} />}

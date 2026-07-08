@@ -3944,48 +3944,19 @@ function GateLanding({ onEnter }){
   );
 }
 
-const CA_SALES_DATA = {"dateRange":"Jan 1 \u2013 Jul 8, 2026","total":21466334,"mktTotal":5432949,"tglTotal":16033385,"mktCloseAll":29.2,"tglCloseAll":50.2,"mktAvgAll":24583,"tglAvgAll":24404,"avgAll":24449,"caCount":10,"mktBU":"HVAC - Sales (NR), HVAC - Sales Costco (NR)","tglBU":"HVAC - Sales (NR), HVAC - Sales Costco (NR)","source":"ESTIMATE AC/TGLS report","monthly":[{"month":"January","mkt":719617,"tgl":1520663,"total":2240280},{"month":"February","mkt":565376,"tgl":1242398,"total":1807775},{"month":"March","mkt":1354730,"tgl":2721633,"total":4076363},{"month":"April","mkt":635424,"tgl":2726161,"total":3361585},{"month":"May","mkt":661526,"tgl":3310827,"total":3972353},{"month":"June","mkt":1312436,"tgl":3716440,"total":5028875},{"month":"July","mkt":183841,"tgl":774074,"total":957915}],"cas":[{"name":"Jeremy Brackett","mkt":747908,"tgl":2574678,"total":3322586,"mktClose":34.0,"tglClose":54.9,"mktAvg":21997,"tglAvg":24062,"avg":23564},{"name":"Jordan Dalrymple","mkt":335838,"tgl":2650052,"total":2985890,"mktClose":31.6,"tglClose":51.1,"mktAvg":18658,"tglAvg":23246,"avg":22620},{"name":"Shawn Brown","mkt":770288,"tgl":2204799,"total":2975087,"mktClose":29.2,"tglClose":48.1,"mktAvg":29626,"tglAvg":28634,"avg":28884},{"name":"Rob Dais","mkt":1062631,"tgl":1696897,"total":2759528,"mktClose":37.1,"tglClose":49.4,"mktAvg":27247,"tglAvg":22328,"avg":23996},{"name":"Daniel Muntifering","mkt":753860,"tgl":1612400,"total":2366260,"mktClose":29.1,"tglClose":45.4,"mktAvg":30154,"tglAvg":25194,"avg":26587},{"name":"Fernando Castillo","mkt":346338,"tgl":1694948,"total":2041286,"mktClose":19.6,"tglClose":47.3,"mktAvg":19241,"tglAvg":27338,"avg":25516},{"name":"Jose Valencia","mkt":420393,"tgl":1459631,"total":1880024,"mktClose":24.4,"tglClose":49.6,"mktAvg":20019,"tglAvg":22456,"avg":21861},{"name":"Derik King","mkt":624481,"tgl":1118059,"total":1742540,"mktClose":23.6,"tglClose":43.8,"mktAvg":29737,"tglAvg":24306,"avg":26008},{"name":"Ryan Hernlund-TECH","mkt":83266,"tgl":785143,"total":868409,"mktClose":100.0,"tglClose":87.2,"mktAvg":16653,"tglAvg":23092,"avg":22267},{"name":"AJ-Alejandro Ruiz Padilla","mkt":287946,"tgl":236778,"total":524724,"mktClose":28.6,"tglClose":40.0,"mktAvg":20568,"tglAvg":19732,"avg":20182}]};
-// ═══ CA SALES · standalone command deck (from Marketing + Tech-Lead reports) ══
+const CA_SALES_DATA = {"dateRange":"Jan 1 \u2013 Jul 8, 2026","total":21466334,"mktTotal":5432949,"tglTotal":16033385,"mktCloseAll":29.2,"tglCloseAll":50.2,"mktAvgAll":24583,"tglAvgAll":24404,"avgAll":24449,"caCount":10,"months":["January","February","March","April","May","June","July"],"monthly":[{"month":"January","mkt":719617,"tgl":1520663,"total":2240280},{"month":"February","mkt":565376,"tgl":1242398,"total":1807775},{"month":"March","mkt":1354730,"tgl":2721633,"total":4076363},{"month":"April","mkt":635424,"tgl":2726161,"total":3361585},{"month":"May","mkt":661526,"tgl":3310827,"total":3972353},{"month":"June","mkt":1312436,"tgl":3716440,"total":5028875},{"month":"July","mkt":183841,"tgl":774074,"total":957915}],"source":"ESTIMATE AC/TGLS report","cas":[{"name":"Jeremy Brackett","mkt":747908,"tgl":2574678,"total":3322586,"mktClose":34.0,"tglClose":54.9,"mktAvg":21997,"tglAvg":24062,"avg":23564,"mo":[231513,338383,665998,652721,717847,716124,0]},{"name":"Jordan Dalrymple","mkt":335838,"tgl":2650052,"total":2985890,"mktClose":31.6,"tglClose":51.1,"mktAvg":18658,"tglAvg":23246,"avg":22620,"mo":[220266,353913,707025,612490,443812,530860,117525]},{"name":"Shawn Brown","mkt":770288,"tgl":2204799,"total":2975087,"mktClose":29.2,"tglClose":48.1,"mktAvg":29626,"tglAvg":28634,"avg":28884,"mo":[192654,371867,499736,594208,513522,581054,222046]},{"name":"Rob Dais","mkt":1062631,"tgl":1696897,"total":2759528,"mktClose":37.1,"tglClose":49.4,"mktAvg":27247,"tglAvg":22328,"avg":23996,"mo":[270509,191308,597572,315104,557975,635884,169989]},{"name":"Daniel Muntifering","mkt":753860,"tgl":1612400,"total":2366260,"mktClose":29.1,"tglClose":45.4,"mktAvg":30154,"tglAvg":25194,"avg":26587,"mo":[496575,193235,331597,204896,367648,709101,63208]},{"name":"Fernando Castillo","mkt":346338,"tgl":1694948,"total":2041286,"mktClose":19.6,"tglClose":47.3,"mktAvg":19241,"tglAvg":27338,"avg":25516,"mo":[289436,65787,194533,454958,363584,638795,34192]},{"name":"Jose Valencia","mkt":420393,"tgl":1459631,"total":1880024,"mktClose":24.4,"tglClose":49.6,"mktAvg":20019,"tglAvg":22456,"avg":21861,"mo":[130733,149987,507916,228601,483319,277291,102177]},{"name":"Derik King","mkt":624481,"tgl":1118059,"total":1742540,"mktClose":23.6,"tglClose":43.8,"mktAvg":29737,"tglAvg":24306,"avg":26008,"mo":[200733,100802,460316,112296,305088,462555,100749]},{"name":"Ryan Hernlund-TECH","mkt":83266,"tgl":785143,"total":868409,"mktClose":100.0,"tglClose":87.2,"mktAvg":16653,"tglAvg":23092,"avg":22267,"mo":[207861,36482,111670,186312,120930,138986,66167]},{"name":"AJ-Alejandro Ruiz Padilla","mkt":287946,"tgl":236778,"total":524724,"mktClose":28.6,"tglClose":40.0,"mktAvg":20568,"tglAvg":19732,"avg":20182,"mo":[0,6010,0,0,98628,338224,81862]}]};
+// ═══ CA SALES · standalone command deck (from ESTIMATE AC/TGLS report) ═══════
 function CASalesDash(){
-  const D=(typeof CA_SALES_DATA!=="undefined")?CA_SALES_DATA:{cas:[],total:0,mktTotal:0,tglTotal:0,caCount:0,dateRange:"",mktCloseAll:0,tglCloseAll:0,avgAll:0,mktAvgAll:0,tglAvgAll:0};
+  const D=(typeof CA_SALES_DATA!=="undefined")?CA_SALES_DATA:{cas:[],total:0,mktTotal:0,tglTotal:0,caCount:0,dateRange:"",mktCloseAll:0,tglCloseAll:0,avgAll:0,mktAvgAll:0,tglAvgAll:0,monthly:[]};
   const [tab,setTab]=React.useState("overview");
   const [sel,setSel]=React.useState(null);
   const [sortCol,setSortCol]=React.useState("total");
   const fmt=v=>v>=1000000?"$"+(v/1000000).toFixed(2)+"M":v>=1000?"$"+Math.round(v/1000).toLocaleString()+"k":"$"+Math.round(v||0);
   const GREEN="#22c55e",BLUE="#5BA4E6",GOLD="#F5B324";
-  const cas=D.cas||[];
+  const cas=D.cas||[]; const monthly=D.monthly||[];
   const rankByTotal={}; [...cas].sort((a,b)=>b.total-a.total).forEach((c,i)=>rankByTotal[c.name]=i+1);
   const selCA=sel?cas.find(c=>c.name===sel):null;
   const mktPct=D.total?Math.round(D.mktTotal/D.total*100):0, tglPct=100-mktPct;
-  const kpi=(label,v,color,sub)=>(
-    <div className="liftCard kpi-card" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"13px 18px",minWidth:112,textAlign:"center"}}>
-      <div style={{fontSize:9,letterSpacing:"0.1em",color:"#6b7a99",fontWeight:700}}>{label}</div>
-      <div style={{fontSize:22,fontWeight:900,color:color,marginTop:4}}>{v}</div>
-      {sub&&<div style={{fontSize:9,color:"#6b7a99",marginTop:2}}>{sub}</div>}
-    </div>);
-  // horizontal bar leaderboard for a value key
-  const barLeader=(key,color,subFn)=>{
-    const list=[...cas].filter(c=>c[key]>0).sort((a,b)=>b[key]-a[key]).slice(0,15);
-    const mx=Math.max(1,...list.map(c=>c[key]));
-    return (
-      <div style={{display:"flex",flexDirection:"column",gap:8}}>
-        {list.map((c,i)=>(
-          <div key={c.name} onClick={()=>setSel(c.name)} style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer",background:sel===c.name?"rgba(34,197,94,.08)":"transparent",borderRadius:8,padding:"2px 4px"}}>
-            <div style={{width:20,fontSize:11,fontWeight:800,color:i<3?GOLD:"#6b7a99",textAlign:"right"}}>{i+1}</div>
-            <div style={{width:150,fontSize:11,color:"#cfeede",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{i===0?"🥇 ":i===1?"🥈 ":i===2?"🥉 ":""}{c.name}</div>
-            <div style={{flex:1,background:"#0a1220",borderRadius:5,height:16,overflow:"hidden"}}><div style={{width:Math.max(2,c[key]/mx*100)+"%",height:"100%",borderRadius:5,background:"linear-gradient(90deg,"+color+","+color+"aa)",animation:"growW 1s ease both"}}/></div>
-            <div style={{width:82,fontSize:11,fontWeight:800,color:GREEN,textAlign:"right"}}>{fmt(c[key])}</div>
-            <div style={{width:100,fontSize:9.5,color:"#9fb3cc",textAlign:"right"}}>{subFn(c)}</div>
-          </div>))}
-      </div>);
-  };
-  const card=(title,sub,body,pad)=>(
-    <div style={{padding:"14px 24px 0"}}><div className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:pad||"16px 20px"}}>
-      <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>{title}</div>
-      {sub&&<div style={{fontSize:10,color:"#6b7a99",marginBottom:12}}>{sub}</div>}
-      {body}
-    </div></div>);
-
   const caCol=r=>r>=50?"#22c55e":r>=30?"#F5B324":"#E63946";
   const gArc=frac=>{const R=58,cx=80,cy=92,a0=Math.PI,a1=Math.PI*(1-Math.max(0,Math.min(1,frac)));
     const x0=cx+R*Math.cos(a0),y0=cy-R*Math.sin(a0),x1=cx+R*Math.cos(a1),y1=cy-R*Math.sin(a1);
@@ -4009,23 +3980,66 @@ function CASalesDash(){
       <div style={{fontSize:25,fontWeight:900,color:accent,marginTop:3}}>{val}</div>
       {sub&&<div style={{fontSize:9,color:"#6b7a99",marginTop:2}}>{sub}</div>}
     </div>);
-  const topCA=cas.length?[...cas].sort((a,b)=>b.total-a.total)[0]:{name:"—",total:0};
+  const card=(title,sub,body)=>(
+    <div style={{padding:"14px 24px 0"}}><div className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",flexWrap:"wrap",gap:6}}>
+        <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>{title}</div>
+        {sub&&<div style={{fontSize:9.5,color:"#6b7a99"}}>{sub}</div>}
+      </div>
+      {body}
+    </div></div>);
+  const monthlyBars=(valFn,solidColor,showMoM)=>{ const vals=monthly.map(valFn); const mx=Math.max(1,...vals.map(v=>v.total));
+    return (<div style={{display:"flex",alignItems:"flex-end",gap:12,height:showMoM?188:166,marginTop:12}}>
+      {monthly.map((m,i)=>{const v=vals[i]; const pv=i>0?vals[i-1].total:0; const g=pv?Math.round((v.total-pv)/pv*100):null; const last=i===monthly.length-1;
+        return (
+        <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-end",height:"100%"}}>
+          {showMoM && g!==null && !last && <div style={{fontSize:8.5,fontWeight:800,color:g>=0?"#4ADE80":"#E63946",marginBottom:2}}>{g>=0?"▲":"▼"}{Math.abs(g)}%</div>}
+          <div style={{fontSize:9,fontWeight:800,color:"#22c55e",marginBottom:4}}>{fmt(v.total)}</div>
+          <div title={m.month} style={{width:"60%",display:"flex",flexDirection:"column",justifyContent:"flex-end",height:Math.max(3,v.total/mx*(showMoM?126:128))+"px",borderRadius:"5px 5px 0 0",overflow:"hidden"}}>
+            {solidColor ? <div style={{height:"100%",background:solidColor}}/> : (
+              <React.Fragment>
+                <div style={{height:(v.total?v.tgl/v.total*100:0)+"%",background:"linear-gradient(180deg,#F5B324,#c98f14)"}}/>
+                <div style={{height:(v.total?v.mkt/v.total*100:0)+"%",background:"linear-gradient(180deg,#5BA4E6,#2E78C7)"}}/>
+              </React.Fragment>)}
+          </div>
+          <div style={{fontSize:9,color:last?"#F5B324":"#7089ab",marginTop:6}}>{m.month.slice(0,3)}{last?"*":""}</div>
+        </div>);})}
+    </div>);};
+  const barLeader=(key,color,subFn)=>{
+    const list=[...cas].filter(c=>c[key]>0).sort((a,b)=>b[key]-a[key]).slice(0,15);
+    const mx=Math.max(1,...list.map(c=>c[key]));
+    return (<div style={{display:"flex",flexDirection:"column",gap:8}}>
+      {list.map((c,i)=>(
+        <div key={c.name} onClick={()=>setSel(c.name)} style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer",background:sel===c.name?"rgba(34,197,94,.08)":"transparent",borderRadius:8,padding:"2px 4px"}}>
+          <div style={{width:20,fontSize:11,fontWeight:800,color:i<3?GOLD:"#6b7a99",textAlign:"right"}}>{i+1}</div>
+          <div style={{width:150,fontSize:11,color:"#cfeede",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{i===0?"🥇 ":i===1?"🥈 ":i===2?"🥉 ":""}{c.name}</div>
+          <div style={{flex:1,background:"#0a1220",borderRadius:5,height:16,overflow:"hidden"}}><div style={{width:Math.max(2,c[key]/mx*100)+"%",height:"100%",borderRadius:5,background:"linear-gradient(90deg,"+color+","+color+"aa)",animation:"growW 1s ease both"}}/></div>
+          <div style={{width:82,fontSize:11,fontWeight:800,color:GREEN,textAlign:"right"}}>{fmt(c[key])}</div>
+          <div style={{width:100,fontSize:9.5,color:"#9fb3cc",textAlign:"right"}}>{subFn(c)}</div>
+        </div>))}
+    </div>);};
+
+  const TABS=[
+    {id:"overview",icon:"📊",label:"OVERVIEW",sub:"Company KPIs"},
+    {id:"trend",icon:"📈",label:"TREND",sub:"Month by month"},
+    {id:"board",icon:"🏆",label:"LEADERBOARD",sub:"All "+D.caCount+" CAs"},
+    {id:"tgl",icon:"🔧",label:"TECH LEADS",sub:"TGL sold"},
+    {id:"mkt",icon:"📣",label:"MARKETING",sub:"Marketed sold"},
+    {id:"analysis",icon:"🎯",label:"ANALYSIS",sub:"Mkt vs Tech"},
+  ];
+  const topCA=cas.length?[...cas].sort((a,b)=>b.total-a.total)[0]:{name:"—",total:0,mo:[]};
   const tickerItems=[
     {l:"TOTAL",v:fmt(D.total),c:"#22c55e"},{l:"MARKETING",v:fmt(D.mktTotal),c:"#5BA4E6"},
     {l:"TECH-LEAD",v:fmt(D.tglTotal),c:"#F5B324"},{l:"AVG TICKET",v:fmt(D.avgAll),c:"#4ADE80"},
     {l:"CAs",v:D.caCount,c:"#fff"},{l:"TGL CLOSE",v:D.tglCloseAll+"%",c:"#F5B324"},
     {l:"MKT CLOSE",v:D.mktCloseAll+"%",c:"#5BA4E6"},{l:"TOP CA",v:topCA.name.split(" ")[0]+" "+fmt(topCA.total),c:"#22c55e"},
   ];
+  const full=monthly.slice(0,-1);
+  const best=full.length?full.reduce((a,b)=>b.total>a.total?b:a):{month:"",total:0};
+  const avgMo=full.length?Math.round(full.reduce((a,b)=>a+b.total,0)/full.length):0;
+  const mom=full.length>=2?Math.round((full[full.length-1].total-full[full.length-2].total)/full[full.length-2].total*100):0;
+  const ytd=monthly.reduce((a,b)=>a+b.total,0);
 
-  const TABS=[
-    {id:"overview",icon:"📊",label:"OVERVIEW",sub:"Company KPIs"},
-    {id:"board",icon:"🏆",label:"LEADERBOARD",sub:"All "+D.caCount+" CAs"},
-    {id:"tgl",icon:"🔧",label:"TECH LEADS",sub:"TGL sold"},
-    {id:"mkt",icon:"📣",label:"MARKETING",sub:"Marketed sold"},
-    {id:"analysis",icon:"🎯",label:"ANALYSIS",sub:"Mkt vs Tech"},
-  ];
-
-  // detail panel
   const detail = selCA && (
     <div style={{padding:"14px 24px 0"}}>
       <div className="liftCard" style={{background:"linear-gradient(135deg,#10261b,#0f1c2e)",border:"1px solid #22c55e55",borderRadius:16,padding:"16px 20px"}}>
@@ -4043,6 +4057,12 @@ function CASalesDash(){
               {s[3]&&<div style={{fontSize:9.5,color:"#9fb3cc",marginTop:2}}>{s[3]}</div>}
             </div>))}
         </div>
+        {selCA.mo && selCA.mo.length>1 && (
+          <div style={{marginTop:14,display:"flex",alignItems:"center",gap:14,flexWrap:"wrap"}}>
+            <div><div style={{fontSize:9,color:"#6b7a99",fontWeight:700,letterSpacing:"0.1em",marginBottom:4}}>MONTHLY SALES (Jan–Jul)</div>
+              <Spark data={selCA.mo} color="#22c55e" w={230} h={40}/></div>
+            <div style={{fontSize:9,color:"#6b7a99"}}>{(D.months||[]).map((mn,i)=>mn.slice(0,3)+" "+fmt(selCA.mo[i]||0)).join(" · ")}</div>
+          </div>)}
         <div style={{marginTop:12}}>
           <div style={{display:"flex",height:16,borderRadius:6,overflow:"hidden",background:"#0a1220"}}>
             <div style={{width:(selCA.mkt/selCA.total*100)+"%",background:"linear-gradient(90deg,#2E78C7,#5BA4E6)"}}/>
@@ -4053,32 +4073,27 @@ function CASalesDash(){
       </div>
     </div>);
 
-  // scatter geometry (analysis tab)
   const maxAxis=Math.max(1,...cas.map(c=>Math.max(c.mkt,c.tgl)));
   const SW=760,SH=300,pL=48,pB=34,pT=14,pR=16;
   const sx=v=>pL+(v/maxAxis)*(SW-pL-pR), sy=v=>(SH-pB)-(v/maxAxis)*(SH-pT-pB);
   const topNames=new Set([...cas].sort((a,b)=>b.total-a.total).slice(0,6).map(c=>c.name));
-
-  // full sortable table (board tab)
   const cols=[["total","Total"],["mkt","Mktg"],["tgl","Tech"],["avg","Avg Tkt"],["mktClose","Mkt %"],["tglClose","Tgl %"]];
   const tableRows=[...cas].sort((a,b)=>b[sortCol]-a[sortCol]);
-  const th=(k,l)=>(<th onClick={()=>setSortCol(k)} style={{padding:"8px 8px",fontSize:9,color:sortCol===k?"#22c55e":"#9fb3cc",fontWeight:700,letterSpacing:"0.04em",textAlign:"right",borderBottom:"2px solid #1e2d47",whiteSpace:"nowrap",cursor:"pointer",position:"sticky",top:0,background:"#111827"}}>{l}{sortCol===k?" ▾":""}</th>);
+  const thc=(k,l)=>(<th onClick={()=>setSortCol(k)} style={{padding:"8px 8px",fontSize:9,color:sortCol===k?"#22c55e":"#9fb3cc",fontWeight:700,textAlign:"right",borderBottom:"2px solid #1e2d47",whiteSpace:"nowrap",cursor:"pointer",position:"sticky",top:0,background:"#111827"}}>{l}{sortCol===k?" ▾":""}</th>);
   const tdN=(v,c,b)=>(<td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:c||"#e6eefb",fontWeight:b?800:500,whiteSpace:"nowrap"}}>{v}</td>);
 
   return (
     <div className="riseIn" style={{padding:"0 0 40px"}}>
-      {/* header */}
       <div style={{padding:"14px 24px",background:"linear-gradient(135deg,#0e2a1c,#123a26)",borderBottom:"1px solid #1e3d2c"}}>
         <div style={{fontSize:9,color:"#22c55e",fontWeight:700,letterSpacing:"0.2em"}}>💰 CA SALES · COMMAND DECK</div>
         <div style={{fontSize:11,color:"#7a8fa0",marginTop:2}}>{D.dateRange} · {D.caCount} comfort advisors · Marketing + Tech-Lead sold revenue</div>
       </div>
-      {/* tab bar */}
       <div style={{display:"flex",gap:8,flexWrap:"wrap",padding:"12px 24px",background:"#0c1626",borderBottom:"1px solid #1e2d47"}}>
         {TABS.map(t=>(
           <button key={t.id} onClick={()=>setTab(t.id)} style={{display:"flex",flexDirection:"column",alignItems:"flex-start",border:"none",cursor:"pointer",fontFamily:"inherit",
             background:tab===t.id?"linear-gradient(135deg,#16351f,#0f2a1c)":"#0e1626",borderRadius:10,padding:"8px 15px",borderBottom:tab===t.id?"2px solid #22c55e":"2px solid transparent"}}>
             <span style={{fontSize:12,fontWeight:800,color:tab===t.id?"#fff":"#9fb3cc"}}>{t.icon} {t.label}</span>
-            <span style={{fontSize:8.5,color:tab===t.id?"#22c55e":"#5a6b85",fontWeight:600,letterSpacing:"0.04em"}}>{t.sub}</span>
+            <span style={{fontSize:8.5,color:tab===t.id?"#22c55e":"#5a6b85",fontWeight:600}}>{t.sub}</span>
           </button>))}
       </div>
 
@@ -4114,28 +4129,31 @@ function CASalesDash(){
               {caTile("AVG TICKET",fmt(D.avgAll),"#4ADE80","blended per sale")}
               {caTile("TOP CA",topCA.name.split(" ")[0],"#22c55e",fmt(topCA.total)+" · #1 of "+D.caCount)}
             </div>
-            {(()=>{ const mo=D.monthly||[]; if(mo.length<2) return null;
-              const mx=Math.max(1,...mo.map(m=>m.total));
-              return (
-              <div style={{padding:"14px 24px 0"}}><div className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",flexWrap:"wrap",gap:6}}>
-                  <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>Monthly CA Sales</div>
-                  <div style={{fontSize:9.5,color:"#6b7a99"}}><span style={{color:"#5BA4E6"}}>▬</span> Marketing&nbsp;&nbsp;<span style={{color:"#F5B324"}}>▬</span> Tech-Lead · *Jul partial</div>
-                </div>
-                <div style={{display:"flex",alignItems:"flex-end",gap:12,height:170,marginTop:12}}>
-                  {mo.map((m,i)=>(
-                    <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-end",height:"100%"}}>
-                      <div style={{fontSize:9,fontWeight:800,color:"#22c55e",marginBottom:4}}>{fmt(m.total)}</div>
-                      <div title={m.month+": mkt "+fmt(m.mkt)+" · tgl "+fmt(m.tgl)} style={{width:"62%",display:"flex",flexDirection:"column",justifyContent:"flex-end",height:Math.max(3,(m.total/mx*132))+"px",borderRadius:"5px 5px 0 0",overflow:"hidden"}}>
-                        <div style={{height:(m.total?m.tgl/m.total*100:0)+"%",background:"linear-gradient(180deg,#F5B324,#c98f14)"}}/>
-                        <div style={{height:(m.total?m.mkt/m.total*100:0)+"%",background:"linear-gradient(180deg,#5BA4E6,#2E78C7)"}}/>
-                      </div>
-                      <div style={{fontSize:9,color:i===mo.length-1?"#F5B324":"#7089ab",marginTop:6}}>{m.month.slice(0,3)}{i===mo.length-1?"*":""}</div>
-                    </div>))}
-                </div>
-              </div></div>);
-            })()}
-            {card("Top CAs · Total Sales","top 15 · click a name for detail", barLeader("total",GREEN,c=>fmt(c.mkt)+" / "+fmt(c.tgl)))}
+            {monthly.length>1 && card("Monthly CA Sales",<span><span style={{color:"#5BA4E6"}}>▬</span> Marketing&nbsp;&nbsp;<span style={{color:"#F5B324"}}>▬</span> Tech-Lead · *Jul partial</span>, monthlyBars(m=>({total:m.total,mkt:m.mkt,tgl:m.tgl})))}
+            {card("Top CAs · Total Sales","top 15 · click for detail", barLeader("total",GREEN,c=>fmt(c.mkt)+" / "+fmt(c.tgl)))}
+          </React.Fragment>)}
+
+        {tab==="trend" && (
+          <React.Fragment>
+            <div style={{padding:"16px 24px 4px",display:"flex",gap:12,flexWrap:"wrap"}}>
+              {caTile("YTD SALES",fmt(ytd),"#22c55e",D.dateRange)}
+              {caTile("BEST MONTH",best.month.slice(0,3),"#F5B324",fmt(best.total))}
+              {caTile("AVG / MONTH",fmt(avgMo),"#4ADE80","full months")}
+              {caTile("LAST MoM",(mom>=0?"▲ ":"▼ ")+Math.abs(mom)+"%",mom>=0?"#4ADE80":"#E63946",(full.length>=2?full[full.length-1].month.slice(0,3)+" vs "+full[full.length-2].month.slice(0,3):""))}
+            </div>
+            {card("Monthly CA Sales — with month-over-month",<span><span style={{color:"#5BA4E6"}}>▬</span> Marketing&nbsp;&nbsp;<span style={{color:"#F5B324"}}>▬</span> Tech-Lead · *Jul partial</span>, monthlyBars(m=>({total:m.total,mkt:m.mkt,tgl:m.tgl}),null,true))}
+            <div style={{padding:"14px 24px 0",display:"flex",gap:14,flexWrap:"wrap"}}>
+              <div className="liftCard" style={{flex:"1 1 300px",background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+                <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>Tech-Lead by month</div>
+                <div style={{fontSize:10,color:"#6b7a99"}}>TGL sold revenue</div>
+                {monthlyBars(m=>({total:m.tgl}),"linear-gradient(180deg,#F5B324,#c98f14)")}
+              </div>
+              <div className="liftCard" style={{flex:"1 1 300px",background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+                <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>Marketing by month</div>
+                <div style={{fontSize:10,color:"#6b7a99"}}>marketed sold revenue</div>
+                {monthlyBars(m=>({total:m.mkt}),"linear-gradient(180deg,#5BA4E6,#2E78C7)")}
+              </div>
+            </div>
           </React.Fragment>)}
 
         {tab==="board" && (
@@ -4143,43 +4161,50 @@ function CASalesDash(){
             <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>CA Leaderboard — all {D.caCount}</div>
             <div style={{fontSize:10,color:"#6b7a99",marginBottom:10}}>click a column to sort · click a row for detail</div>
             <div className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,overflow:"auto",maxHeight:560}}>
-            <table style={{width:"100%",borderCollapse:"collapse",fontFamily:"inherit"}}>
-              <thead><tr>
-                <th style={{padding:"8px",fontSize:9,color:"#9fb3cc",textAlign:"left",borderBottom:"2px solid #1e2d47",position:"sticky",top:0,background:"#111827"}}>#</th>
-                <th style={{padding:"8px",fontSize:9,color:"#9fb3cc",textAlign:"left",borderBottom:"2px solid #1e2d47",position:"sticky",top:0,background:"#111827"}}>Comfort Advisor</th>
-                {cols.map(c=>th(c[0],c[1]))}
-              </tr></thead>
-              <tbody>
-                {tableRows.map((c,i)=>(
-                  <tr key={c.name} className="trow" onClick={()=>setSel(c.name)} style={{cursor:"pointer",background:sel===c.name?"rgba(34,197,94,.10)":(i%2?"#141c2e":"transparent"),borderTop:"1px solid #111827"}}>
-                    {tdN(i+1,"#6b7a99")}
-                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"left",color:"#fff",fontWeight:700,whiteSpace:"nowrap"}}>{c.name}</td>
-                    {tdN(fmt(c.total),GREEN,true)}{tdN(fmt(c.mkt),BLUE)}{tdN(fmt(c.tgl),GOLD)}{tdN(fmt(c.avg),"#4ADE80")}{tdN(c.mktClose+"%",BLUE)}{tdN(c.tglClose+"%",GOLD)}
-                  </tr>))}
-              </tbody>
-            </table>
-          </div></div>)}
+              <table style={{width:"100%",borderCollapse:"collapse",fontFamily:"inherit"}}>
+                <thead><tr>
+                  <th style={{padding:"8px",fontSize:9,color:"#9fb3cc",textAlign:"left",borderBottom:"2px solid #1e2d47",position:"sticky",top:0,background:"#111827"}}>#</th>
+                  <th style={{padding:"8px",fontSize:9,color:"#9fb3cc",textAlign:"left",borderBottom:"2px solid #1e2d47",position:"sticky",top:0,background:"#111827"}}>Comfort Advisor</th>
+                  {cols.map(c=>thc(c[0],c[1]))}
+                </tr></thead>
+                <tbody>
+                  {tableRows.map((c,i)=>(
+                    <tr key={c.name} className="trow" onClick={()=>setSel(c.name)} style={{cursor:"pointer",background:sel===c.name?"rgba(34,197,94,.10)":(i%2?"#141c2e":"transparent"),borderTop:"1px solid #111827"}}>
+                      {tdN(i+1,"#6b7a99")}
+                      <td style={{padding:"6px 8px",fontSize:11,textAlign:"left",color:"#fff",fontWeight:700,whiteSpace:"nowrap"}}>{c.name}</td>
+                      {tdN(fmt(c.total),GREEN,true)}{tdN(fmt(c.mkt),BLUE)}{tdN(fmt(c.tgl),GOLD)}{tdN(fmt(c.avg),"#4ADE80")}{tdN(c.mktClose+"%",BLUE)}{tdN(c.tglClose+"%",GOLD)}
+                    </tr>))}
+                </tbody>
+              </table>
+            </div>
+          </div>)}
 
         {tab==="tgl" && (
           <React.Fragment>
-            <div style={{padding:"16px 24px 4px",display:"flex",gap:12,flexWrap:"wrap"}}>
-              {kpi("TECH-LEAD SALES",fmt(D.tglTotal),GOLD,tglPct+"% of company")}
-              {kpi("TGL CLOSE",D.tglCloseAll+"%",GOLD,"overall")}
-              {kpi("TGL AVG TICKET",fmt(D.tglAvgAll),"#4ADE80")}
-              {kpi("CAs SELLING TGL",cas.filter(c=>c.tgl>0).length,"#fff")}
+            <div style={{padding:"16px 24px 0",display:"flex",gap:14,flexWrap:"wrap"}}>
+              <div style={{flex:"2 1 300px",display:"flex",gap:12,flexWrap:"wrap"}}>
+                {caTile("TECH-LEAD SALES",fmt(D.tglTotal),"#F5B324",tglPct+"% of company")}
+                {caTile("TGL AVG TICKET",fmt(D.tglAvgAll),"#4ADE80","per sold")}
+                {caTile("CAs SELLING TGL",cas.filter(c=>c.tgl>0).length,"#fff","of "+D.caCount)}
+              </div>
+              {caGauge("TGL CLOSE RATE",D.tglCloseAll,50,caCol(D.tglCloseAll))}
             </div>
-            {card("Tech-Lead (TGL) Leaderboard","top 15 by TGL sold revenue · click for detail", barLeader("tgl",GOLD,c=>"close "+c.tglClose+"% · "+fmt(c.tglAvg)))}
+            {card("Tech-Lead by month","TGL sold revenue · *Jul partial", monthlyBars(m=>({total:m.tgl}),"linear-gradient(180deg,#F5B324,#c98f14)"))}
+            {card("Tech-Lead Leaderboard","top 15 by TGL sold · click for detail", barLeader("tgl",GOLD,c=>"close "+c.tglClose+"% · "+fmt(c.tglAvg)))}
           </React.Fragment>)}
 
         {tab==="mkt" && (
           <React.Fragment>
-            <div style={{padding:"16px 24px 4px",display:"flex",gap:12,flexWrap:"wrap"}}>
-              {kpi("MARKETING SALES",fmt(D.mktTotal),BLUE,mktPct+"% of company")}
-              {kpi("MKT CLOSE",D.mktCloseAll+"%",BLUE,"overall")}
-              {kpi("MKT AVG TICKET",fmt(D.mktAvgAll),"#4ADE80")}
-              {kpi("CAs SELLING MKT",cas.filter(c=>c.mkt>0).length,"#fff")}
+            <div style={{padding:"16px 24px 0",display:"flex",gap:14,flexWrap:"wrap"}}>
+              <div style={{flex:"2 1 300px",display:"flex",gap:12,flexWrap:"wrap"}}>
+                {caTile("MARKETING SALES",fmt(D.mktTotal),"#5BA4E6",mktPct+"% of company")}
+                {caTile("MKT AVG TICKET",fmt(D.mktAvgAll),"#4ADE80","per sold")}
+                {caTile("CAs SELLING MKT",cas.filter(c=>c.mkt>0).length,"#fff","of "+D.caCount)}
+              </div>
+              {caGauge("MKT CLOSE RATE",D.mktCloseAll,30,caCol(D.mktCloseAll))}
             </div>
-            {card("Marketing Leaderboard","top 15 by marketing sold revenue · click for detail", barLeader("mkt",BLUE,c=>"close "+c.mktClose+"% · "+fmt(c.mktAvg)))}
+            {card("Marketing by month","marketed sold revenue · *Jul partial", monthlyBars(m=>({total:m.mkt}),"linear-gradient(180deg,#5BA4E6,#2E78C7)"))}
+            {card("Marketing Leaderboard","top 15 by marketing sold · click for detail", barLeader("mkt",BLUE,c=>"close "+c.mktClose+"% · "+fmt(c.mktAvg)))}
           </React.Fragment>)}
 
         {tab==="analysis" && card("Marketing vs Tech-Lead — by CA","each dot = a CA · above the dashed line = tech-lead heavy · click a dot",
@@ -4200,10 +4225,11 @@ function CASalesDash(){
           </svg>)}
       </div>
 
-      <div style={{fontSize:9,color:"#4a5a70",padding:"16px 24px 0",lineHeight:1.5}}>Source: “Sales from Marketing Leads” &amp; “Sales from Tech Leads” reports ({D.dateRange}). Marketing BU: {D.mktBU} · Tech-Lead BU: {D.tglBU}. ⚠ different BU filters. Monthly trend needs month-split reports.</div>
+      <div style={{fontSize:9,color:"#4a5a70",padding:"16px 24px 0",lineHeight:1.5}}>Source: {D.source} ({D.dateRange}) · BU HVAC-Sales(NR)+Costco · lead source = Marketed Lead vs technician-generated (TGL). Close rate = sold ÷ estimates ran. *current month partial.</div>
     </div>
   );
 }
+
 
 
 

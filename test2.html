@@ -4483,7 +4483,9 @@ function ServiceDash(){
   const proj=dept.rev&&D.elapsedFrac?Math.round(dept.rev/D.elapsedFrac):0;
   const teamSplit=teams.map(t=>({...t,pct:dept.rev?Math.round(t.rev/dept.rev*100):0}));
   const iaqTot=D.iaqTotal||0;
-  const cols=[["rev","Revenue"],["jobs","Jobs"],["opp","Opps"],["conv","Opp %"],["jobAvg","Job Avg"],["mSold","Memb"],["mConv","Memb %"],["leads","Leads"],["iaq","IAQ $"]];
+  const optAll=(()=>{const o=techs.reduce((a,t)=>a+(t.opo||0)*(t.opp||0),0),d=techs.reduce((a,t)=>a+(t.opp||0),0);return d?Math.round(o/d*100)/100:0;})();
+  const totConvAll=(()=>{const s=techs.reduce((a,t)=>a+(t.totalConv||0)*(t.jobs||0),0),d=techs.reduce((a,t)=>a+(t.jobs||0),0);return d?Math.round(s/d*10)/10:0;})();
+  const cols=[["rev","Revenue"],["jobs","Jobs"],["opp","Opps"],["conv","Opp %"],["totalConv","Total %"],["opo","Opt/Opp"],["jobAvg","Job Avg"],["mSold","Memb"],["mConv","Memb %"],["leads","Leads"],["iaq","IAQ $"]];
   const tableRows=[...techs].filter(c=>!search||c.name.toLowerCase().includes(search.toLowerCase())).sort((a,b)=>(b[sortCol]||0)-(a[sortCol]||0));
   const thc=(k,l)=>(<th onClick={()=>setSortCol(k)} style={{padding:"8px",fontSize:9,color:sortCol===k?BLUE:"#9fb3cc",fontWeight:700,textAlign:"right",borderBottom:"2px solid #1e2d47",whiteSpace:"nowrap",cursor:"pointer",position:"sticky",top:0,background:"#111827"}}>{l}{sortCol===k?" ▾":""}</th>);
   const tdN=(v,c,b)=>(<td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:c||"#e6eefb",fontWeight:b?800:500,whiteSpace:"nowrap"}}>{v}</td>);
@@ -4547,6 +4549,8 @@ function ServiceDash(){
             {tile("IAQ SOLD",fmt(iaqTot),"#4ADE80","air-quality revenue")}
             {tile("JOB AVERAGE",fmt(dept.jobAvg),GOLD,"per converted opp")}
             {tile("REV / BILLABLE HR",fmt(dept.revPerHr),BLUE,"efficiency")}
+            {tile("OPTIONS / OPP",optAll,"#a78bfa","presented per opportunity")}
+            {tile("TOTAL CONVERSION",totConvAll+"%",GOLD,"incl. non-opportunity jobs")}
           </div>
           {card("Top Service Techs · Completed Revenue","top 12 by revenue",rankBar(techs.slice(0,12),"rev",BLUE,fmt,c=>c.conv+"% conv"))}
           {iaqMo.length>1 && card("IAQ Sold by Month","indoor-air-quality revenue trend · *Jul partial",iaqChart())}
@@ -4573,7 +4577,7 @@ function ServiceDash(){
                     <tr key={c.name} className="trow" style={{background:i%2?"#141c2e":"transparent",borderTop:"1px solid #111827"}}>
                       {tdN(i+1,"#6b7a99")}
                       <td style={{padding:"6px 8px",fontSize:11,textAlign:"left",color:"#fff",fontWeight:700,whiteSpace:"nowrap"}}>{c.name}</td>
-                      {tdN(fmt(c.rev),BLUE,true)}{tdN((c.jobs||0).toLocaleString(),"#e6eefb")}{tdN((c.opp||0).toLocaleString(),"#9fb3cc")}{tdN(c.conv+"%",GOLD)}{tdN(fmt(c.jobAvg),"#4ADE80")}{tdN(c.mSold,GREEN)}{tdN(c.mConv+"%","#4ADE80")}{tdN(c.leads,"#a78bfa")}{tdN(fmt(c.iaq),BLUE)}
+                      {tdN(fmt(c.rev),BLUE,true)}{tdN((c.jobs||0).toLocaleString(),"#e6eefb")}{tdN((c.opp||0).toLocaleString(),"#9fb3cc")}{tdN(c.conv+"%",GOLD)}{tdN((c.totalConv||0)+"%","#4ADE80")}{tdN(c.opo,"#a78bfa")}{tdN(fmt(c.jobAvg),"#4ADE80")}{tdN(c.mSold,GREEN)}{tdN(c.mConv+"%","#4ADE80")}{tdN(c.leads,"#a78bfa")}{tdN(fmt(c.iaq),BLUE)}
                     </tr>))}
                 </tbody>
               </table>

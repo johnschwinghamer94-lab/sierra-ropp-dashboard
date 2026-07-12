@@ -10440,7 +10440,23 @@ function LiveFeedTab({
 }
 
 function Root() {
-  const [tab, setTab] = useState("overview");
+  // survive refreshes on the current tab: URL hash (#livefeed = pin a TV) wins,
+  // then the last tab this browser was on, then overview
+  const TAB_IDS = ["overview", "livefeed", "hourbyhour", "ytd", "mtd", "weeklyconv", "revenue", "monthly_breakdown", "weekly", "pace", "deptpace", "sameday", "cancel", "allteams", "siloonly", "caclose", "yesterday"];
+  const [tab, setTab] = useState(() => {
+    try {
+      const h = (window.location.hash || "").replace("#", "");
+      if (TAB_IDS.indexOf(h) >= 0) return h;
+      const saved = localStorage.getItem("silo_tab");
+      if (TAB_IDS.indexOf(saved) >= 0) return saved;
+    } catch (x) {}
+    return "overview";
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem("silo_tab", tab);
+    } catch (x) {}
+  }, [tab]);
   const [data, setData] = useState(INITIAL_DATA);
   const [showManage, setShowManage] = useState(false);
   const [hourly, setHourly] = useState(null);

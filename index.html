@@ -209,6 +209,34 @@ th{font-family:'Chakra Petch','Inter',sans-serif!important;text-transform:upperc
 .hxh-node.cur .hxh-ring{animation:pulse 2s infinite;}
 .hxh-lab{font-size:7.5px;color:#5d6fa8;margin-top:5px;font-weight:700;letter-spacing:.06em;font-family:'Chakra Petch',sans-serif;}
 .hxh-sub{font-size:8px;color:#8fa3d9;margin-top:1px;}
+
+/* ═══ WOW PACK — boot, radar, stagger, shine, breath ═══════════════════════ */
+#boot-ov{position:fixed;inset:0;z-index:99999;background:radial-gradient(ellipse at 50% 40%,#0e1a45,#05070f 75%);display:flex;align-items:center;justify-content:center;transition:opacity .45s;cursor:pointer;}
+#boot-ov.boot-out{opacity:0;pointer-events:none;}
+.boot-in{display:flex;flex-direction:column;align-items:center;gap:11px;animation:bootIn .5s ease both;}
+.boot-logo{width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,#f5c518,#c79a0a);color:#081020;font:900 34px 'Chakra Petch',sans-serif;display:flex;align-items:center;justify-content:center;animation:bootPulse 1.2s ease infinite;}
+.boot-line{font:700 15px 'Chakra Petch',sans-serif;letter-spacing:.3em;color:#fff;}
+.boot-sub{font:600 9px 'Chakra Petch',sans-serif;letter-spacing:.5em;color:#f5c518;}
+.boot-bar{width:220px;height:3px;background:#101a35;border-radius:2px;overflow:hidden;}
+.boot-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#f5c518,#2E78C7);transform-origin:left;animation:bootBar 1.35s cubic-bezier(.2,.7,.3,1) both;}
+@keyframes bootBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes bootPulse{0%,100%{box-shadow:0 0 26px #f5c51844}50%{box-shadow:0 0 55px #f5c51899}}
+@keyframes bootIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+body::after{content:"";position:fixed;left:50%;top:-30%;width:170vmax;height:170vmax;margin-left:-85vmax;background:conic-gradient(from 0deg at 50% 50%,transparent 0deg,rgba(46,120,199,.05) 14deg,rgba(245,197,24,.028) 22deg,transparent 38deg);border-radius:50%;animation:radarSweep 48s linear infinite;pointer-events:none;z-index:0;}
+@keyframes radarSweep{to{transform:rotate(360deg)}}
+.kpi-card{position:relative;overflow:hidden;animation:riseIn .5s cubic-bezier(.2,.7,.2,1) both;}
+.kpi-card:nth-child(1){animation-delay:.03s}.kpi-card:nth-child(2){animation-delay:.09s}
+.kpi-card:nth-child(3){animation-delay:.15s}.kpi-card:nth-child(4){animation-delay:.21s}
+.kpi-card:nth-child(5){animation-delay:.27s}.kpi-card:nth-child(6){animation-delay:.33s}
+.kpi-card:nth-child(7){animation-delay:.39s}.kpi-card:nth-child(8){animation-delay:.45s}
+.kpi-card::after{content:"";position:absolute;top:0;left:-85%;width:60%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.09),transparent);transform:skewX(-18deg);transition:left .55s ease;pointer-events:none;}
+.kpi-card:hover::after{left:125%;}
+.lf2-card{position:relative;overflow:hidden;}
+.lf2-card::after{content:"";position:absolute;top:0;left:-85%;width:60%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.07),transparent);transform:skewX(-18deg);transition:left .55s ease;pointer-events:none;}
+.lf2-card:hover::after{left:125%;}
+@keyframes hdrBreath{0%,100%{box-shadow:0 1px 22px rgba(245,179,36,.10)}50%{box-shadow:0 1px 34px rgba(245,179,36,.24)}}
+.sticky-hdr{animation:hdrBreath 7s ease-in-out infinite;}
+@media (prefers-reduced-motion: reduce){body::after,.sticky-hdr,.kpi-card{animation:none!important;}}
 /* pace + leaderboard glow */
 .pace-ring{filter:drop-shadow(0 0 7px currentColor);}
 .lb-bar,.scenario-bar{box-shadow:0 0 12px rgba(245,179,36,.22);}
@@ -11133,6 +11161,26 @@ ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.
     window.location.reload();
   }
   setTimeout(tick, EVERY);
+})();
+</script>
+<script>
+(function () {
+  try {
+    if (sessionStorage.getItem("lf_boot")) return;
+    sessionStorage.setItem("lf_boot", "1");
+  } catch (e) {}
+  var o = document.createElement("div");
+  o.id = "boot-ov";
+  o.innerHTML = '<div class="boot-in"><div class="boot-logo">S</div>' +
+    '<div class="boot-line">SIERRA AIR — SILO COMMAND</div>' +
+    '<div class="boot-sub">SYSTEMS ONLINE</div>' +
+    '<div class="boot-bar"><i></i></div></div>';
+  document.body.appendChild(o);
+  var kill = function () {
+    if (o.parentNode) { o.classList.add("boot-out"); setTimeout(function () { o.remove(); }, 460); }
+  };
+  o.addEventListener("click", kill);
+  setTimeout(kill, 1550);
 })();
 </script>
 </body>

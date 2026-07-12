@@ -10277,7 +10277,8 @@ const LF_CSS = `
 .lf2-bu.on{border-color:#f5c518;color:#f5c518;background:#f5c51811;box-shadow:0 0 10px #f5c51822}
 .lf2-main{display:flex;gap:14px;padding:14px 22px;align-items:flex-start;flex-wrap:wrap}
 .lf2-grid{flex:2.6 1 560px;min-width:300px;display:grid;grid-template-columns:repeat(auto-fill,minmax(295px,1fr));gap:12px}
-.lf2-card{background:linear-gradient(180deg,#0e1a45,#0a1233);border:1px solid #243380;border-radius:10px;padding:11px 13px 10px;box-shadow:0 0 16px #060b2088}
+.lf2-card{background:linear-gradient(180deg,#0e1a45,#0a1233);border:1px solid #243380;border-radius:10px;padding:11px 13px 10px;box-shadow:0 0 16px #060b2088;cursor:pointer;transition:transform .12s,border-color .12s}
+.lf2-card:hover{transform:translateY(-2px);border-color:#f5c518aa}
 .lf2-card.working{border-color:#f5c51866;box-shadow:0 0 18px #f5c51815}
 .lf2-card.warncard{border-color:#e63946aa;box-shadow:0 0 18px #e6394622}
 .lf2-card.done{opacity:.78}
@@ -10377,7 +10378,12 @@ function LiveFeedTab() {
         opt ? "\u{1F6E0} " + opt.n + " opt" + (opt.n === 1 ? "" : "s") + " · " + money(opt.total) : "no options yet"),
       j.warn ? e("span", { className: "lf2-warnbadge" }, j.warn)
              : sig ? e("span", { style: { color: "#4ade80", fontWeight: 700 } }, "✅ TGL" + (sig.total > 0 ? " +" + money(sig.total) : " ✍")) : null);
-    return e("div", { key: j.jobId, className: kls },
+    return e("div", {
+      key: j.jobId,
+      className: kls,
+      title: "Open job " + (j.jobNumber || j.jobId) + " in ServiceTitan",
+      onClick: () => window.open("https://go.servicetitan.com/#/Job/Index/" + j.jobId, "_blank", "noopener")
+    },
       e("div", { className: "lf2-cardtop" },
         e("div", { style: { minWidth: 0 } },
           e("div", { className: "lf2-tech" }, j.tech || "Unassigned"),

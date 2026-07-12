@@ -10325,7 +10325,7 @@ function LiveFeedTab({
       }).catch(() => { if (alive) setFailed(true); });
     };
     load();
-    const id = setInterval(load, 90000);
+    const id = setInterval(load, 45000);
     const tk = setInterval(() => setTick(x => x + 1), 30000);
     return () => { alive = false; clearInterval(id); clearInterval(tk); };
   }, []);
@@ -10335,9 +10335,9 @@ function LiveFeedTab({
       return +new Intl.DateTimeFormat("en-US", { hour: "numeric", hour12: false, timeZone: "America/Los_Angeles" }).format(new Date());
     } catch (x) { return new Date().getHours(); }
   })();
-  const inOps = vegasHour >= 7 && vegasHour < 20;
+  const inOps = vegasHour >= 7 && vegasHour < 22;
   const ageMin = lf && lf.generatedMs ? Math.floor((Date.now() - lf.generatedMs) / 60000) : null;
-  const stale = inOps && ageMin !== null && ageMin > 8;
+  const stale = inOps && ageMin !== null && ageMin > 6;
 
   const k = lf && lf.kpis || { jobs: 0, completed: 0, onSite: 0, enRoute: 0, optionsTotal: 0, optionsCount: 0, optionsJobs: 0, signedTotal: 0, signedJobs: 0 };
   const allJobs = lf && lf.jobs || [];
@@ -10451,7 +10451,7 @@ function Root() {
   const [kpiVal, setKpiVal] = useState(60);
 
   // Live hourly snapshots
-  const INTERVAL = 90 * 1000;
+  const INTERVAL = 60 * 1000;
   const loadHourly = React.useCallback(() => {
     setRefreshing(true);
     fetch("hourly.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {

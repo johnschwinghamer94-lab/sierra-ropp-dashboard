@@ -10379,7 +10379,10 @@ function LiveFeedTab({
       e("span", { style: { color: opt ? "#f5c518" : "#42549c" } },
         opt ? "\u{1F6E0} " + opt.n + " opt" + (opt.n === 1 ? "" : "s") + " · " + money(opt.total) : "no options yet"),
       j.warn ? e("span", { className: "lf2-warnbadge" }, j.warn)
-             : sig ? e("span", { style: { color: "#4ade80", fontWeight: 700 } }, "✅ TGL" + (sig.total > 0 ? " +" + money(sig.total) : " ✍")) : null);
+             : sig || s.sold ? e("span", { style: { color: "#4ade80", fontWeight: 700 } },
+                 (sig ? "✅ TGL" + (sig.n > 1 ? " ×" + sig.n : "") : "") +
+                 (sig && s.sold ? " · " : "") +
+                 (s.sold ? "💵 +" + money(s.sold.total) : "")) : null);
     return e("div", {
       key: j.jobId,
       className: kls,
@@ -10426,7 +10429,7 @@ function LiveFeedTab({
       kpi("Jobs Today", k.jobs, k.completed + " completed"),
       kpi("On Site Now", k.onSite, k.enRoute + " en route", k.onSite > 0 ? "#f5c518" : null),
       kpi("Options In Play", money(k.optionsTotal), k.optionsCount + " options on " + k.optionsJobs + " jobs", "#f5c518"),
-      kpi("TGLs Created", k.signedJobs, k.signedTotal > 0 ? "turnovers signed · +" + money(k.signedTotal) + " sold" : "turnover estimates signed", "#4ade80"),
+      kpi("TGLs Created", k.signedJobs, k.signedTotal > 0 ? "lead jobs booked · 💵 +" + money(k.signedTotal) + " sold on calls" : "lead jobs booked from calls", "#4ade80"),
       kpi("Sold TGL Revenue", hourly && hourly.today ? money(hourly.today.rev) : "—", "sales from leads created today", "#f5c518")),
     buList.length > 1 && e("div", { className: "lf2-bus" },
       ["ALL"].concat(buList).map(b => e("button", { key: b, className: "lf2-bu" + (buFilter === b ? " on" : ""), onClick: () => setBuFilter(b) }, b))),

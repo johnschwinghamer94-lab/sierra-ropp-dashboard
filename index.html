@@ -10369,14 +10369,14 @@ function LiveFeedTab() {
       seg(!!opt),
       node("OPTIONS", opt ? opt.t || "✓" : null, !!opt, false, "$"),
       seg(!!sig),
-      node("SIGNED", sig ? sig.t || "✓" : null, !!sig, true, "✓"),
+      node("TGL", sig ? sig.t || "✓" : null, !!sig, true, "✓"),
       seg(!!s.done),
       node("DONE", s.done === "✓" ? "✓" : s.done, !!s.done, false, "⬤"));
     const bot = e("div", { className: "lf2-cardbot" },
       e("span", { style: { color: opt ? "#f5c518" : "#42549c" } },
         opt ? "\u{1F6E0} " + opt.n + " opt" + (opt.n === 1 ? "" : "s") + " · " + money(opt.total) : "no options yet"),
       j.warn ? e("span", { className: "lf2-warnbadge" }, j.warn)
-             : sig ? e("span", { style: { color: "#4ade80", fontWeight: 700 } }, sig.total > 0 ? "✅ " + money(sig.total) : "✅ SIGNED ✍") : null);
+             : sig ? e("span", { style: { color: "#4ade80", fontWeight: 700 } }, "✅ TGL" + (sig.total > 0 ? " +" + money(sig.total) : " ✍")) : null);
     return e("div", { key: j.jobId, className: kls },
       e("div", { className: "lf2-cardtop" },
         e("div", { style: { minWidth: 0 } },
@@ -10418,7 +10418,7 @@ function LiveFeedTab() {
       kpi("Jobs Today", k.jobs, k.completed + " completed"),
       kpi("On Site Now", k.onSite, k.enRoute + " en route", k.onSite > 0 ? "#f5c518" : null),
       kpi("Options In Play", money(k.optionsTotal), k.optionsCount + " options on " + k.optionsJobs + " jobs", "#f5c518"),
-      kpi("Signed Today", money(k.signedTotal), k.signedJobs + " job" + (k.signedJobs === 1 ? "" : "s") + " signed", "#4ade80")),
+      kpi("TGLs Created", k.signedJobs, k.signedTotal > 0 ? "turnovers signed · +" + money(k.signedTotal) + " sold" : "turnover estimates signed", "#4ade80")),
     buList.length > 1 && e("div", { className: "lf2-bus" },
       ["ALL"].concat(buList).map(b => e("button", { key: b, className: "lf2-bu" + (buFilter === b ? " on" : ""), onClick: () => setBuFilter(b) }, b))),
     e("div", { className: "lf2-main" },

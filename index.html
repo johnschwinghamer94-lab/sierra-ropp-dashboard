@@ -194,6 +194,27 @@ th{font-family:'Chakra Petch','Inter',sans-serif!important;text-transform:upperc
 ::selection{background:rgba(245,179,36,.3);}
 .tcnt{font-family:'Chakra Petch',sans-serif;}
 .upd-badge,.countdown,.days-left{font-family:'Chakra Petch',monospace;}
+
+
+/* HxH hour rail */
+.hxh-rail{display:flex;align-items:flex-start;position:relative;padding:14px 10px 8px;background:linear-gradient(180deg,#0d1638,#0a1130);border:1px solid #22307a;border-radius:12px;overflow-x:auto;}
+.hxh-rail::before{content:"";position:absolute;left:26px;right:26px;top:25px;height:2px;background:#22307a;}
+.hxh-node{flex:1 0 46px;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;}
+.hxh-ring{width:22px;height:22px;border-radius:50%;border:2px solid #2a3a85;background:#0a1233;color:#42549c;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Chakra Petch',sans-serif;}
+.hxh-ring.lit{border-color:#f5c518;color:#f5c518;box-shadow:0 0 9px #f5c51866;}
+.hxh-ring.green{border-color:#4ADE80;color:#4ADE80;box-shadow:0 0 9px #4ADE8066;}
+.hxh-node.cur .hxh-ring{animation:pulse 2s infinite;}
+.hxh-lab{font-size:7.5px;color:#5d6fa8;margin-top:5px;font-weight:700;letter-spacing:.06em;font-family:'Chakra Petch',sans-serif;}
+.hxh-sub{font-size:8px;color:#8fa3d9;margin-top:1px;}
+/* pace + leaderboard glow */
+.pace-ring{filter:drop-shadow(0 0 7px currentColor);}
+.lb-bar,.scenario-bar{box-shadow:0 0 12px rgba(245,179,36,.22);}
+.gauge-grid svg{filter:drop-shadow(0 0 5px rgba(46,120,199,.25));}
+/* COMMAND THEME · tier-2 tab polish */
+tbody tr:nth-child(even) td{background:rgba(13,22,56,.32);}
+.riseIn.liftCard{box-shadow:inset 0 0 26px rgba(16,29,82,.22);}
+table{border-collapse:collapse;}
+thead th{background:rgba(11,18,48,.6);}
 /* ═══════════════════════════════════════════════════════════════════════ */
 
 </style>
@@ -578,7 +599,7 @@ function ManagePanel({
       fontSize: 16,
       fontWeight: 800,
       color: "#FFFFFF",
-      fontFamily: "'Inter',sans-serif",
+      fontFamily: "'Chakra Petch','Inter',sans-serif",
       marginTop: 2
     }
   }, "Add · Remove · Edit Numbers")), /*#__PURE__*/React.createElement("div", {
@@ -1090,7 +1111,7 @@ function KPICard({
       fontSize: big ? 28 : 20,
       fontWeight: 800,
       color: color || "#FFFFFF",
-      fontFamily: "'Inter',sans-serif"
+      fontFamily: "'Chakra Petch','Inter',sans-serif"
     }
   }, value), sub && /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1334,7 +1355,7 @@ function Gauge({
       transform: `rotate(90deg) translate(0px, -${size}px)`,
       fontSize: 13,
       fontWeight: 800,
-      fontFamily: "'Inter',system-ui,sans-serif"
+      fontFamily: "'Chakra Petch','Inter',sans-serif"
     }
   }, rate !== null ? rate.toFixed(0) + "%" : "—"));
 }
@@ -1570,7 +1591,7 @@ function TechRow({
       fontSize: 18,
       fontWeight: 800,
       color: badge.color,
-      fontFamily: "'Inter',sans-serif"
+      fontFamily: "'Chakra Petch','Inter',sans-serif"
     }
   }, fmtPct(rate)), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1802,7 +1823,7 @@ function PeriodTable({
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "16px 20px",
-      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      background: "linear-gradient(90deg,#0b1230,#101b45)",
       borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 12,
@@ -2066,7 +2087,7 @@ function PeriodTable({
       fontSize: 16,
       fontWeight: 800,
       color: overallBadge.color,
-      fontFamily: "'Inter',sans-serif"
+      fontFamily: "'Chakra Petch','Inter',sans-serif"
     }
   }, fmtPct(overallRate)), /*#__PURE__*/React.createElement("span", {
     style: {
@@ -2195,7 +2216,7 @@ function CancellationTab() {
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "16px 24px",
-      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      background: "linear-gradient(90deg,#0b1230,#101b45)",
       borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 12,
@@ -2301,7 +2322,7 @@ function CancellationTab() {
         fontSize: 18,
         fontWeight: 800,
         color: badge.color,
-        fontFamily: "'Inter',sans-serif"
+        fontFamily: "'Chakra Petch','Inter',sans-serif"
       }
     }, rate !== null ? rate + "%" : "—"), /*#__PURE__*/React.createElement("div", {
       style: {
@@ -2330,6 +2351,9 @@ function CancellationTab() {
     style: {
       color: "#E63946",
       fontSize: 13,
+      fontFamily: "'Chakra Petch',sans-serif",
+      letterSpacing: ".12em",
+      textTransform: "uppercase",
       fontWeight: 700,
       letterSpacing: 1
     }
@@ -2418,6 +2442,9 @@ function CancellationTab() {
     style: {
       color: "#E63946",
       fontSize: 13,
+      fontFamily: "'Chakra Petch',sans-serif",
+      letterSpacing: ".12em",
+      textTransform: "uppercase",
       fontWeight: 700,
       letterSpacing: 1
     }
@@ -2771,7 +2798,7 @@ function SameDayConversion() {
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "16px 24px",
-      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      background: "linear-gradient(90deg,#0b1230,#101b45)",
       borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 12,
@@ -3395,13 +3422,15 @@ function WeeklyTrends() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 24px 12px",
-      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      background: "linear-gradient(90deg,#0b1230,#101b45)",
       borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 9,
       color: "#F5B324",
+      fontFamily: "'Chakra Petch',sans-serif",
+      textShadow: "0 0 12px rgba(245,179,36,.35)",
       fontWeight: 700,
       letterSpacing: "0.2em"
     }
@@ -3750,7 +3779,7 @@ function PaceReport() {
     }, tp.pace_pct, "%"));
   })), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      background: "linear-gradient(90deg,#0b1230,#101b45)",
       borderRadius: 12,
       padding: "24px 28px",
       marginBottom: 24,
@@ -3768,6 +3797,8 @@ function PaceReport() {
     style: {
       fontSize: 11,
       color: "#F5B324",
+      fontFamily: "'Chakra Petch',sans-serif",
+      textShadow: "0 0 12px rgba(245,179,36,.35)",
       fontWeight: 700,
       letterSpacing: "0.2em",
       marginBottom: 4
@@ -3777,7 +3808,7 @@ function PaceReport() {
       fontSize: 28,
       fontWeight: 800,
       color: "#FFFFFF",
-      fontFamily: "'Inter',sans-serif",
+      fontFamily: "'Chakra Petch','Inter',sans-serif",
       marginBottom: 4
     }
   }, selTech), /*#__PURE__*/React.createElement("div", {
@@ -3834,7 +3865,7 @@ function PaceReport() {
       fontSize: 18,
       fontWeight: 800,
       color: c.color,
-      fontFamily: "'Inter',sans-serif"
+      fontFamily: "'Chakra Petch','Inter',sans-serif"
     }
   }, c.value))))), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3929,6 +3960,9 @@ function PaceReport() {
     style: {
       color: "#F5B324",
       fontSize: 13,
+      fontFamily: "'Chakra Petch',sans-serif",
+      letterSpacing: ".12em",
+      textTransform: "uppercase",
       fontWeight: 700,
       letterSpacing: 1,
       marginBottom: 12
@@ -3994,6 +4028,9 @@ function PaceReport() {
     style: {
       color: "#F5B324",
       fontSize: 13,
+      fontFamily: "'Chakra Petch',sans-serif",
+      letterSpacing: ".12em",
+      textTransform: "uppercase",
       fontWeight: 700,
       letterSpacing: 1,
       marginBottom: 12
@@ -4069,6 +4106,9 @@ function PaceReport() {
     style: {
       color: "#F5B324",
       fontSize: 13,
+      fontFamily: "'Chakra Petch',sans-serif",
+      letterSpacing: ".12em",
+      textTransform: "uppercase",
       fontWeight: 700,
       letterSpacing: 1
     }
@@ -4278,7 +4318,7 @@ function RevenueTable({
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 20px",
-      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      background: "linear-gradient(90deg,#0b1230,#101b45)",
       borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -4768,7 +4808,7 @@ function MonthlyBreakdown({
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 20px",
-      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      background: "linear-gradient(90deg,#0b1230,#101b45)",
       borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -4858,7 +4898,7 @@ function MonthlyBreakdown({
       fontSize: 28,
       fontWeight: 800,
       color: monthBadge.color,
-      fontFamily: "'Inter',sans-serif"
+      fontFamily: "'Chakra Petch','Inter',sans-serif"
     }
   }, fmtPct(monthRate)), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -5285,7 +5325,7 @@ function MonthlyBreakdown({
         fontSize: 18,
         fontWeight: 800,
         color: mb.color,
-        fontFamily: "'Inter',sans-serif",
+        fontFamily: "'Chakra Petch','Inter',sans-serif",
         margin: "4px 0"
       }
     }, fmtPct(mRate)), /*#__PURE__*/React.createElement("div", {
@@ -5523,7 +5563,7 @@ function AllTeamsTab() {
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "16px 24px",
-      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      background: "linear-gradient(90deg,#0b1230,#101b45)",
       borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 12,
@@ -5538,6 +5578,8 @@ function AllTeamsTab() {
     style: {
       fontSize: 9,
       color: "#F5B324",
+      fontFamily: "'Chakra Petch',sans-serif",
+      textShadow: "0 0 12px rgba(245,179,36,.35)",
       fontWeight: 700,
       letterSpacing: "0.2em"
     }
@@ -5692,6 +5734,9 @@ function AllTeamsTab() {
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
+        fontFamily: "'Chakra Petch',sans-serif",
+        letterSpacing: ".12em",
+        textTransform: "uppercase",
         fontWeight: 700,
         color: "#FFFFFF"
       }
@@ -6197,7 +6242,7 @@ function SiloOnlyTab() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 24px",
-      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      background: "linear-gradient(90deg,#0b1230,#101b45)",
       borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 16,
@@ -6212,6 +6257,8 @@ function SiloOnlyTab() {
     style: {
       fontSize: 9,
       color: "#F5B324",
+      fontFamily: "'Chakra Petch',sans-serif",
+      textShadow: "0 0 12px rgba(245,179,36,.35)",
       fontWeight: 700,
       letterSpacing: "0.2em"
     }
@@ -6808,7 +6855,7 @@ function CACloseRateTab() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 24px",
-      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      background: "linear-gradient(90deg,#0b1230,#101b45)",
       borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 16,
@@ -6823,6 +6870,8 @@ function CACloseRateTab() {
     style: {
       fontSize: 9,
       color: "#F5B324",
+      fontFamily: "'Chakra Petch',sans-serif",
+      textShadow: "0 0 12px rgba(245,179,36,.35)",
       fontWeight: 700,
       letterSpacing: "0.2em"
     }
@@ -7732,7 +7781,7 @@ function YesterdayTab() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 24px",
-      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      background: "linear-gradient(90deg,#0b1230,#101b45)",
       borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 16,
@@ -7747,6 +7796,8 @@ function YesterdayTab() {
     style: {
       fontSize: 9,
       color: "#F5B324",
+      fontFamily: "'Chakra Petch',sans-serif",
+      textShadow: "0 0 12px rgba(245,179,36,.35)",
       fontWeight: 700,
       letterSpacing: "0.2em"
     }
@@ -8141,13 +8192,15 @@ function DeptPaceReport() {
   }, /*#__PURE__*/React.createElement(RingRow, null), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 24px 12px",
-      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      background: "linear-gradient(90deg,#0b1230,#101b45)",
       borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 9,
       color: "#F5B324",
+      fontFamily: "'Chakra Petch',sans-serif",
+      textShadow: "0 0 12px rgba(245,179,36,.35)",
       fontWeight: 700,
       letterSpacing: "0.2em"
     }
@@ -8295,6 +8348,8 @@ function DeptPaceReport() {
     style: {
       fontSize: 10,
       color: "#F5B324",
+      fontFamily: "'Chakra Petch',sans-serif",
+      textShadow: "0 0 12px rgba(245,179,36,.35)",
       fontWeight: 700,
       letterSpacing: "0.08em",
       marginBottom: 12
@@ -8409,6 +8464,8 @@ function DeptPaceReport() {
     style: {
       fontSize: 9,
       color: "#F5B324",
+      fontFamily: "'Chakra Petch',sans-serif",
+      textShadow: "0 0 12px rgba(245,179,36,.35)",
       fontWeight: 700,
       letterSpacing: "0.1em"
     }
@@ -8531,13 +8588,15 @@ function WeeklyConvTab() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 24px 12px",
-      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      background: "linear-gradient(90deg,#0b1230,#101b45)",
       borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 9,
       color: "#F5B324",
+      fontFamily: "'Chakra Petch',sans-serif",
+      textShadow: "0 0 12px rgba(245,179,36,.35)",
       fontWeight: 700,
       letterSpacing: "0.2em"
     }
@@ -8652,6 +8711,9 @@ function WeeklyConvTab() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
+      fontFamily: "'Chakra Petch',sans-serif",
+      letterSpacing: ".12em",
+      textTransform: "uppercase",
       fontWeight: 700,
       color: "#FFFFFF"
     }
@@ -9200,7 +9262,7 @@ function OverviewTab({
       strokeWidth: "5",
       paintOrder: "stroke",
       style: {
-        fontFamily: "'Inter',sans-serif"
+        fontFamily: "'Chakra Petch','Inter',sans-serif"
       }
     }, rate !== null ? rate.toFixed(1) + "%" : "—"), delta !== null && /*#__PURE__*/React.createElement("text", {
       x: "80",
@@ -9302,6 +9364,8 @@ function OverviewTab({
     style: {
       fontSize: 9,
       color: "#F5B324",
+      fontFamily: "'Chakra Petch',sans-serif",
+      textShadow: "0 0 12px rgba(245,179,36,.35)",
       fontWeight: 700,
       letterSpacing: "0.22em"
     }
@@ -9617,6 +9681,9 @@ function OverviewTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
+      fontFamily: "'Chakra Petch',sans-serif",
+      letterSpacing: ".12em",
+      textTransform: "uppercase",
       fontWeight: 700,
       color: "#fff"
     }
@@ -9681,6 +9748,9 @@ function OverviewTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
+      fontFamily: "'Chakra Petch',sans-serif",
+      letterSpacing: ".12em",
+      textTransform: "uppercase",
       fontWeight: 700,
       color: "#fff"
     }
@@ -9831,13 +9901,15 @@ function HourByHourTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 24px 12px",
-      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      background: "linear-gradient(90deg,#0b1230,#101b45)",
       borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 9,
       color: "#F5B324",
+      fontFamily: "'Chakra Petch',sans-serif",
+      textShadow: "0 0 12px rgba(245,179,36,.35)",
       fontWeight: 700,
       letterSpacing: "0.2em"
     }
@@ -9855,6 +9927,21 @@ function HourByHourTab({
       gap: 16
     }
   }, /*#__PURE__*/React.createElement("div", {
+    className: "hxh-rail"
+  }, hrs.filter(x => +x.hour >= 7 && +x.hour <= 21).map(x => {
+    const lit = (x.dcalls || 0) > 0 || (x.dtgls || 0) > 0;
+    const cur = x.hour === String(new Date().getHours()).padStart(2, "0");
+    return /*#__PURE__*/React.createElement("div", {
+      key: x.hour,
+      className: "hxh-node" + (cur ? " cur" : "")
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "hxh-ring" + (lit ? (x.dtgls || 0) > 0 ? " green" : " lit" : "")
+    }, lit ? x.dcalls || 0 : ""), /*#__PURE__*/React.createElement("div", {
+      className: "hxh-lab"
+    }, fmtHour(x.hour).replace(" ", "")), /*#__PURE__*/React.createElement("div", {
+      className: "hxh-sub"
+    }, lit ? (x.dcalls || 0) + "c / " + (x.dtgls || 0) + "t" : "–"));
+  })), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 12,
@@ -10095,6 +10182,8 @@ function HourByHourTab({
       padding: "13px 20px 3px",
       fontSize: 9,
       color: "#F5B324",
+      fontFamily: "'Chakra Petch',sans-serif",
+      textShadow: "0 0 12px rgba(245,179,36,.35)",
       fontWeight: 700,
       letterSpacing: "0.2em"
     }
@@ -10166,6 +10255,8 @@ function HourByHourTab({
       padding: "13px 20px 3px",
       fontSize: 9,
       color: "#F5B324",
+      fontFamily: "'Chakra Petch',sans-serif",
+      textShadow: "0 0 12px rgba(245,179,36,.35)",
       fontWeight: 700,
       letterSpacing: "0.2em"
     }
@@ -10763,7 +10854,7 @@ function Root() {
       fontSize: 22,
       fontWeight: 800,
       color: "#FFFFFF",
-      fontFamily: "'Inter',sans-serif",
+      fontFamily: "'Chakra Petch','Inter',sans-serif",
       letterSpacing: "-0.02em",
       margin: "4px 0 2px"
     }
@@ -10819,7 +10910,7 @@ function Root() {
         fontSize: 18,
         fontWeight: 800,
         color: c,
-        fontFamily: "'Inter',sans-serif"
+        fontFamily: "'Chakra Petch','Inter',sans-serif"
       }
     }, v), /*#__PURE__*/React.createElement("div", {
       style: {
@@ -10880,7 +10971,7 @@ function Root() {
     onClick: () => setTab(t.id),
     style: {
       padding: "8px 11px",
-      fontFamily: "'Inter',system-ui,sans-serif",
+      fontFamily: "'Chakra Petch','Inter',sans-serif",
       fontSize: 10,
       fontWeight: 700,
       letterSpacing: "0.02em",

@@ -10397,7 +10397,13 @@ function LiveFeedTab({
         e("div", { style: { display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end", flexShrink: 0 } },
           e("span", { className: "lf2-buchip", style: { color: buCol(j.bu), borderColor: buCol(j.bu) + "77" } }, buShort(j.bu) || "SVC"),
           j.tagFlag === "removed" ? e("span", { className: "lf2-buchip", style: { color: "#ff7b86", borderColor: "#e63946aa", background: "#2a0d1266" } }, "🚫 MGMT REMOVED ROPP")
-          : j.tagFlag === "noropp" ? e("span", { className: "lf2-buchip", style: { color: "#ffb35c", borderColor: "#ff9f4388" } }, "⚠ NO ROPP TAG") : null)),
+          : j.tagFlag === "noropp" ? e("span", { className: "lf2-buchip", style: { color: "#ffb35c", borderColor: "#ff9f4388" } }, "⚠ NO ROPP TAG") : null,
+          (j.extraTags || []).map((t, ti) => e("span", {
+            key: "xt" + ti,
+            className: "lf2-buchip",
+            style: t.k === "recall" ? { color: "#ff8fa3", borderColor: "#e63946aa", background: "#2a0d1244" }
+                                    : { color: "#7fb3e8", borderColor: "#2E78C766" }
+          }, (t.k === "recall" ? "🔁 " : "🛡 ") + t.n)))),
       timeline, bot);
   };
 

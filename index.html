@@ -237,6 +237,15 @@ body::after{content:"";position:fixed;left:50%;top:-30%;width:170vmax;height:170
 @keyframes hdrBreath{0%,100%{box-shadow:0 1px 22px rgba(245,179,36,.10)}50%{box-shadow:0 1px 34px rgba(245,179,36,.24)}}
 .sticky-hdr{animation:hdrBreath 7s ease-in-out infinite;}
 @media (prefers-reduced-motion: reduce){body::after,.sticky-hdr,.kpi-card{animation:none!important;}}
+
+/* sync flash + TV takeover */
+.sync-flash{animation:syncFlash 1.25s ease!important;}
+@keyframes syncFlash{0%,100%{box-shadow:0 1px 22px rgba(245,179,36,.10)}30%{box-shadow:0 3px 48px rgba(74,222,128,.5)}}
+.tv-takeover{position:fixed;inset:0;z-index:9998;background:radial-gradient(ellipse at 50% 45%,#0d2b18f2,#05070ff8 75%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;cursor:pointer;animation:bootIn .4s ease both;}
+.tvt-big{font:800 64px 'Chakra Petch',sans-serif;letter-spacing:.1em;color:#4ADE80;animation:glowPulse 1.6s ease infinite;}
+.tvt-txt{font:700 26px 'Chakra Petch',sans-serif;color:#fff;text-align:center;max-width:80vw;letter-spacing:.04em;line-height:1.4;}
+.tvt-t{font:600 14px 'Chakra Petch',sans-serif;color:#8fa3d9;letter-spacing:.3em;}
+@media(max-width:900px){.tvt-big{font-size:34px}.tvt-txt{font-size:16px}}
 /* pace + leaderboard glow */
 .pace-ring{filter:drop-shadow(0 0 7px currentColor);}
 .lb-bar,.scenario-bar{box-shadow:0 0 12px rgba(245,179,36,.22);}
@@ -1111,6 +1120,36 @@ const getBadge = rate => {
   };
 };
 
+// ── Animated count-up for KPI values ─────────────────────────────────────────
+function CountVal({
+  v
+}) {
+  const s = String(v == null ? "" : v);
+  const m = s.match(/^([^0-9\-]*)(-?[\d,]+(?:\.(\d+))?)([\s\S]*)$/);
+  const target = m ? parseFloat(m[2].replace(/,/g, "")) : null;
+  const dec = m && m[3] ? m[3].length : 0;
+  const [n, setN] = React.useState(target);
+  React.useEffect(() => {
+    if (target === null || !isFinite(target)) return;
+    let raf, t0 = null;
+    const dur = 800;
+    const step = ts => {
+      if (t0 === null) t0 = ts;
+      const p = Math.min(1, (ts - t0) / dur);
+      setN(target * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [target]);
+  if (target === null || !isFinite(target)) return s;
+  const num = (n == null ? target : n).toLocaleString(undefined, {
+    minimumFractionDigits: dec,
+    maximumFractionDigits: dec
+  });
+  return m[1] + num + m[4];
+}
+
 // ── KPI Card ──────────────────────────────────────────────────────────────────
 function KPICard({
   label,
@@ -1144,7 +1183,9 @@ function KPICard({
       color: color || "#FFFFFF",
       fontFamily: "'Chakra Petch','Inter',sans-serif"
     }
-  }, value), sub && /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(CountVal, {
+    v: value
+  })), sub && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 9,
       color: "#6b7a99",
@@ -10561,7 +10602,7 @@ function LiveFeedTab({
 
   const kpi = (l, v, sub, col) => e("div", { className: "lf2-kpi" },
     e("div", { className: "l" }, l),
-    e("div", { className: "v", style: col ? { color: col } : null }, v),
+    e("div", { className: "v", style: col ? { color: col } : null }, e(CountVal, { v: v })),
     e("div", { className: "s" }, sub));
 
   const headerRight = stale ? e("div", { className: "lf2-chip-stale" }, "⚠ FEED STALE · " + ageMin + "M")
@@ -10627,7 +10668,8 @@ function Root() {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [countdown, setCountdown] = useState(null);
-  const [kioskMode, setKioskMode] = useState(false);
+  const TV_MODE = new URLSearchParams(window.location.search).has("tv");
+  const [kioskMode, setKioskMode] = useState(TV_MODE);
   const [kpiVal, setKpiVal] = useState(60);
 
   // Live hourly snapshots
@@ -10692,6 +10734,59 @@ function Root() {
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [lastUpdated]);
+
+  // ── Data-sync flash: header glows green when a fresh capture lands ───────
+  useEffect(() => {
+    if (!hourly || !hourly.updated) return;
+    const el = document.querySelector(".sticky-hdr");
+    if (!el) return;
+    el.classList.add("sync-flash");
+    const t = setTimeout(() => el.classList.remove("sync-flash"), 1300);
+    return () => clearTimeout(t);
+  }, [hourly && hourly.updated]);
+
+  // ── TV takeover: full-screen splash when a new TGL lands (?tv=1 only) ────
+  const [takeover, setTakeover] = useState(null);
+  const lastEvRef = React.useRef(null);
+  useEffect(() => {
+    if (!TV_MODE) return;
+    let alive = true;
+    const poll = () => {
+      fetch("livefeed.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
+        if (!alive || !j || !j.feed || !j.feed.length) return;
+        const ev = j.feed[0];
+        const sig = ev.x + "|" + ev.t;
+        if (lastEvRef.current === null) {
+          lastEvRef.current = sig;
+          return;
+        }
+        if (sig !== lastEvRef.current) {
+          lastEvRef.current = sig;
+          if (ev.i === "✅") setTakeover({
+            big: "TGL CREATED",
+            text: ev.x.replace("TGL CREATED: ", ""),
+            t: ev.t
+          });
+        }
+      }).catch(() => {});
+    };
+    poll();
+    const id = setInterval(poll, 60000);
+    return () => {
+      alive = false;
+      clearInterval(id);
+    };
+  }, []);
+  useEffect(() => {
+    if (!takeover) return;
+    const t = setTimeout(() => setTakeover(null), 10000);
+    const onKey = e => e.key === "Escape" && setTakeover(null);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [takeover]);
   const tabs = [{
     id: "overview",
     label: "⌂ OVERVIEW",
@@ -10784,8 +10879,8 @@ function Root() {
   // ── Kiosk auto-rotate ────────────────────────────────────────────────────
   useEffect(() => {
     if (!kioskMode) return;
-    const ids = tabs.map(t => t.id);
-    const id = setInterval(() => setTab(cur => ids[(ids.indexOf(cur) + 1) % ids.length]), 9000);
+    const ids = TV_MODE ? ["overview", "livefeed", "hourbyhour", "ytd", "deptpace", "siloonly"] : tabs.map(t => t.id);
+    const id = setInterval(() => setTab(cur => ids[(ids.indexOf(cur) + 1) % ids.length]), TV_MODE ? 12000 : 9000);
     return () => clearInterval(id);
   }, [kioskMode]);
 
@@ -11071,7 +11166,16 @@ function Root() {
       justifyContent: "space-between",
       letterSpacing: "0.1em"
     }
-  }, /*#__PURE__*/React.createElement("span", null, "ROPP TGL CONVERSION DASHBOARD v3 · 2026"), /*#__PURE__*/React.createElement("span", null, "KPI = 60% · ⚙ MANAGE: ADD/REMOVE/EDIT · REMOVE BUG FIXED ✓ · v3 NEW: REVENUE + SPLIT + DAILY TRACKER")));
+  }, /*#__PURE__*/React.createElement("span", null, "ROPP TGL CONVERSION DASHBOARD v3 · 2026"), /*#__PURE__*/React.createElement("span", null, "KPI = 60% · ⚙ MANAGE: ADD/REMOVE/EDIT · REMOVE BUG FIXED ✓ · v3 NEW: REVENUE + SPLIT + DAILY TRACKER")), takeover && /*#__PURE__*/React.createElement("div", {
+    className: "tv-takeover",
+    onClick: () => setTakeover(null)
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "tvt-big"
+  }, "✅ " + takeover.big), /*#__PURE__*/React.createElement("div", {
+    className: "tvt-txt"
+  }, takeover.text), /*#__PURE__*/React.createElement("div", {
+    className: "tvt-t"
+  }, takeover.t)));
 }
 ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.createElement(Root, null));
 

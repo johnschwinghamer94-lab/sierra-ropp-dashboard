@@ -3608,7 +3608,7 @@ function Root() {
   const [kpiVal, setKpiVal] = useState(60);
 
   // Live hourly snapshots
-  const INTERVAL = 4 * 60 * 1000;
+  const INTERVAL = 90 * 1000;
   const loadHourly = React.useCallback(() => {
     setRefreshing(true);
     fetch("hourly.json?t=" + Date.now()).then(r => r.ok ? r.json() : null)

@@ -10308,7 +10308,9 @@ const LF_CSS = `
 .lf2-ev .t{font-size:8.5px;color:#5d6fa8;margin-top:1px}
 .lf2-empty{background:#0d1638;border:1px dashed #22307a;border-radius:10px;padding:34px 20px;text-align:center;color:#5d6fa8;font-size:12px;letter-spacing:.06em;grid-column:1/-1}
 `;
-function LiveFeedTab() {
+function LiveFeedTab({
+  hourly
+}) {
   const e = React.createElement;
   const [lf, setLf] = React.useState(null);
   const [failed, setFailed] = React.useState(false);
@@ -10424,7 +10426,8 @@ function LiveFeedTab() {
       kpi("Jobs Today", k.jobs, k.completed + " completed"),
       kpi("On Site Now", k.onSite, k.enRoute + " en route", k.onSite > 0 ? "#f5c518" : null),
       kpi("Options In Play", money(k.optionsTotal), k.optionsCount + " options on " + k.optionsJobs + " jobs", "#f5c518"),
-      kpi("TGLs Created", k.signedJobs, k.signedTotal > 0 ? "turnovers signed · +" + money(k.signedTotal) + " sold" : "turnover estimates signed", "#4ade80")),
+      kpi("TGLs Created", k.signedJobs, k.signedTotal > 0 ? "turnovers signed · +" + money(k.signedTotal) + " sold" : "turnover estimates signed", "#4ade80"),
+      kpi("Sold TGL Revenue", hourly && hourly.today ? money(hourly.today.rev) : "—", "sales from leads created today", "#f5c518")),
     buList.length > 1 && e("div", { className: "lf2-bus" },
       ["ALL"].concat(buList).map(b => e("button", { key: b, className: "lf2-bu" + (buFilter === b ? " on" : ""), onClick: () => setBuFilter(b) }, b))),
     e("div", { className: "lf2-main" },
@@ -10866,7 +10869,9 @@ function Root() {
     setKpiVal: setKpiVal
   }), tab === "hourbyhour" && /*#__PURE__*/React.createElement(HourByHourTab, {
     hourly: hourly
-  }), tab === "livefeed" && /*#__PURE__*/React.createElement(LiveFeedTab, null), tab === "ytd" && /*#__PURE__*/React.createElement(PeriodTable, {
+  }), tab === "livefeed" && /*#__PURE__*/React.createElement(LiveFeedTab, {
+    hourly: hourly
+  }), tab === "ytd" && /*#__PURE__*/React.createElement(PeriodTable, {
     period: "ytd",
     data: data
   }), tab === "mtd" && /*#__PURE__*/React.createElement(PeriodTable, {

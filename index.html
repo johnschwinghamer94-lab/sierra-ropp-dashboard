@@ -16,7 +16,7 @@
 body{background:#070b16;color:#eaf1fb;font-family:'Inter','Segoe UI',system-ui,sans-serif;min-height:100vh;}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:#070b16;}
-::-webkit-scrollbar-thumb{background:#1e2d47;border-radius:3px;}
+::-webkit-scrollbar-thumb{background:#22307a;border-radius:3px;}
 @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px currentColor;}50%{opacity:.4;box-shadow:0 0 2px currentColor;}}
 @keyframes riseIn{from{opacity:0;transform:translateY(14px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
 @keyframes drawArc{from{stroke-dashoffset:440;}to{stroke-dashoffset:0;}}
@@ -37,13 +37,13 @@ body{background:#070b16;color:#eaf1fb;font-family:'Inter','Segoe UI',system-ui,s
 .tcnt{background:rgba(245,179,36,.18);color:#F5B324;border-radius:9px;padding:1px 5px;
   font-size:8px;font-weight:700;margin-left:3px;vertical-align:middle;}
 /* Keyboard hint */
-.kbd{background:#1e2d47;border:1px solid #2E78C7;color:#7089ab;border-radius:4px;
+.kbd{background:#22307a;border:1px solid #2E78C7;color:#7089ab;border-radius:4px;
   padding:1px 5px;font-size:8px;font-family:monospace;display:inline-block;}
 /* Tooltip host */
 .tiphost{position:relative;cursor:help;}
 .tiphost:hover .tipbubble{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0);}
 .tipbubble{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%) translateY(5px);
-  background:#1a2740;border:1px solid #2E78C7;color:#eaf1fb;font-size:10px;line-height:1.5;
+  background:#13214f;border:1px solid #2E78C7;color:#eaf1fb;font-size:10px;line-height:1.5;
   padding:7px 11px;border-radius:9px;white-space:nowrap;z-index:300;opacity:0;
   transition:opacity .18s,transform .18s;pointer-events:none;max-width:220px;text-align:center;}
 /* Projected month-end pill */
@@ -97,7 +97,7 @@ input[type=range].kpi-range::-webkit-slider-thumb{-webkit-appearance:none;width:
 #confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;}
 /* Days left chip */
 .days-left{font-size:9px;color:#7089ab;font-weight:600;background:rgba(255,255,255,.05);
-  border:1px solid #1e2d47;padding:2px 8px;border-radius:12px;}
+  border:1px solid #22307a;padding:2px 8px;border-radius:12px;}
 /* Gradient leaderboard bars */
 .lb-bar{height:16px;border-radius:5px;animation:growW 1s ease both;transform-origin:left;}
 /* CSV export btn */
@@ -110,7 +110,7 @@ input[type=range].kpi-range::-webkit-slider-thumb{-webkit-appearance:none;width:
 .proj-mtd{background:linear-gradient(135deg,rgba(46,120,199,.18),rgba(245,179,36,.08));border:1px solid #2E78C744;
   border-radius:12px;padding:10px 16px;min-width:160px;}
 /* Tech filter input */
-.tech-filter{background:#0e1626;border:1px solid #1e2d47;color:#eaf1fb;border-radius:8px;padding:7px 13px;
+.tech-filter{background:#0a1130;border:1px solid #22307a;color:#eaf1fb;border-radius:8px;padding:7px 13px;
   font-family:inherit;font-size:11px;outline:none;width:220px;transition:border-color .15s;}
 .tech-filter:focus{border-color:#2E78C7;}
 /* Mobile responsive tweaks */
@@ -133,7 +133,7 @@ input[type=range].kpi-range::-webkit-slider-thumb{-webkit-appearance:none;width:
 
 /* ── Round 4 Global ─────────────────────────────────────────── */
 tr.hov-row{transition:background .12s;}
-tr.hov-row:hover td{background:#1a2540 !important;}
+tr.hov-row:hover td{background:#13214f !important;}
 .hm-cell{position:relative;transition:background .2s;}
 .medal-1{color:#FFD700;text-shadow:0 0 8px #FFD70088;font-size:14px;}
 .medal-2{color:#C0C0C0;font-size:14px;}
@@ -145,7 +145,7 @@ tr.hov-row:hover td{background:#1a2540 !important;}
 .trend-up{color:#4ADE80;font-weight:800;font-size:11px;}
 .trend-dn{color:#E63946;font-weight:800;font-size:11px;}
 .trend-eq{color:#6b7a99;font-size:11px;}
-.tab-search{background:#0a1220;border:1px solid #1e2d47;color:#fff;border-radius:8px;
+.tab-search{background:#0a1130;border:1px solid #22307a;color:#fff;border-radius:8px;
   padding:6px 12px;font-family:inherit;font-size:11px;outline:none;transition:border .15s;width:180px;}
 .tab-search:focus{border-color:#F5B324;}
 .tab-search::placeholder{color:#4a5a70;}
@@ -155,7 +155,7 @@ tr.hov-row:hover td{background:#1a2540 !important;}
 .hm-good{background:rgba(245,179,36,.14) !important;}
 .hm-bad{background:rgba(230,57,70,.14) !important;}
 .spark-svg{overflow:visible;}
-.eod-tile{background:linear-gradient(135deg,#0f1e38,#162849);border:1px solid #2E78C744;
+.eod-tile{background:linear-gradient(135deg,#0d1638,#16225a);border:1px solid #2E78C744;
   border-radius:12px;padding:14px 18px;display:flex;flex-direction:column;gap:4px;}
 .beat-chip{background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);
   color:#4ADE80;font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;}
@@ -166,6 +166,36 @@ tr.hov-row:hover td{background:#1a2540 !important;}
 .liftCard{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;}
 .liftCard:hover{transform:translateY(-3px);box-shadow:0 10px 34px rgba(0,0,0,.45);border-color:#2E78C7 !important;}
 .gridbg{background-image:linear-gradient(rgba(46,120,199,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(46,120,199,.05) 1px,transparent 1px);background-size:34px 34px;}
+/* ═══ COMMAND THEME — site-wide neon overhaul (2026-07-12) ═════════════════ */
+body{background:radial-gradient(ellipse 90% 55% at 50% -12%,#122052 0%,#0a1024 55%,#070b1a 100%) fixed;}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(46,120,199,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(46,120,199,.045) 1px,transparent 1px);
+  background-size:36px 36px;
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 0%,transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 0%,transparent 75%);}
+#root{position:relative;z-index:1;}
+h1{font-family:'Chakra Petch','Inter',sans-serif!important;text-transform:uppercase;
+  letter-spacing:.14em!important;text-shadow:0 0 18px rgba(245,179,36,.35);}
+.sticky-hdr{background:linear-gradient(90deg,#0b1230f2,#101b45f2)!important;
+  border-bottom:1px solid #f5b32488!important;box-shadow:0 1px 22px rgba(245,179,36,.12);}
+button[data-tab]{font-family:'Chakra Petch','Inter',sans-serif!important;text-transform:uppercase;
+  letter-spacing:.08em!important;}
+button[data-tab]:hover{color:#F5B324!important;background:rgba(245,179,36,.06)!important;}
+th{font-family:'Chakra Petch','Inter',sans-serif!important;text-transform:uppercase;letter-spacing:.14em!important;}
+.kpi-card{background:linear-gradient(180deg,#0d1638,#0a1130)!important;
+  border:1px solid #22307a!important;box-shadow:inset 0 0 26px rgba(16,29,82,.25);}
+.kpi-card>div:first-child{font-family:'Chakra Petch','Inter',sans-serif!important;
+  text-transform:uppercase;letter-spacing:.2em!important;color:#8fa3d9!important;}
+.kpi-card>div:nth-child(2){font-family:'Chakra Petch','Inter',sans-serif!important;}
+.liftCard:hover{border-color:#f5b324aa!important;box-shadow:0 10px 34px rgba(0,0,0,.5),0 0 18px rgba(245,179,36,.12);}
+.eod-tile{box-shadow:inset 0 0 24px rgba(16,29,82,.3);}
+::-webkit-scrollbar-thumb{background:#22307a;}
+::-webkit-scrollbar-thumb:hover{background:#2E78C7;}
+::selection{background:rgba(245,179,36,.3);}
+.tcnt{font-family:'Chakra Petch',sans-serif;}
+.upd-badge,.countdown,.days-left{font-family:'Chakra Petch',monospace;}
+/* ═══════════════════════════════════════════════════════════════════════ */
+
 </style>
 </head>
 <body>
@@ -495,8 +525,8 @@ function ManagePanel({
     onChange: e => onChange(e.target.value),
     style: {
       width: 52,
-      background: "#111827",
-      border: "1px solid #1e2d47",
+      background: "#101a35",
+      border: "1px solid #22307a",
       color: "#FFFFFF",
       borderRadius: 4,
       padding: "3px 5px",
@@ -520,8 +550,8 @@ function ManagePanel({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
-      border: "1px solid #1e2d47",
+      background: "#0d1638",
+      border: "1px solid #22307a",
       borderRadius: 18,
       width: "100%",
       maxWidth: 900,
@@ -530,8 +560,8 @@ function ManagePanel({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "18px 24px",
-      background: "#111827",
-      borderBottom: "1px solid #1e2d47",
+      background: "#101a35",
+      borderBottom: "1px solid #22307a",
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center"
@@ -587,8 +617,8 @@ function ManagePanel({
   }, "✕ CLOSE"))), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "10px 24px",
-      background: "#111827",
-      borderBottom: "1px solid #1e2d47",
+      background: "#101a35",
+      borderBottom: "1px solid #22307a",
       display: "flex",
       alignItems: "center",
       gap: 12,
@@ -614,7 +644,7 @@ function ManagePanel({
     style: {
       marginLeft: "auto",
       background: "transparent",
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       color: "#94a3b8",
       borderRadius: 6,
       padding: "4px 10px",
@@ -625,8 +655,8 @@ function ManagePanel({
   }, "Forget saved token")), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "16px 24px",
-      background: "#111827",
-      borderBottom: "1px solid #1e2d47"
+      background: "#101a35",
+      borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -651,8 +681,8 @@ function ManagePanel({
     }
   }, /*#__PURE__*/React.createElement("label", {
     style: {
-      background: "#111827",
-      border: "1px solid #1e2d47",
+      background: "#101a35",
+      border: "1px solid #22307a",
       borderRadius: 8,
       padding: "10px 16px",
       cursor: "pointer",
@@ -685,8 +715,8 @@ function ManagePanel({
     value: rbAsof,
     onChange: e => setRbAsof(e.target.value),
     style: {
-      background: "#111827",
-      border: "1px solid #1e2d47",
+      background: "#101a35",
+      border: "1px solid #22307a",
       color: "#FFFFFF",
       borderRadius: 6,
       padding: "7px 10px",
@@ -709,8 +739,8 @@ function ManagePanel({
     value: rbMonth,
     onChange: e => setRbMonth(e.target.value),
     style: {
-      background: "#111827",
-      border: "1px solid #1e2d47",
+      background: "#101a35",
+      border: "1px solid #22307a",
       color: "#FFFFFF",
       borderRadius: 6,
       padding: "7px 10px",
@@ -748,7 +778,7 @@ function ManagePanel({
       padding: "3px 9px",
       borderRadius: 16,
       fontWeight: 700,
-      background: rbFiles[k] ? "#14532d" : "#1e2d47",
+      background: rbFiles[k] ? "#14532d" : "#22307a",
       color: rbFiles[k] ? "#4ade80" : "#64748b"
     }
   }, rbFiles[k] ? "✓ " : "○ ", lbl))), rbMsg && /*#__PURE__*/React.createElement("div", {
@@ -761,7 +791,7 @@ function ManagePanel({
   }, rbMsg)), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "16px 24px",
-      borderBottom: "1px solid #1e2d47",
+      borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 10,
       alignItems: "center",
@@ -785,8 +815,8 @@ function ManagePanel({
     style: {
       flex: 1,
       minWidth: 200,
-      background: "#111827",
-      border: "1px solid #1e2d47",
+      background: "#101a35",
+      border: "1px solid #22307a",
       color: "#FFFFFF",
       borderRadius: 6,
       padding: "7px 12px",
@@ -832,9 +862,9 @@ function ManagePanel({
       key: tech,
       style: {
         marginBottom: 16,
-        background: ri % 2 === 0 ? "#111827" : "#111827",
+        background: ri % 2 === 0 ? "#101a35" : "#101a35",
         borderRadius: 8,
-        border: "1px solid #111827",
+        border: "1px solid #101a35",
         overflow: "hidden"
       }
     }, /*#__PURE__*/React.createElement("div", {
@@ -843,7 +873,7 @@ function ManagePanel({
         alignItems: "center",
         gap: 12,
         padding: "10px 14px",
-        borderBottom: "1px solid #111827"
+        borderBottom: "1px solid #101a35"
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
@@ -919,7 +949,7 @@ function ManagePanel({
           fontSize: 9,
           color: "#F5B324",
           marginLeft: 4,
-          borderLeft: "1px solid #1e2d47",
+          borderLeft: "1px solid #22307a",
           paddingLeft: 6
         }
       }, "SvcC"), inp(d[p].svc_calls || 0, v => updateVal(tech, p, "svc_calls", v)), /*#__PURE__*/React.createElement("span", {
@@ -932,7 +962,7 @@ function ManagePanel({
           fontSize: 9,
           color: "#5BA4E6",
           marginLeft: 4,
-          borderLeft: "1px solid #1e2d47",
+          borderLeft: "1px solid #22307a",
           paddingLeft: 6
         }
       }, "MntC"), inp(d[p].maint_calls || 0, v => updateVal(tech, p, "maint_calls", v)), /*#__PURE__*/React.createElement("span", {
@@ -983,7 +1013,7 @@ function ManagePanel({
   })), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "12px 24px",
-      borderTop: "1px solid #1e2d47",
+      borderTop: "1px solid #22307a",
       fontSize: 9,
       color: "#FFFFFF",
       letterSpacing: "0.1em",
@@ -1010,7 +1040,7 @@ const getBadge = rate => {
   if (rate === null) return {
     label: "N/A",
     color: "#FFFFFF",
-    bg: "#111827"
+    bg: "#101a35"
   };
   if (rate >= KPI) return {
     label: "✓ ON TARGET",
@@ -1040,8 +1070,8 @@ function KPICard({
   return /*#__PURE__*/React.createElement("div", {
     className: "liftCard kpi-card",
     style: {
-      background: "#161d2e",
-      border: "1px solid #1e2d47",
+      background: "#0d1638",
+      border: "1px solid #22307a",
       borderRadius: 16,
       padding: big ? "14px 22px" : "11px 16px",
       minWidth: big ? 130 : 104,
@@ -1180,7 +1210,7 @@ function WeekChart({
               color: "#9fb3cc"
             },
             grid: {
-              color: "#1e2d47"
+              color: "#22307a"
             }
           },
           y: {
@@ -1190,7 +1220,7 @@ function WeekChart({
               callback: v => isMoney ? "$" + Math.round(v / 1000) + "k" : isPct ? v + "%" : v
             },
             grid: {
-              color: "#1e2d47"
+              color: "#22307a"
             }
           }
         }
@@ -1205,8 +1235,8 @@ function WeekChart({
   }, [byTech, ready]);
   return /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
-      border: "1px solid #1e2d47",
+      background: "#0d1638",
+      border: "1px solid #22307a",
       borderRadius: 16,
       padding: "14px 18px"
     }
@@ -1238,7 +1268,7 @@ function WeekChart({
       fontWeight: 700,
       fontFamily: "inherit",
       cursor: "pointer",
-      border: "1px solid " + (byTech ? "#F5B324" : "#1e2d47"),
+      border: "1px solid " + (byTech ? "#F5B324" : "#22307a"),
       background: byTech ? "rgba(245,179,36,.15)" : "transparent",
       color: byTech ? "#F5B324" : "#9fb3cc"
     }
@@ -1322,8 +1352,8 @@ function InsightBar({
       gap: 10,
       flexWrap: "wrap",
       padding: "11px 16px",
-      background: "linear-gradient(135deg,#161d2e,#12203a)",
-      border: "1px solid #1e2d47",
+      background: "linear-gradient(135deg,#0d1638,#12203a)",
+      border: "1px solid #22307a",
       borderLeft: "3px solid #F5B324",
       borderRadius: 14,
       marginBottom: 14
@@ -1447,7 +1477,7 @@ function TechRow({
   return /*#__PURE__*/React.createElement("div", {
     className: rank === 0 ? "champion-row" : "",
     style: {
-      borderBottom: "1px solid #111827"
+      borderBottom: "1px solid #101a35"
     }
   }, /*#__PURE__*/React.createElement("div", {
     onClick: onToggle,
@@ -1456,7 +1486,7 @@ function TechRow({
       alignItems: "center",
       gap: 12,
       padding: "10px 16px",
-      background: expanded ? "#111827" : idx % 2 === 0 ? "#111827" : "#111827",
+      background: expanded ? "#101a35" : idx % 2 === 0 ? "#101a35" : "#101a35",
       cursor: "pointer",
       transition: "background 0.15s"
     }
@@ -1517,7 +1547,7 @@ function TechRow({
       width: 360,
       flexShrink: 0,
       height: 10,
-      background: "#0a1220",
+      background: "#0a1130",
       borderRadius: 5,
       overflow: "hidden"
     }
@@ -1607,7 +1637,7 @@ function TechRow({
     style: {
       background: "#0a0e1a",
       padding: "16px 20px 16px 32px",
-      borderTop: "1px solid #111827"
+      borderTop: "1px solid #101a35"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1772,8 +1802,8 @@ function PeriodTable({
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "16px 20px",
-      background: "linear-gradient(135deg,#161d2e,#1e2d47)",
-      borderBottom: "1px solid #1e2d47",
+      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 12,
       alignItems: "center",
@@ -1804,8 +1834,8 @@ function PeriodTable({
   }, "60% Conversion"))), /*#__PURE__*/React.createElement("div", {
     className: "liftCard",
     style: {
-      background: "#161d2e",
-      border: "1px solid #1e2d47",
+      background: "#0d1638",
+      border: "1px solid #22307a",
       borderRadius: 16,
       padding: "8px 16px 4px",
       textAlign: "center"
@@ -1847,7 +1877,7 @@ function PeriodTable({
     style: {
       padding: "14px 20px",
       background: "#0a0e1a",
-      borderBottom: "1px solid #1e2d47"
+      borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1888,7 +1918,7 @@ function PeriodTable({
   }, t.tech), /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1,
-      background: "#0a1220",
+      background: "#0a1130",
       borderRadius: 5,
       height: 18,
       position: "relative",
@@ -1914,8 +1944,8 @@ function PeriodTable({
   }, t.rate.toFixed(1) + "%"))))), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "10px 20px",
-      background: "#111827",
-      borderBottom: "1px solid #111827",
+      background: "#101a35",
+      borderBottom: "1px solid #101a35",
       display: "flex",
       gap: 8,
       flexWrap: "wrap",
@@ -1979,14 +2009,14 @@ function PeriodTable({
     style: {
       width: 1,
       height: 20,
-      background: "#1e2d47",
+      background: "#22307a",
       margin: "0 4px"
     }
   }), /*#__PURE__*/React.createElement("button", {
     onClick: () => setSiloFirst(v => !v),
     style: {
       padding: "4px 12px",
-      border: `1px solid ${siloFirst ? "#F5B324" : "#1e2d47"}`,
+      border: `1px solid ${siloFirst ? "#F5B324" : "#22307a"}`,
       background: siloFirst ? "rgba(245,179,36,.15)" : "transparent",
       borderRadius: 6,
       fontSize: 10,
@@ -2009,8 +2039,8 @@ function PeriodTable({
   }))), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "12px 20px",
-      background: "#161d2e",
-      borderTop: "2px solid #1e2d47",
+      background: "#0d1638",
+      borderTop: "2px solid #22307a",
       display: "flex",
       alignItems: "center",
       gap: 20
@@ -2093,7 +2123,7 @@ function CancellationTab() {
     textAlign: "center",
     fontSize: 11,
     color: "#FFFFFF",
-    borderBottom: "1px solid #1e2d47",
+    borderBottom: "1px solid #22307a",
     fontWeight: 700,
     letterSpacing: 1
   };
@@ -2102,7 +2132,7 @@ function CancellationTab() {
     textAlign: "center",
     fontSize: 12,
     color: color || (bold ? "#FFFFFF" : "#FFFFFF"),
-    borderBottom: "1px solid #111827",
+    borderBottom: "1px solid #101a35",
     fontWeight: bold ? 700 : 400
   });
 
@@ -2165,8 +2195,8 @@ function CancellationTab() {
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "16px 24px",
-      background: "linear-gradient(135deg,#161d2e,#1e2d47)",
-      borderBottom: "1px solid #1e2d47",
+      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 12,
       alignItems: "center",
@@ -2237,7 +2267,7 @@ function CancellationTab() {
   })), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
-      borderBottom: "1px solid #111827",
+      borderBottom: "1px solid #101a35",
       background: "#0a0e1a"
     }
   }, weeks.map((w, i) => {
@@ -2256,8 +2286,8 @@ function CancellationTab() {
         flex: 1,
         padding: "10px 12px",
         textAlign: "center",
-        borderRight: i < weeks.length - 1 ? "1px solid #111827" : "none",
-        background: i === weeks.length - 1 ? "#161d2e" : "transparent"
+        borderRight: i < weeks.length - 1 ? "1px solid #101a35" : "none",
+        background: i === weeks.length - 1 ? "#0d1638" : "transparent"
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -2285,16 +2315,16 @@ function CancellationTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
+      background: "#0d1638",
       borderRadius: 12,
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       overflow: "hidden",
       marginBottom: 24
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 20px",
-      borderBottom: "1px solid #1e2d47"
+      borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
@@ -2310,7 +2340,7 @@ function CancellationTab() {
     }
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#111827"
+      background: "#101a35"
     }
   }, ["TECHNICIAN", "SCHEDULED", "CANCELLED", "RAN", "CANCEL RATE"].map((h, i) => /*#__PURE__*/React.createElement("th", {
     key: h,
@@ -2327,7 +2357,7 @@ function CancellationTab() {
     return /*#__PURE__*/React.createElement("tr", {
       key: tech,
       style: {
-        background: i % 2 === 0 ? "#111827" : "#111827"
+        background: i % 2 === 0 ? "#101a35" : "#101a35"
       }
     }, /*#__PURE__*/React.createElement("td", {
       style: {
@@ -2350,8 +2380,8 @@ function CancellationTab() {
     }, rate !== null ? rate + "%" : "—"));
   }), /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#161d2e",
-      borderTop: "2px solid #1e2d47"
+      background: "#0d1638",
+      borderTop: "2px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("td", {
     style: {
@@ -2373,16 +2403,16 @@ function CancellationTab() {
     }
   }, ytdCancelRate !== null ? ytdCancelRate + "%" : "—"))))), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
+      background: "#0d1638",
       borderRadius: 12,
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       overflow: "hidden",
       marginBottom: 24
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 20px",
-      borderBottom: "1px solid #1e2d47"
+      borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
@@ -2402,7 +2432,7 @@ function CancellationTab() {
     }
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#111827"
+      background: "#101a35"
     }
   }, /*#__PURE__*/React.createElement("th", {
     style: {
@@ -2433,7 +2463,7 @@ function CancellationTab() {
     return /*#__PURE__*/React.createElement("tr", {
       key: tech,
       style: {
-        background: i % 2 === 0 ? "#111827" : "#111827"
+        background: i % 2 === 0 ? "#101a35" : "#101a35"
       }
     }, /*#__PURE__*/React.createElement("td", {
       style: {
@@ -2490,15 +2520,15 @@ function CancellationTab() {
     }, "—")));
   }))))), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
+      background: "#0d1638",
       borderRadius: 12,
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 20px",
-      borderBottom: "1px solid #1e2d47"
+      borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
@@ -2518,7 +2548,7 @@ function CancellationTab() {
     }
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#111827"
+      background: "#101a35"
     }
   }, /*#__PURE__*/React.createElement("th", {
     style: {
@@ -2537,7 +2567,7 @@ function CancellationTab() {
     return /*#__PURE__*/React.createElement("tr", {
       key: tech,
       style: {
-        background: i % 2 === 0 ? "#111827" : "#111827"
+        background: i % 2 === 0 ? "#101a35" : "#101a35"
       }
     }, /*#__PURE__*/React.createElement("td", {
       style: {
@@ -2649,7 +2679,7 @@ function SameDayConversion() {
       style: {
         flex: 1,
         minWidth: 140,
-        background: "#111827",
+        background: "#101a35",
         borderRadius: 10,
         padding: "12px 16px",
         border: "1px solid " + rC + "44"
@@ -2741,8 +2771,8 @@ function SameDayConversion() {
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "16px 24px",
-      background: "linear-gradient(135deg,#161d2e,#1e2d47)",
-      borderBottom: "1px solid #1e2d47",
+      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 12,
       alignItems: "center",
@@ -2819,8 +2849,8 @@ function SameDayConversion() {
       display: "flex",
       gap: 12,
       flexWrap: "wrap",
-      borderBottom: "1px solid #1e2d47",
-      background: "#111827"
+      borderBottom: "1px solid #22307a",
+      background: "#101a35"
     }
   }, weekCards), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -2828,16 +2858,16 @@ function SameDayConversion() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
+      background: "#0d1638",
       borderRadius: 12,
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "10px 20px",
-      borderBottom: "1px solid #1e2d47",
-      background: "#111827",
+      borderBottom: "1px solid #22307a",
+      background: "#101a35",
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center"
@@ -2865,7 +2895,7 @@ function SameDayConversion() {
     }
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#111827"
+      background: "#101a35"
     }
   }, /*#__PURE__*/React.createElement("th", {
     style: {
@@ -2873,7 +2903,7 @@ function SameDayConversion() {
       fontSize: 9,
       color: "#6b7a99",
       textAlign: "left",
-      borderBottom: "1px solid #1e2d47",
+      borderBottom: "1px solid #22307a",
       fontWeight: 700,
       letterSpacing: 1
     }
@@ -2885,7 +2915,7 @@ function SameDayConversion() {
         fontSize: 9,
         color: "#6b7a99",
         textAlign: "center",
-        borderBottom: "1px solid #1e2d47",
+        borderBottom: "1px solid #22307a",
         fontWeight: 700,
         letterSpacing: 1
       }
@@ -2896,7 +2926,7 @@ function SameDayConversion() {
       fontSize: 9,
       color: "#F5B324",
       textAlign: "center",
-      borderBottom: "1px solid #1e2d47",
+      borderBottom: "1px solid #22307a",
       fontWeight: 700,
       letterSpacing: 1
     }
@@ -2906,7 +2936,7 @@ function SameDayConversion() {
       fontSize: 9,
       color: "#5BA4E6",
       textAlign: "center",
-      borderBottom: "1px solid #1e2d47",
+      borderBottom: "1px solid #22307a",
       fontWeight: 700,
       letterSpacing: 1
     }
@@ -2928,7 +2958,7 @@ function SameDayConversion() {
     return /*#__PURE__*/React.createElement("tr", {
       key: tech,
       style: {
-        background: i % 2 === 0 ? "#111827" : "#111827"
+        background: i % 2 === 0 ? "#101a35" : "#101a35"
       }
     }, /*#__PURE__*/React.createElement("td", {
       style: {
@@ -3008,8 +3038,8 @@ function SameDayConversion() {
     }, "—")));
   }), /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#161d2e",
-      borderTop: "2px solid #1e2d47"
+      background: "#0d1638",
+      borderTop: "2px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("td", {
     style: {
@@ -3287,7 +3317,7 @@ function WeeklyTrends() {
               }
             },
             grid: {
-              color: "#1e2d47"
+              color: "#22307a"
             }
           },
           y: {
@@ -3297,7 +3327,7 @@ function WeeklyTrends() {
               callback: v => isMoney ? "$" + Math.round(v / 1000) + "k" : isPct ? v + "%" : v
             },
             grid: {
-              color: "#1e2d47"
+              color: "#22307a"
             }
           }
         }
@@ -3365,8 +3395,8 @@ function WeeklyTrends() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 24px 12px",
-      background: "linear-gradient(135deg,#161d2e,#1e2d47)",
-      borderBottom: "1px solid #1e2d47"
+      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3411,7 +3441,7 @@ function WeeklyTrends() {
       fontWeight: 700,
       cursor: "pointer",
       fontFamily: "inherit",
-      border: "1px solid " + (metric === m.id ? m.color : "#1e2d47"),
+      border: "1px solid " + (metric === m.id ? m.color : "#22307a"),
       background: metric === m.id ? m.color + "22" : "transparent",
       color: metric === m.id ? m.color : "#9fb3cc"
     }
@@ -3430,7 +3460,7 @@ function WeeklyTrends() {
       fontFamily: "inherit",
       cursor: perTechAvail ? "pointer" : "not-allowed",
       opacity: perTechAvail ? 1 : 0.4,
-      border: "1px solid " + (byTech && perTechAvail ? "#F5B324" : "#1e2d47"),
+      border: "1px solid " + (byTech && perTechAvail ? "#F5B324" : "#22307a"),
       background: byTech && perTechAvail ? "rgba(245,179,36,.15)" : "transparent",
       color: byTech && perTechAvail ? "#F5B324" : "#9fb3cc"
     }
@@ -3439,8 +3469,8 @@ function WeeklyTrends() {
       display: "flex",
       gap: 20,
       alignItems: "center",
-      background: "#111827",
-      border: "1px solid #1e2d47",
+      background: "#101a35",
+      border: "1px solid #22307a",
       borderRadius: 10,
       padding: "12px 18px",
       flexWrap: "wrap"
@@ -3483,8 +3513,8 @@ function WeeklyTrends() {
     }
   }, "week over week")), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#111827",
-      border: "1px solid #1e2d47",
+      background: "#101a35",
+      border: "1px solid #22307a",
       borderRadius: 16,
       padding: "16px 18px"
     }
@@ -3542,7 +3572,7 @@ function PaceReport() {
     textAlign: "center",
     fontSize: 11,
     color: "#FFFFFF",
-    borderBottom: "1px solid #1e2d47",
+    borderBottom: "1px solid #22307a",
     fontWeight: 700,
     letterSpacing: 1
   };
@@ -3550,7 +3580,7 @@ function PaceReport() {
     padding: "10px 16px",
     textAlign: "center",
     fontSize: 13,
-    borderBottom: "1px solid #111827"
+    borderBottom: "1px solid #101a35"
   };
   const maxRev = Math.max(...pd.monthly.map(m => m.revenue), 1);
   const barW = 55,
@@ -3605,8 +3635,8 @@ function PaceReport() {
   })), /*#__PURE__*/React.createElement("div", {
     className: "liftCard",
     style: {
-      background: "#161d2e",
-      border: "1px solid #1e2d47",
+      background: "#0d1638",
+      border: "1px solid #22307a",
       borderRadius: 18,
       padding: "16px 20px",
       margin: "4px 0 22px"
@@ -3652,7 +3682,7 @@ function PaceReport() {
       style: {
         flex: 1,
         maxWidth: 900,
-        background: "#0a1220",
+        background: "#0a1130",
         borderRadius: 6,
         height: 22,
         position: "relative",
@@ -3707,7 +3737,7 @@ function PaceReport() {
         fontSize: 11,
         fontWeight: 700,
         fontFamily: "inherit",
-        background: selTech === t ? pc + "22" : "#161d2e",
+        background: selTech === t ? pc + "22" : "#0d1638",
         color: selTech === t ? pc : "#FFFFFF",
         transition: "all 0.2s"
       }
@@ -3720,11 +3750,11 @@ function PaceReport() {
     }, tp.pace_pct, "%"));
   })), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "linear-gradient(135deg,#161d2e,#1e2d47)",
+      background: "linear-gradient(135deg,#0d1638,#22307a)",
       borderRadius: 12,
       padding: "24px 28px",
       marginBottom: 24,
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       display: "flex",
       alignItems: "center",
       gap: 20,
@@ -3784,7 +3814,7 @@ function PaceReport() {
   }].map(c => /*#__PURE__*/React.createElement("div", {
     key: c.label,
     style: {
-      background: "#111827",
+      background: "#101a35",
       borderRadius: 10,
       padding: "12px 16px",
       textAlign: "center",
@@ -3808,11 +3838,11 @@ function PaceReport() {
     }
   }, c.value))))), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
+      background: "#0d1638",
       borderRadius: 12,
       padding: "20px 24px",
       marginBottom: 24,
-      border: "1px solid #1e2d47"
+      border: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3838,7 +3868,7 @@ function PaceReport() {
       height: 32,
       marginBottom: 6,
       borderRadius: 8,
-      background: "#111827",
+      background: "#101a35",
       overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -3847,7 +3877,7 @@ function PaceReport() {
       top: 0,
       left: 0,
       height: "100%",
-      background: "#1e2d47",
+      background: "#22307a",
       width: pd.expected_pace / pd.goal * 100 + "%"
     }
   }), /*#__PURE__*/React.createElement("div", {
@@ -3867,7 +3897,7 @@ function PaceReport() {
     style: {
       fontSize: 12,
       fontWeight: 800,
-      color: "#111827",
+      color: "#101a35",
       whiteSpace: "nowrap"
     }
   }, fmtK(pd.ytd_revenue)))), /*#__PURE__*/React.createElement("div", {
@@ -3890,10 +3920,10 @@ function PaceReport() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
+      background: "#0d1638",
       borderRadius: 12,
       padding: "20px 24px",
-      border: "1px solid #1e2d47"
+      border: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3955,10 +3985,10 @@ function PaceReport() {
     }, "Monthly target"));
   })())), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
+      background: "#0d1638",
       borderRadius: 12,
       padding: "20px 24px",
-      border: "1px solid #1e2d47"
+      border: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4010,7 +4040,7 @@ function PaceReport() {
       display: "flex",
       justifyContent: "space-between",
       padding: "6px 0",
-      borderBottom: "1px solid #111827"
+      borderBottom: "1px solid #101a35"
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
@@ -4025,15 +4055,15 @@ function PaceReport() {
     }
   }, row.value))))), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
+      background: "#0d1638",
       borderRadius: 12,
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 20px",
-      borderBottom: "1px solid #1e2d47"
+      borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
@@ -4049,7 +4079,7 @@ function PaceReport() {
     }
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#111827"
+      background: "#101a35"
     }
   }, ["MONTH", "CALLS", "TGLs", "CONV %", "REVENUE", "vs MONTHLY TARGET", "RUNNING TOTAL"].map(h => /*#__PURE__*/React.createElement("th", {
     key: h,
@@ -4064,7 +4094,7 @@ function PaceReport() {
       return /*#__PURE__*/React.createElement("tr", {
         key: m.month,
         style: {
-          background: i % 2 === 0 ? "#111827" : "#111827"
+          background: i % 2 === 0 ? "#101a35" : "#101a35"
         }
       }, /*#__PURE__*/React.createElement("td", {
         style: {
@@ -4119,13 +4149,13 @@ const thSt = (align = "center") => ({
   color: "#FFFFFF",
   fontSize: 10,
   fontWeight: 700,
-  borderBottom: "1px solid #111827",
+  borderBottom: "1px solid #101a35",
   whiteSpace: "nowrap"
 });
 const tdSt = bold => ({
   padding: "9px 12px",
   textAlign: "center",
-  borderBottom: "1px solid #111827",
+  borderBottom: "1px solid #101a35",
   fontWeight: bold ? 800 : 400,
   whiteSpace: "nowrap"
 });
@@ -4248,8 +4278,8 @@ function RevenueTable({
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 20px",
-      background: "linear-gradient(135deg,#161d2e,#1e2d47)",
-      borderBottom: "1px solid #1e2d47"
+      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4347,8 +4377,8 @@ function RevenueTable({
   })), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "8px 20px",
-      background: "#111827",
-      borderBottom: "1px solid #111827",
+      background: "#101a35",
+      borderBottom: "1px solid #101a35",
       display: "flex",
       gap: 6,
       flexWrap: "wrap",
@@ -4377,14 +4407,14 @@ function RevenueTable({
     style: {
       width: 1,
       height: 20,
-      background: "#1e2d47",
+      background: "#22307a",
       margin: "0 4px"
     }
   }), /*#__PURE__*/React.createElement("button", {
     onClick: () => setSiloFirst(v => !v),
     style: {
       padding: "3px 10px",
-      border: `1px solid ${siloFirst ? "#F5B324" : "#1e2d47"}`,
+      border: `1px solid ${siloFirst ? "#F5B324" : "#22307a"}`,
       background: siloFirst ? "rgba(245,179,36,.15)" : "transparent",
       borderRadius: 5,
       fontSize: 10,
@@ -4415,7 +4445,7 @@ function RevenueTable({
     }
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#111827"
+      background: "#101a35"
     }
   }, /*#__PURE__*/React.createElement("th", {
     style: thSt("left")
@@ -4444,7 +4474,7 @@ function RevenueTable({
     }
   }, "REVENUE")), /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#111827"
+      background: "#101a35"
     }
   }, /*#__PURE__*/React.createElement("th", {
     style: thSt("left")
@@ -4482,12 +4512,12 @@ function RevenueTable({
     return /*#__PURE__*/React.createElement("tr", {
       key: s.tech,
       style: {
-        background: i % 2 === 0 ? "#111827" : "#111827"
+        background: i % 2 === 0 ? "#101a35" : "#101a35"
       }
     }, /*#__PURE__*/React.createElement("td", {
       style: {
         padding: "9px 16px",
-        borderBottom: "1px solid #111827"
+        borderBottom: "1px solid #101a35"
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -4553,8 +4583,8 @@ function RevenueTable({
     }, fmtRev(s.revenue)));
   })), /*#__PURE__*/React.createElement("tfoot", null, /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#161d2e",
-      borderTop: "2px solid #1e2d47"
+      background: "#0d1638",
+      borderTop: "2px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("td", {
     style: {
@@ -4738,8 +4768,8 @@ function MonthlyBreakdown({
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 20px",
-      background: "linear-gradient(135deg,#161d2e,#1e2d47)",
-      borderBottom: "1px solid #1e2d47"
+      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4761,8 +4791,8 @@ function MonthlyBreakdown({
     onClick: prevMonth,
     disabled: mIdx <= 0,
     style: {
-      background: "#0a1220",
-      border: "1px solid #1e2d47",
+      background: "#0a1130",
+      border: "1px solid #22307a",
       color: mIdx > 0 ? "#F5B324" : "#2a3a50",
       borderRadius: 6,
       padding: "5px 10px",
@@ -4790,8 +4820,8 @@ function MonthlyBreakdown({
     onClick: nextMonth,
     disabled: mIdx >= MONTHS_LIST.length - 1,
     style: {
-      background: "#0a1220",
-      border: "1px solid #1e2d47",
+      background: "#0a1130",
+      border: "1px solid #22307a",
       color: mIdx < MONTHS_LIST.length - 1 ? "#F5B324" : "#2a3a50",
       borderRadius: 6,
       padding: "5px 10px",
@@ -4879,7 +4909,7 @@ function MonthlyBreakdown({
     style: {
       padding: "16px 20px",
       background: "#0a0e1a",
-      borderBottom: "1px solid #1e2d47"
+      borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4939,8 +4969,8 @@ function MonthlyBreakdown({
   }))), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "8px 20px",
-      background: "#111827",
-      borderBottom: "1px solid #111827",
+      background: "#101a35",
+      borderBottom: "1px solid #101a35",
       display: "flex",
       gap: 6,
       flexWrap: "wrap",
@@ -4977,7 +5007,7 @@ function MonthlyBreakdown({
     }
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#111827"
+      background: "#101a35"
     }
   }, /*#__PURE__*/React.createElement("th", {
     style: thSt("left")
@@ -5007,7 +5037,7 @@ function MonthlyBreakdown({
     colSpan: 2
   }, "REVENUE")), /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#111827"
+      background: "#101a35"
     }
   }, /*#__PURE__*/React.createElement("th", {
     style: thSt("left")
@@ -5044,12 +5074,12 @@ function MonthlyBreakdown({
     return /*#__PURE__*/React.createElement("tr", {
       key: s.tech,
       style: {
-        background: i % 2 === 0 ? "#111827" : "#111827"
+        background: i % 2 === 0 ? "#101a35" : "#101a35"
       }
     }, /*#__PURE__*/React.createElement("td", {
       style: {
         padding: "9px 16px",
-        borderBottom: "1px solid #111827"
+        borderBottom: "1px solid #101a35"
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -5150,8 +5180,8 @@ function MonthlyBreakdown({
     }, "—")));
   })), /*#__PURE__*/React.createElement("tfoot", null, /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#161d2e",
-      borderTop: "2px solid #1e2d47"
+      background: "#0d1638",
+      borderTop: "2px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("td", {
     style: {
@@ -5207,7 +5237,7 @@ function MonthlyBreakdown({
     style: {
       padding: "16px 20px",
       background: "#0a0e1a",
-      borderTop: "1px solid #111827"
+      borderTop: "1px solid #101a35"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -5234,7 +5264,7 @@ function MonthlyBreakdown({
       key: m,
       onClick: () => setMonth(m),
       style: {
-        background: month === m ? "#111827" : "#111827",
+        background: month === m ? "#101a35" : "#101a35",
         border: `1px solid ${month === m ? "#F5B324" : mb.color + "33"}`,
         borderRadius: 10,
         padding: "10px 16px",
@@ -5304,8 +5334,8 @@ function AllTeamsTab() {
     fontWeight: 700,
     letterSpacing: 1,
     cursor: "pointer",
-    background: "#111827",
-    borderBottom: "1px solid #1e2d47",
+    background: "#101a35",
+    borderBottom: "1px solid #22307a",
     color: sortKey === k ? "#F5B324" : "#FFFFFF",
     borderTop: sortKey === k ? "2px solid #F5B32455" : "2px solid transparent"
   });
@@ -5313,7 +5343,7 @@ function AllTeamsTab() {
     padding: "10px 14px",
     textAlign: "center",
     fontSize: 12,
-    borderBottom: "1px solid #111827",
+    borderBottom: "1px solid #101a35",
     color: c || (b ? "#FFFFFF" : "#8BA8C8"),
     fontWeight: b ? 700 : 400
   });
@@ -5326,7 +5356,7 @@ function AllTeamsTab() {
       r = period === "ytd" ? t.ytd_rate : t.mtd_rate;
     return /*#__PURE__*/React.createElement("tr", {
       style: {
-        background: i % 2 === 0 ? "#111827" : "#111827"
+        background: i % 2 === 0 ? "#101a35" : "#101a35"
       }
     }, /*#__PURE__*/React.createElement("td", {
       style: {
@@ -5378,7 +5408,7 @@ function AllTeamsTab() {
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "#111827",
+        background: "#101a35",
         borderRadius: 4,
         height: 6,
         width: 80,
@@ -5403,13 +5433,13 @@ function AllTeamsTab() {
       r = period === "ytd" ? tot.ytd_rate : tot.mtd_rate;
     return /*#__PURE__*/React.createElement("tr", {
       style: {
-        background: s ? "#111827" : "#111827"
+        background: s ? "#101a35" : "#101a35"
       }
     }, /*#__PURE__*/React.createElement("td", {
       colSpan: 6,
       style: {
         padding: "10px 20px",
-        borderBottom: "1px solid #1e2d47",
+        borderBottom: "1px solid #22307a",
         borderTop: "2px solid " + color + "44"
       }
     }, /*#__PURE__*/React.createElement("div", {
@@ -5493,8 +5523,8 @@ function AllTeamsTab() {
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "16px 24px",
-      background: "linear-gradient(135deg,#161d2e,#1e2d47)",
-      borderBottom: "1px solid #1e2d47",
+      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 12,
       alignItems: "center",
@@ -5546,7 +5576,7 @@ function AllTeamsTab() {
     return /*#__PURE__*/React.createElement("div", {
       key: label,
       style: {
-        background: "#111827",
+        background: "#101a35",
         borderRadius: 8,
         padding: "8px 14px",
         textAlign: "center",
@@ -5570,11 +5600,11 @@ function AllTeamsTab() {
     style: {
       width: 1,
       height: 40,
-      background: "#1e2d47"
+      background: "#22307a"
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#111827",
+      background: "#101a35",
       borderRadius: 8,
       padding: "8px 14px",
       textAlign: "center",
@@ -5595,7 +5625,7 @@ function AllTeamsTab() {
     }
   }, fmtR(sT.ytd_rev + nT.ytd_rev))), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#111827",
+      background: "#101a35",
       borderRadius: 8,
       padding: "8px 14px",
       textAlign: "center",
@@ -5616,7 +5646,7 @@ function AllTeamsTab() {
     }
   }, fmtR(sT.ytd_rev))), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#111827",
+      background: "#101a35",
       borderRadius: 8,
       padding: "8px 14px",
       textAlign: "center",
@@ -5654,8 +5684,8 @@ function AllTeamsTab() {
     }, /*#__PURE__*/React.createElement("div", {
       className: "liftCard",
       style: {
-        background: "#161d2e",
-        border: "1px solid #1e2d47",
+        background: "#0d1638",
+        border: "1px solid #22307a",
         borderRadius: 12,
         padding: "16px 18px"
       }
@@ -5687,7 +5717,7 @@ function AllTeamsTab() {
       }
     }, "Others " + fmtP(nRate))), /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "#0a1220",
+        background: "#0a1130",
         borderRadius: 5,
         height: 15,
         marginBottom: 6
@@ -5702,7 +5732,7 @@ function AllTeamsTab() {
       }
     })), /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "#0a1220",
+        background: "#0a1130",
         borderRadius: 5,
         height: 15,
         marginBottom: 16
@@ -5735,7 +5765,7 @@ function AllTeamsTab() {
         height: 20,
         borderRadius: 6,
         overflow: "hidden",
-        background: "#0a1220"
+        background: "#0a1130"
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -5763,9 +5793,9 @@ function AllTeamsTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
+      background: "#0d1638",
       borderRadius: 12,
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("table", {
@@ -5779,9 +5809,9 @@ function AllTeamsTab() {
       textAlign: "left",
       fontSize: 11,
       color: "#FFFFFF",
-      borderBottom: "1px solid #1e2d47",
+      borderBottom: "1px solid #22307a",
       fontWeight: 700,
-      background: "#111827"
+      background: "#101a35"
     }
   }, "TECHNICIAN"), /*#__PURE__*/React.createElement("th", {
     style: thS("calls"),
@@ -5801,9 +5831,9 @@ function AllTeamsTab() {
       textAlign: "left",
       fontSize: 11,
       color: "#FFFFFF",
-      borderBottom: "1px solid #1e2d47",
+      borderBottom: "1px solid #22307a",
       fontWeight: 700,
-      background: "#111827"
+      background: "#101a35"
     }
   }, "PACE"))), /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement(SecH, {
     s: true
@@ -5819,8 +5849,8 @@ function AllTeamsTab() {
     i: i + siloRows.length
   })), /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#161d2e",
-      borderTop: "2px solid #1e2d47"
+      background: "#0d1638",
+      borderTop: "2px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("td", {
     style: {
@@ -5892,7 +5922,7 @@ function SiloOnlyTab() {
     return /*#__PURE__*/React.createElement("div", {
       style: {
         flex: 1,
-        background: "#161d2e",
+        background: "#0d1638",
         borderRadius: 12,
         border: `2px solid ${color}`,
         overflow: "hidden"
@@ -6022,7 +6052,7 @@ function SiloOnlyTab() {
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         height: 5,
-        background: "#111827",
+        background: "#101a35",
         borderRadius: 3,
         overflow: "hidden"
       }
@@ -6057,7 +6087,7 @@ function SiloOnlyTab() {
       key: t.name,
       style: {
         padding: "6px 10px",
-        background: "#111827",
+        background: "#101a35",
         borderRadius: 6,
         borderLeft: `3px solid ${color}`,
         marginBottom: 2
@@ -6087,7 +6117,7 @@ function SiloOnlyTab() {
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         flex: 1,
-        background: "#111827",
+        background: "#101a35",
         borderRadius: 5,
         padding: "4px 8px",
         textAlign: "center"
@@ -6112,7 +6142,7 @@ function SiloOnlyTab() {
     }, t.ytd_calls, "c/", t.ytd_tgls, "t")), /*#__PURE__*/React.createElement("div", {
       style: {
         flex: 1,
-        background: "#111827",
+        background: "#101a35",
         borderRadius: 5,
         padding: "4px 8px",
         textAlign: "center"
@@ -6167,8 +6197,8 @@ function SiloOnlyTab() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 24px",
-      background: "linear-gradient(135deg,#161d2e,#1e2d47)",
-      borderBottom: "1px solid #1e2d47",
+      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 16,
       alignItems: "center",
@@ -6206,7 +6236,7 @@ function SiloOnlyTab() {
       fontSize: 11,
       fontWeight: 700,
       fontFamily: "inherit",
-      background: view === v ? "#F5B324" : "#111827",
+      background: view === v ? "#F5B324" : "#101a35",
       color: view === v ? "#000" : "#FFFFFF",
       borderRadius: 6,
       letterSpacing: "0.05em",
@@ -6231,8 +6261,8 @@ function SiloOnlyTab() {
     }, /*#__PURE__*/React.createElement("div", {
       className: "liftCard",
       style: {
-        background: "#161d2e",
-        border: "1px solid #1e2d47",
+        background: "#0d1638",
+        border: "1px solid #22307a",
         borderRadius: 18,
         padding: "16px 20px"
       }
@@ -6264,7 +6294,7 @@ function SiloOnlyTab() {
       }
     }, "Team B " + bR + "%")), /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "#0a1220",
+        background: "#0a1130",
         borderRadius: 5,
         height: 16,
         marginBottom: 6
@@ -6279,7 +6309,7 @@ function SiloOnlyTab() {
       }
     })), /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "#0a1220",
+        background: "#0a1130",
         borderRadius: 5,
         height: 16,
         marginBottom: 16
@@ -6312,7 +6342,7 @@ function SiloOnlyTab() {
         height: 20,
         borderRadius: 6,
         overflow: "hidden",
-        background: "#0a1220"
+        background: "#0a1130"
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -6342,8 +6372,8 @@ function SiloOnlyTab() {
   })(), view !== "split" && /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "12px 24px",
-      background: "#111827",
-      borderBottom: "1px solid #1e2d47",
+      background: "#101a35",
+      borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 12,
       flexWrap: "wrap",
@@ -6372,7 +6402,7 @@ function SiloOnlyTab() {
   }) => /*#__PURE__*/React.createElement("div", {
     key: l,
     style: {
-      background: "#111827",
+      background: "#101a35",
       border: `1px solid ${c}33`,
       borderRadius: 8,
       padding: "8px 16px",
@@ -6399,19 +6429,19 @@ function SiloOnlyTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
+      background: "#0d1638",
       borderRadius: 12,
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "10px 20px",
-      borderBottom: "1px solid #1e2d47",
+      borderBottom: "1px solid #22307a",
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      background: "#111827"
+      background: "#101a35"
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
@@ -6436,7 +6466,7 @@ function SiloOnlyTab() {
     }
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#111827"
+      background: "#101a35"
     }
   }, ["#", "TECHNICIAN", "CALLS", "TGLs", "CONV RATE", "YTD REVENUE"].map(h => /*#__PURE__*/React.createElement("th", {
     key: h,
@@ -6446,7 +6476,7 @@ function SiloOnlyTab() {
       fontWeight: 700,
       letterSpacing: 1,
       color: "#6b7a99",
-      borderBottom: "1px solid #1e2d47",
+      borderBottom: "1px solid #22307a",
       textAlign: h === "TECHNICIAN" ? "left" : "center"
     }
   }, h)))), /*#__PURE__*/React.createElement("tbody", null, sorted_techs.map((t, i) => {
@@ -6538,8 +6568,8 @@ function SiloOnlyTab() {
     }, fmtR(t.ytd_rev)));
   }), /*#__PURE__*/React.createElement("tr", {
     style: {
-      background: "#161d2e",
-      borderTop: "2px solid #1e2d47"
+      background: "#0d1638",
+      borderTop: "2px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("td", {
     style: {
@@ -6603,9 +6633,9 @@ function SiloOnlyTab() {
   }, teamCard("TEAM A", team_a, "#2E78C7", "🔵"), teamCard("TEAM B", team_b, "#F5B324", "🟡")), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 16,
-      background: "#111827",
+      background: "#101a35",
       borderRadius: 10,
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       padding: "14px 20px",
       display: "flex",
       gap: 24,
@@ -6719,11 +6749,11 @@ function CACloseRateTab() {
       fontWeight: 700,
       letterSpacing: "0.05em",
       textAlign: al || "center",
-      borderBottom: "2px solid #1e2d47",
+      borderBottom: "2px solid #22307a",
       whiteSpace: "nowrap",
       position: "sticky",
       top: 0,
-      background: "#111827"
+      background: "#101a35"
     },
     className: tip ? "tiphost" : "",
     title: tip || undefined
@@ -6778,8 +6808,8 @@ function CACloseRateTab() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 24px",
-      background: "linear-gradient(135deg,#161d2e,#1e2d47)",
-      borderBottom: "1px solid #1e2d47",
+      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 16,
       alignItems: "center",
@@ -6818,7 +6848,7 @@ function CACloseRateTab() {
       fontSize: 11,
       fontWeight: 700,
       fontFamily: "inherit",
-      background: period === p ? "#2E78C7" : "#111827",
+      background: period === p ? "#2E78C7" : "#101a35",
       color: "#FFFFFF",
       borderRadius: 6,
       letterSpacing: "0.05em",
@@ -6827,7 +6857,7 @@ function CACloseRateTab() {
   }, l)), /*#__PURE__*/React.createElement("div", {
     style: {
       width: 1,
-      background: "#1e2d47",
+      background: "#22307a",
       margin: "2px 2px"
     }
   }), [["combined", "⚔ COMBINED"], ["team_a", "🔵 TEAM A"], ["team_b", "🟡 TEAM B"]].map(([v, l]) => /*#__PURE__*/React.createElement("button", {
@@ -6840,7 +6870,7 @@ function CACloseRateTab() {
       fontSize: 11,
       fontWeight: 700,
       fontFamily: "inherit",
-      background: view === v ? "#F5B324" : "#111827",
+      background: view === v ? "#F5B324" : "#101a35",
       color: view === v ? "#000" : "#FFFFFF",
       borderRadius: 6,
       letterSpacing: "0.05em",
@@ -6951,8 +6981,8 @@ function CACloseRateTab() {
   }, /*#__PURE__*/React.createElement("div", {
     className: "liftCard",
     style: {
-      background: "#161d2e",
-      border: "1px solid #1e2d47",
+      background: "#0d1638",
+      border: "1px solid #22307a",
       borderRadius: 16,
       padding: "16px 20px"
     }
@@ -7049,7 +7079,7 @@ function CACloseRateTab() {
         }
       }, conv, "% ↓"))), /*#__PURE__*/React.createElement("div", {
         style: {
-          background: "#0a1220",
+          background: "#0a1130",
           borderRadius: 6,
           height: 17,
           overflow: "hidden"
@@ -7091,8 +7121,8 @@ function CACloseRateTab() {
     }, /*#__PURE__*/React.createElement("div", {
       className: "liftCard",
       style: {
-        background: "#161d2e",
-        border: "1px solid #1e2d47",
+        background: "#0d1638",
+        border: "1px solid #22307a",
         borderRadius: 16,
         padding: "16px 20px"
       }
@@ -7148,7 +7178,7 @@ function CACloseRateTab() {
       y1: Y(g),
       x2: W - padR,
       y2: Y(g),
-      stroke: "#1e2d47",
+      stroke: "#22307a",
       strokeWidth: "1"
     }), /*#__PURE__*/React.createElement("text", {
       x: padL - 6,
@@ -7185,7 +7215,7 @@ function CACloseRateTab() {
       cy: Y(m.cr),
       r: "3.6",
       fill: closeCol(m.cr),
-      stroke: "#0a1220",
+      stroke: "#0a1130",
       strokeWidth: "1.6"
     }), /*#__PURE__*/React.createElement("text", {
       x: X(i),
@@ -7258,7 +7288,7 @@ function CACloseRateTab() {
     }, r.name), /*#__PURE__*/React.createElement("div", {
       style: {
         flex: 1,
-        background: "#0a1220",
+        background: "#0a1130",
         borderRadius: 5,
         height: 18,
         overflow: "hidden"
@@ -7302,8 +7332,8 @@ function CACloseRateTab() {
     }, /*#__PURE__*/React.createElement("div", {
       className: "liftCard",
       style: {
-        background: "#161d2e",
-        border: "1px solid #1e2d47",
+        background: "#0d1638",
+        border: "1px solid #22307a",
         borderRadius: 18,
         padding: "16px 20px"
       }
@@ -7335,7 +7365,7 @@ function CACloseRateTab() {
       }
     }, "Team B " + bC + "%")), /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "#0a1220",
+        background: "#0a1130",
         borderRadius: 5,
         height: 16,
         marginBottom: 6
@@ -7350,7 +7380,7 @@ function CACloseRateTab() {
       }
     })), /*#__PURE__*/React.createElement("div", {
       style: {
-        background: "#0a1220",
+        background: "#0a1130",
         borderRadius: 5,
         height: 16,
         marginBottom: 16
@@ -7383,7 +7413,7 @@ function CACloseRateTab() {
         height: 20,
         borderRadius: 6,
         overflow: "hidden",
-        background: "#0a1220"
+        background: "#0a1130"
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -7416,8 +7446,8 @@ function CACloseRateTab() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
-      border: "1px solid #1e2d47",
+      background: "#0d1638",
+      border: "1px solid #22307a",
       borderRadius: 14,
       overflow: "auto"
     }
@@ -7443,7 +7473,7 @@ function CACloseRateTab() {
       className: "trow",
       style: {
         background: lead ? "rgba(245,179,36,.08)" : i % 2 ? "#141c2e" : "transparent",
-        borderTop: "1px solid #111827",
+        borderTop: "1px solid #101a35",
         borderLeft: lead ? "3px solid #F5B324" : "3px solid transparent"
       }
     }, td( /*#__PURE__*/React.createElement("span", null, medal ? /*#__PURE__*/React.createElement("span", {
@@ -7468,7 +7498,7 @@ function CACloseRateTab() {
     }, r.close_rate, "%", rankChip(rkClose[r.name])), /*#__PURE__*/React.createElement("div", {
       style: {
         height: 3,
-        background: "#0a1220",
+        background: "#0a1130",
         borderRadius: 2,
         marginTop: 3,
         overflow: "hidden"
@@ -7484,7 +7514,7 @@ function CACloseRateTab() {
     }))), td(fmtR(r.sales), "center", "#22c55e"), td( /*#__PURE__*/React.createElement("span", null, "$", (r.per_ropp || 0).toLocaleString(), rankChip(rkPer[r.name])), "center", "#2E78C7"));
   })), sorted.length > 0 && /*#__PURE__*/React.createElement("tfoot", null, /*#__PURE__*/React.createElement("tr", {
     style: {
-      borderTop: "2px solid #1e2d47",
+      borderTop: "2px solid #22307a",
       background: "#0f1626"
     }
   }, td("TOTALS", "left", "#F5B324", true), td(tot.ropps, "center", "#F5B324", true), td(tot.tgls, "center", "#F5B324", true), td(tot.canceled, "center", "#F5B324", true), td(tot.actual, "center", "#F5B324", true), td(totTgl + "%", "center", tglCol(totTgl), true), td(tot.ran, "center", "#F5B324", true), td(tot.sold, "center", "#F5B324", true), td(totClose + "%", "center", closeCol(totClose), true), td(fmtR(tot.sales), "center", "#F5B324", true), td("$" + totPer.toLocaleString(), "center", "#F5B324", true))))), /*#__PURE__*/React.createElement("div", {
@@ -7521,7 +7551,7 @@ function YesterdayTab() {
     return /*#__PURE__*/React.createElement("div", {
       style: {
         flex: 1,
-        background: "#161d2e",
+        background: "#0d1638",
         borderRadius: 12,
         border: `2px solid ${color}`,
         overflow: "hidden"
@@ -7577,7 +7607,7 @@ function YesterdayTab() {
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         height: 5,
-        background: "#111827",
+        background: "#101a35",
         borderRadius: 3,
         overflow: "hidden"
       }
@@ -7615,7 +7645,7 @@ function YesterdayTab() {
         alignItems: "center",
         gap: 8,
         padding: "6px 10px",
-        background: "#111827",
+        background: "#101a35",
         borderRadius: 6,
         borderLeft: `3px solid ${color}`
       }
@@ -7702,8 +7732,8 @@ function YesterdayTab() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 24px",
-      background: "linear-gradient(135deg,#161d2e,#1e2d47)",
-      borderBottom: "1px solid #1e2d47",
+      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      borderBottom: "1px solid #22307a",
       display: "flex",
       gap: 16,
       alignItems: "center",
@@ -7739,8 +7769,8 @@ function YesterdayTab() {
   }, /*#__PURE__*/React.createElement("div", {
     className: "liftCard",
     style: {
-      background: "#161d2e",
-      border: "1px solid #1e2d47",
+      background: "#0d1638",
+      border: "1px solid #22307a",
       borderRadius: 18,
       padding: "16px 20px"
     }
@@ -7789,7 +7819,7 @@ function YesterdayTab() {
       style: {
         flex: 1,
         maxWidth: 760,
-        background: "#0a1220",
+        background: "#0a1130",
         borderRadius: 5,
         height: 16
       }
@@ -7826,7 +7856,7 @@ function YesterdayTab() {
       style: {
         flex: 1,
         maxWidth: 760,
-        background: "#0a1220",
+        background: "#0a1130",
         borderRadius: 5,
         height: 16
       }
@@ -7859,9 +7889,9 @@ function YesterdayTab() {
   }, teamCard("TEAM A", team_a, "#2E78C7", "🔵"), teamCard("TEAM B", team_b, "#F5B324", "🟡")), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 16,
-      background: "#111827",
+      background: "#101a35",
       borderRadius: 10,
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       padding: "14px 20px",
       display: "flex",
       gap: 24,
@@ -8014,7 +8044,7 @@ function DeptPaceReport() {
       cy: r + 10,
       r: r,
       fill: "none",
-      stroke: "#0a1220",
+      stroke: "#0a1130",
       strokeWidth: "10"
     }), /*#__PURE__*/React.createElement("circle", {
       cx: r + 10,
@@ -8062,7 +8092,7 @@ function DeptPaceReport() {
       padding: "18px 24px 8px",
       flexWrap: "wrap",
       background: "#0a0e1a",
-      borderBottom: "1px solid #1e2d47"
+      borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement(Ring, {
     pct: goalPct,
@@ -8111,8 +8141,8 @@ function DeptPaceReport() {
   }, /*#__PURE__*/React.createElement(RingRow, null), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 24px 12px",
-      background: "linear-gradient(135deg,#161d2e,#1e2d47)",
-      borderBottom: "1px solid #1e2d47"
+      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -8152,8 +8182,8 @@ function DeptPaceReport() {
       style: {
         flex: 1,
         minWidth: 110,
-        background: "#111827",
-        border: "1px solid #1e2d47",
+        background: "#101a35",
+        border: "1px solid #22307a",
         borderRadius: 8,
         padding: "10px 14px",
         textAlign: "center"
@@ -8174,8 +8204,8 @@ function DeptPaceReport() {
     }, k.v));
   })), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#111827",
-      border: "1px solid #1e2d47",
+      background: "#101a35",
+      border: "1px solid #22307a",
       borderRadius: 10,
       padding: "16px 20px"
     }
@@ -8201,7 +8231,7 @@ function DeptPaceReport() {
   }, /*#__PURE__*/React.createElement("span", null, "YTD Earned: " + fmt(d.ytd_revenue)), /*#__PURE__*/React.createElement("span", null, "Goal: " + fmt(d.goal))), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 14,
-      background: "#111827",
+      background: "#101a35",
       borderRadius: 6,
       overflow: "hidden",
       position: "relative"
@@ -8234,7 +8264,7 @@ function DeptPaceReport() {
   }, pct(d.projected_eoy / d.goal * 100) + " of goal")), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 8,
-      background: "#111827",
+      background: "#101a35",
       borderRadius: 6,
       overflow: "hidden"
     }
@@ -8256,8 +8286,8 @@ function DeptPaceReport() {
     style: {
       flex: 1,
       minWidth: 280,
-      background: "#111827",
-      border: "1px solid #1e2d47",
+      background: "#101a35",
+      border: "1px solid #22307a",
       borderRadius: 10,
       padding: "16px 20px"
     }
@@ -8293,7 +8323,7 @@ function DeptPaceReport() {
         justifyContent: "space-between",
         alignItems: "center",
         padding: "8px 0",
-        borderBottom: "1px solid #161d2e"
+        borderBottom: "1px solid #0d1638"
       }
     }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -8318,8 +8348,8 @@ function DeptPaceReport() {
     style: {
       flex: 1,
       minWidth: 280,
-      background: "#111827",
-      border: "1px solid #1e2d47",
+      background: "#101a35",
+      border: "1px solid #22307a",
       borderRadius: 10,
       padding: "16px 20px"
     }
@@ -8341,7 +8371,7 @@ function DeptPaceReport() {
         justifyContent: "space-between",
         alignItems: "center",
         padding: "7px 0",
-        borderBottom: "1px solid #161d2e"
+        borderBottom: "1px solid #0d1638"
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -8366,8 +8396,8 @@ function DeptPaceReport() {
     }, (vs >= 0 ? "+" : "") + fmt(Math.abs(vs)) + (hits ? " ✅" : " short"))));
   }))), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#111827",
-      border: "1px solid #1e2d47",
+      background: "#101a35",
+      border: "1px solid #22307a",
       borderRadius: 10,
       padding: "14px 20px",
       display: "flex",
@@ -8501,8 +8531,8 @@ function WeeklyConvTab() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 24px 12px",
-      background: "linear-gradient(135deg,#161d2e,#1e2d47)",
-      borderBottom: "1px solid #1e2d47"
+      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -8544,8 +8574,8 @@ function WeeklyConvTab() {
       style: {
         flex: 1,
         minWidth: 140,
-        background: "#111827",
-        border: "2px solid " + (isBest ? "#4ADE80" : "#1e2d47"),
+        background: "#101a35",
+        border: "2px solid " + (isBest ? "#4ADE80" : "#22307a"),
         borderRadius: 10,
         padding: "14px 16px",
         textAlign: "center",
@@ -8593,7 +8623,7 @@ function WeeklyConvTab() {
     }, fmtR(wt.revenue)), /*#__PURE__*/React.createElement("div", {
       style: {
         height: 5,
-        background: "#111827",
+        background: "#101a35",
         borderRadius: 3,
         marginTop: 8,
         overflow: "hidden"
@@ -8614,8 +8644,8 @@ function WeeklyConvTab() {
     }, "No data yet"));
   })), act.length >= 1 && /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#111827",
-      border: "1px solid #1e2d47",
+      background: "#101a35",
+      border: "1px solid #22307a",
       borderRadius: 10,
       padding: "14px 18px"
     }
@@ -8645,7 +8675,7 @@ function WeeklyConvTab() {
       y1: py(g),
       x2: CW - PR,
       y2: py(g),
-      stroke: g === 60 ? "#F5B324" : "#1e2d47",
+      stroke: g === 60 ? "#F5B324" : "#22307a",
       strokeWidth: "1",
       strokeDasharray: g === 60 ? "5 5" : "",
       opacity: g === 60 ? 0.85 : 0.5
@@ -8661,7 +8691,7 @@ function WeeklyConvTab() {
     y1: py(0),
     x2: CW - PR,
     y2: py(0),
-    stroke: "#1e2d47"
+    stroke: "#22307a"
   }), /*#__PURE__*/React.createElement("polyline", {
     points: linePts,
     fill: "none",
@@ -8693,15 +8723,15 @@ function WeeklyConvTab() {
     }, w.week));
   }))), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#111827",
-      border: "1px solid #1e2d47",
+      background: "#101a35",
+      border: "1px solid #22307a",
       borderRadius: 10,
       overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#1e2d47",
-      borderBottom: "1px solid #1e2d47",
+      background: "#22307a",
+      borderBottom: "1px solid #22307a",
       padding: "10px 16px"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -8747,7 +8777,7 @@ function WeeklyConvTab() {
       key: tech,
       style: {
         padding: "8px 16px",
-        borderBottom: "1px solid #161d2e"
+        borderBottom: "1px solid #0d1638"
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -8807,7 +8837,7 @@ function WeeklyConvTab() {
   }), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "10px 16px",
-      background: "#1e2d47",
+      background: "#22307a",
       borderTop: "2px solid #F5B324"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -9018,7 +9048,7 @@ function OverviewTab({
     className: "riseIn liftCard",
     style: {
       background: "#131c30",
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       borderLeft: "3px solid " + accent,
       borderRadius: 13,
       padding: "13px 15px",
@@ -9100,8 +9130,8 @@ function OverviewTab({
     return /*#__PURE__*/React.createElement("div", {
       className: "riseIn liftCard",
       style: {
-        background: "linear-gradient(160deg,#131c30,#0e1626)",
-        border: "1px solid #1e2d47",
+        background: "linear-gradient(160deg,#131c30,#0a1130)",
+        border: "1px solid #22307a",
         borderRadius: 18,
         padding: "14px 12px",
         flex: "1 1 180px",
@@ -9201,7 +9231,7 @@ function OverviewTab({
     }, (callsN || 0).toLocaleString())), /*#__PURE__*/React.createElement("div", {
       style: {
         width: 1,
-        background: "#1e2d47"
+        background: "#22307a"
       }
     }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -9226,7 +9256,7 @@ function OverviewTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       overflow: "hidden",
-      borderBottom: "1px solid #1e2d47",
+      borderBottom: "1px solid #22307a",
       background: "rgba(10,18,32,.7)"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -9311,7 +9341,7 @@ function OverviewTab({
   }, gaugeCard("TODAY" + (hourly && hourly.updated ? " · " + hourly.updated : ""), hourly && hourly.today ? hourly.today.rate : null, hourly && hourly.today ? hourly.today.calls : 0, hourly && hourly.today ? hourly.today.tgls : 0), gaugeCard("YTD CONVERSION", ytdRate, yc, yt), gaugeCard(CUR_MONTH.toUpperCase() + " MTD", mtdRate, mc, mt), /*#__PURE__*/React.createElement("div", {
     className: "riseIn liftCard",
     style: {
-      background: "linear-gradient(160deg,#10231a,#0e1626)",
+      background: "linear-gradient(160deg,#10231a,#0a1130)",
       border: "1px solid #1e3a2c",
       borderRadius: 16,
       padding: "16px",
@@ -9362,7 +9392,7 @@ function OverviewTab({
     style: {
       flex: 1,
       background: "#131c30",
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       borderLeft: "3px solid " + (paceOk ? "#4ADE80" : "#F5B324"),
       borderRadius: 13,
       padding: "13px 15px",
@@ -9488,7 +9518,7 @@ function OverviewTab({
     className: "riseIn",
     style: {
       background: "linear-gradient(120deg,rgba(46,120,199,.14),rgba(245,179,36,.06))",
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       borderRadius: 14,
       padding: "15px 18px",
       marginBottom: 14
@@ -9531,7 +9561,7 @@ function OverviewTab({
   }, paceOk ? "ON PACE" : "BEHIND PACE"))), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 22,
-      background: "#0a1220",
+      background: "#0a1130",
       borderRadius: 8,
       position: "relative",
       overflow: "hidden"
@@ -9580,7 +9610,7 @@ function OverviewTab({
     className: "riseIn liftCard",
     style: {
       background: "#131c30",
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       borderRadius: 14,
       padding: "14px 16px"
     }
@@ -9644,7 +9674,7 @@ function OverviewTab({
     className: "riseIn liftCard",
     style: {
       background: "#131c30",
-      border: "1px solid #1e2d47",
+      border: "1px solid #22307a",
       borderRadius: 14,
       padding: "14px 16px"
     }
@@ -9691,7 +9721,7 @@ function OverviewTab({
   }, t.tech), /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1,
-      background: "#0a1220",
+      background: "#0a1130",
       borderRadius: 5,
       height: 16,
       overflow: "hidden"
@@ -9738,7 +9768,7 @@ function HourByHourTab({
     textAlign: "center",
     fontSize: 10,
     color: "#9fb3cc",
-    borderBottom: "1px solid #1e2d47",
+    borderBottom: "1px solid #22307a",
     fontWeight: 700,
     letterSpacing: 1
   };
@@ -9746,7 +9776,7 @@ function HourByHourTab({
     padding: "9px 14px",
     textAlign: "center",
     fontSize: 12,
-    borderBottom: "1px solid #111827"
+    borderBottom: "1px solid #101a35"
   };
 
   // EOD projection
@@ -9801,8 +9831,8 @@ function HourByHourTab({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 24px 12px",
-      background: "linear-gradient(135deg,#161d2e,#1e2d47)",
-      borderBottom: "1px solid #1e2d47"
+      background: "linear-gradient(135deg,#0d1638,#22307a)",
+      borderBottom: "1px solid #22307a"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -9953,7 +9983,7 @@ function HourByHourTab({
   }, "/", hrs.length)), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 6,
-      background: "#0a1220",
+      background: "#0a1130",
       borderRadius: 3,
       marginTop: 8,
       overflow: "hidden"
@@ -9977,8 +10007,8 @@ function HourByHourTab({
     kpi: 60
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
-      border: "1px solid #1e2d47",
+      background: "#0d1638",
+      border: "1px solid #22307a",
       borderRadius: 16,
       overflow: "hidden"
     }
@@ -10055,8 +10085,8 @@ function HourByHourTab({
     });
   })()))), t.techs && t.techs.length ? /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
-      border: "1px solid #1e2d47",
+      background: "#0d1638",
+      border: "1px solid #22307a",
       borderRadius: 16,
       overflow: "hidden"
     }
@@ -10126,8 +10156,8 @@ function HourByHourTab({
     }
   }, "$" + Number(tc.rev || 0).toLocaleString())))))) : null, t.sched ? /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
-      border: "1px solid #1e2d47",
+      background: "#0d1638",
+      border: "1px solid #22307a",
       borderRadius: 16,
       overflow: "hidden"
     }
@@ -10156,8 +10186,8 @@ function HourByHourTab({
     key: kv[0],
     style: {
       flex: "1 1 130px",
-      background: "#0e1626",
-      border: "1px solid #1e2d47",
+      background: "#0a1130",
+      border: "1px solid #22307a",
       borderRadius: 12,
       padding: "12px 14px",
       textAlign: "center"
@@ -10227,8 +10257,8 @@ function HourByHourTab({
     }
   }, "$" + Number(s.soldrev || 0).toLocaleString())))))) : null) : /*#__PURE__*/React.createElement("div", {
     style: {
-      background: "#161d2e",
-      border: "1px solid #1e2d47",
+      background: "#0d1638",
+      border: "1px solid #22307a",
       borderRadius: 16,
       padding: "44px 20px",
       textAlign: "center",
@@ -10688,7 +10718,7 @@ function Root() {
   }), /*#__PURE__*/React.createElement("div", {
     className: "sticky-hdr",
     style: {
-      background: "linear-gradient(135deg,#0a0e1aee,#1e2d47ee)",
+      background: "linear-gradient(135deg,#0a0e1aee,#22307aee)",
       borderBottom: "2px solid #F5B324",
       padding: "12px 24px 0"
     }
@@ -10771,7 +10801,7 @@ function Root() {
     return /*#__PURE__*/React.createElement("div", {
       key: k.l,
       style: {
-        background: "#161d2e",
+        background: "#0d1638",
         border: `1px solid ${c}33`,
         borderRadius: 8,
         padding: "8px 14px",
@@ -10814,7 +10844,7 @@ function Root() {
   }, kioskMode ? "⏹ KIOSK" : "▶ KIOSK"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setShowManage(true),
     style: {
-      background: "linear-gradient(135deg,#1d4ed8,#1e2d47)",
+      background: "linear-gradient(135deg,#1d4ed8,#22307a)",
       border: "1px solid #F5B32455",
       color: "#FFFFFF",
       borderRadius: 8,

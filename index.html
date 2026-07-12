@@ -129,6 +129,9 @@ input[type=range].kpi-range::-webkit-slider-thumb{-webkit-appearance:none;width:
   .tech-filter,.tab-search{width:100%!important;}
   /* Trim heavy section padding so content isn't squeezed */
   .sec-pad{padding-left:12px!important;padding-right:12px!important;}
+  /* Phones: header scrolls away with the page instead of pinning and
+     eating half the viewport (it stays sticky on desktop/TV) */
+  .sticky-hdr{position:static!important;backdrop-filter:none!important;}
 }
 
 /* ── Round 4 Global ─────────────────────────────────────────── */

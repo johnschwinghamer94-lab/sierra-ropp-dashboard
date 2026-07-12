@@ -10251,6 +10251,515 @@ function HourByHourTab({
     }
   }, "Fills in automatically as today's hourly ServiceTitan reports arrive (9 AM–11 PM)."))));
 }
+
+// ── LIVE FEED tab · all-SILO live board (modeled on the Live Call Tracker) ───
+function LiveFeedTab({
+  hourly,
+  countdown
+}) {
+  const e = React.createElement;
+  const tierCol = r => r >= 60 ? "#2E78C7" : r >= 48 ? "#F5B324" : "#E63946";
+  const today = hourly && hourly.today || {
+    calls: 0,
+    tgls: 0,
+    rate: 0,
+    rev: 0,
+    techs: []
+  };
+  const techsToday = today.techs || [];
+  const roster = Array.from(new Set([...SILO_12, "Andrew Alonso"]));
+  const byName = {};
+  techsToday.forEach(t => {
+    byName[t.name] = t;
+  });
+  const active = [...techsToday].sort((a, b) => (b.rev || 0) - (a.rev || 0) || (b.tgls || 0) - (a.tgls || 0) || (b.calls || 0) - (a.calls || 0));
+  const idle = roster.filter(n => !byName[n]);
+  const mtdOf = n => {
+    const t = (typeof SILO_ONLY_DATA !== "undefined" && SILO_ONLY_DATA.techs || []).find(x => x.name === n);
+    return t ? t.mtd_calls + "/" + t.mtd_tgls + " · " + fmtPct(t.mtd_rate) : null;
+  };
+  const vegasHour = (() => {
+    try {
+      return +new Intl.DateTimeFormat("en-US", {
+        hour: "numeric",
+        hour12: false,
+        timeZone: "America/Los_Angeles"
+      }).format(new Date());
+    } catch (x) {
+      return new Date().getHours();
+    }
+  })();
+  const inOps = vegasHour >= 7 && vegasHour < 20;
+
+  // Live activity feed — diff each hourly snapshot per tech; persisted per day
+  const [events, setEvents] = React.useState([]);
+  React.useEffect(() => {
+    if (!hourly || !hourly.date) return;
+    const seenKey = "lf_seen_" + hourly.date,
+      evKey = "lf_events_" + hourly.date;
+    try {
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i) || "";
+        if ((k.indexOf("lf_seen_") === 0 || k.indexOf("lf_events_") === 0) && k !== seenKey && k !== evKey) localStorage.removeItem(k);
+      }
+    } catch (x) {}
+    let seen = null,
+      evs = [];
+    try {
+      seen = JSON.parse(localStorage.getItem(seenKey));
+      evs = JSON.parse(localStorage.getItem(evKey)) || [];
+    } catch (x) {
+      evs = [];
+    }
+    const stamp = hourly.updated || "";
+    const first = !seen;
+    if (!seen) seen = {};
+    techsToday.forEach(t => {
+      const p = seen[t.name] || {
+        calls: 0,
+        tgls: 0,
+        rev: 0
+      };
+      const dc = (t.calls || 0) - (p.calls || 0),
+        dt = (t.tgls || 0) - (p.tgls || 0),
+        dr = (t.rev || 0) - (p.rev || 0);
+      if (!first) {
+        if (dc > 0) evs.unshift({
+          i: "🏃",
+          x: t.name + " ran " + (dc === 1 ? "a ROPP call" : dc + " ROPP calls"),
+          t: stamp,
+          c: "#9fb3cc"
+        });
+        if (dt > 0) evs.unshift({
+          i: "✅",
+          x: t.name + " turned " + (dt === 1 ? "a TGL" : dt + " TGLs"),
+          t: stamp,
+          c: "#4ADE80"
+        });
+        if (dr > 0) evs.unshift({
+          i: "💰",
+          x: t.name + " +$" + Math.round(dr).toLocaleString() + " lead revenue",
+          t: stamp,
+          c: "#F5B324"
+        });
+      }
+      seen[t.name] = {
+        calls: t.calls || 0,
+        tgls: t.tgls || 0,
+        rev: t.rev || 0
+      };
+    });
+    if (first) {
+      const fmtHr = h => {
+        const n = +h;
+        return (n % 12 || 12) + " " + (n < 12 ? "AM" : "PM");
+      };
+      (hourly.hours || []).forEach(h => {
+        if ((h.dcalls || 0) > 0 || (h.dtgls || 0) > 0) {
+          const parts = [];
+          if (h.dcalls) parts.push("+" + h.dcalls + (h.dcalls === 1 ? " call" : " calls"));
+          if (h.dtgls) parts.push("+" + h.dtgls + (h.dtgls === 1 ? " TGL" : " TGLs"));
+          evs.unshift({
+            i: "🕐",
+            x: parts.join(" · ") + " (team)",
+            t: fmtHr(h.hour),
+            c: "#7089ab"
+          });
+        }
+      });
+      if (techsToday.length) evs.unshift({
+        i: "📡",
+        x: "Live Feed connected — tracking " + techsToday.length + " active SILO tech" + (techsToday.length === 1 ? "" : "s"),
+        t: stamp,
+        c: "#2E78C7"
+      });
+    }
+    if (evs.length > 150) evs = evs.slice(0, 150);
+    try {
+      localStorage.setItem(seenKey, JSON.stringify(seen));
+      localStorage.setItem(evKey, JSON.stringify(evs));
+    } catch (x) {}
+    setEvents(evs);
+  }, [hourly]);
+
+  // Needs-attention + hot streaks
+  const warn = active.filter(t => (t.calls || 0) >= 2 && (t.tgls || 0) === 0);
+  const hot = active.filter(t => (t.tgls || 0) >= 3 || (t.rate || 0) >= 100 && (t.calls || 0) >= 2);
+  const avgPerTgl = today.tgls > 0 ? Math.round((today.rev || 0) / today.tgls) : 0;
+  const techCard = t => {
+    const hasWarn = (t.calls || 0) >= 2 && (t.tgls || 0) === 0;
+    const isHot = hot.indexOf(t) !== -1;
+    const col = (t.calls || 0) > 0 ? tierCol(t.rate || 0) : "#7089ab";
+    const mtd = mtdOf(t.name);
+    return e("div", {
+      key: t.name,
+      className: "liftCard",
+      style: {
+        background: "#161d2e",
+        border: "1px solid " + (hasWarn ? "#E6394655" : "#1e2d47"),
+        borderLeft: "3px solid " + col,
+        borderRadius: 14,
+        padding: "12px 14px",
+        flex: "1 1 215px",
+        minWidth: 215,
+        maxWidth: 300
+      }
+    }, e("div", {
+      style: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "baseline",
+        gap: 8
+      }
+    }, e("div", {
+      style: {
+        fontSize: 12.5,
+        fontWeight: 800,
+        color: "#fff",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
+      }
+    }, isHot ? "🔥 " : "", t.name), e("div", {
+      style: {
+        fontSize: 15,
+        fontWeight: 800,
+        color: col
+      }
+    }, (t.calls || 0) > 0 ? fmtPct(t.rate || 0) : "—")), e("div", {
+      style: {
+        display: "flex",
+        gap: 13,
+        marginTop: 8,
+        fontSize: 11,
+        color: "#9fb3cc",
+        flexWrap: "wrap"
+      }
+    }, e("span", null, "🏃 ", e("b", {
+      style: {
+        color: "#fff"
+      }
+    }, t.calls || 0), " calls"), e("span", null, "✅ ", e("b", {
+      style: {
+        color: "#4ADE80"
+      }
+    }, t.tgls || 0), " TGLs"), e("span", null, "💰 ", e("b", {
+      style: {
+        color: "#F5B324"
+      }
+    }, "$" + Number(t.rev || 0).toLocaleString()))), e("div", {
+      style: {
+        marginTop: 9,
+        height: 5,
+        background: "#0d1322",
+        borderRadius: 4,
+        overflow: "hidden",
+        position: "relative"
+      }
+    }, e("div", {
+      style: {
+        width: Math.min(100, (t.calls || 0) > 0 ? t.rate || 0 : 0) + "%",
+        height: "100%",
+        background: col,
+        borderRadius: 4,
+        transition: "width .6s"
+      }
+    }), e("div", {
+      style: {
+        position: "absolute",
+        left: "60%",
+        top: 0,
+        bottom: 0,
+        width: 1,
+        background: "#ffffff44"
+      }
+    })), e("div", {
+      style: {
+        display: "flex",
+        justifyContent: "space-between",
+        marginTop: 6,
+        fontSize: 9,
+        color: "#6b7a99"
+      }
+    }, e("span", null, mtd ? "MTD " + mtd : ""), hasWarn && e("span", {
+      style: {
+        color: "#E63946",
+        fontWeight: 700
+      }
+    }, "⚠ NO TGL YET")));
+  };
+  return e("div", {
+    className: "riseIn",
+    style: {
+      padding: "0 0 40px"
+    }
+  }, e("style", null, "@keyframes lfPulse{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55)}70%{box-shadow:0 0 0 9px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}"), e("div", {
+    style: {
+      padding: "14px 24px 12px",
+      background: "linear-gradient(135deg,#161d2e,#1e2d47)",
+      borderBottom: "1px solid #1e2d47",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      flexWrap: "wrap",
+      gap: 10
+    }
+  }, e("div", null, e("div", {
+    style: {
+      fontSize: 9,
+      color: "#F5B324",
+      fontWeight: 700,
+      letterSpacing: "0.2em"
+    }
+  }, "📡 LIVE FEED · SILO TEAM"), e("div", {
+    style: {
+      fontSize: 11,
+      color: "#6b7a99",
+      marginTop: 2
+    }
+  }, hourly && hourly.date ? "All-SILO live board · updated " + (hourly.updated || "") + (countdown ? " · next check " + countdown : "") : "Waiting for today's first hourly report")), inOps ? e("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 7,
+      background: "#0d1f14",
+      border: "1px solid #4ADE8044",
+      borderRadius: 20,
+      padding: "5px 14px"
+    }
+  }, e("span", {
+    style: {
+      width: 8,
+      height: 8,
+      borderRadius: "50%",
+      background: "#4ADE80",
+      animation: "lfPulse 2s infinite"
+    }
+  }), e("span", {
+    style: {
+      fontSize: 10,
+      fontWeight: 800,
+      letterSpacing: "0.15em",
+      color: "#4ADE80"
+    }
+  }, "LIVE")) : e("div", {
+    style: {
+      background: "#101b30",
+      border: "1px solid #2E78C755",
+      borderRadius: 20,
+      padding: "5px 14px",
+      fontSize: 10,
+      fontWeight: 800,
+      letterSpacing: "0.12em",
+      color: "#7fb3e8"
+    }
+  }, "🌙 AFTER HOURS · FINAL")), e("div", {
+    style: {
+      padding: "18px 24px",
+      display: "flex",
+      flexDirection: "column",
+      gap: 16
+    }
+  }, e("div", {
+    style: {
+      display: "flex",
+      gap: 12,
+      flexWrap: "wrap"
+    }
+  }, e(KPICard, {
+    label: "ROPP CALLS",
+    value: today.calls || 0,
+    color: "#FFFFFF",
+    sub: "today",
+    big: true
+  }), e(KPICard, {
+    label: "TGLS TURNED",
+    value: today.tgls || 0,
+    color: "#4ADE80",
+    sub: "today",
+    big: true
+  }), e(KPICard, {
+    label: "CONVERSION",
+    value: (today.calls || 0) > 0 ? fmtPct(today.rate || 0) : "—",
+    color: (today.calls || 0) > 0 ? tierCol(today.rate || 0) : "#7089ab",
+    sub: "KPI 60%",
+    big: true
+  }), e(KPICard, {
+    label: "LEAD REVENUE",
+    value: "$" + Number(today.rev || 0).toLocaleString(),
+    color: "#F5B324",
+    sub: "from leads created today",
+    big: true
+  }), e(KPICard, {
+    label: "ACTIVE TECHS",
+    value: active.length + " / " + roster.length,
+    color: "#2E78C7",
+    sub: "SILO roster",
+    big: true
+  }), e(KPICard, {
+    label: "AVG $ / TGL",
+    value: "$" + avgPerTgl.toLocaleString(),
+    color: "#9fb3cc",
+    sub: "today",
+    big: true
+  })), warn.length > 0 && e("div", {
+    style: {
+      background: "#2a0d12",
+      border: "1px solid #E6394666",
+      borderRadius: 14,
+      padding: "10px 16px",
+      display: "flex",
+      alignItems: "center",
+      gap: 12,
+      flexWrap: "wrap"
+    }
+  }, e("span", {
+    style: {
+      fontSize: 10,
+      fontWeight: 800,
+      letterSpacing: "0.15em",
+      color: "#E63946"
+    }
+  }, "⚠ NEEDS ATTENTION"), warn.map(t => e("span", {
+    key: t.name,
+    style: {
+      fontSize: 11,
+      color: "#ffb3ba",
+      background: "#3b000033",
+      border: "1px solid #E6394633",
+      borderRadius: 10,
+      padding: "3px 10px"
+    }
+  }, t.name + " — " + t.calls + " calls, no TGL yet"))), e("div", {
+    style: {
+      display: "flex",
+      gap: 16,
+      alignItems: "flex-start",
+      flexWrap: "wrap"
+    }
+  }, e("div", {
+    style: {
+      flex: "2 1 480px",
+      minWidth: 300
+    }
+  }, e("div", {
+    style: {
+      fontSize: 10,
+      fontWeight: 700,
+      letterSpacing: "0.15em",
+      color: "#9fb3cc",
+      marginBottom: 10
+    }
+  }, "TECH BOARD · TODAY"), techsToday.length === 0 ? e("div", {
+    style: {
+      background: "#161d2e",
+      border: "1px dashed #1e2d47",
+      borderRadius: 14,
+      padding: "28px 20px",
+      textAlign: "center",
+      color: "#6b7a99",
+      fontSize: 12
+    }
+  }, "No SILO activity yet today — board fills in as hourly reports land (9 AM–11 PM).") : e("div", {
+    style: {
+      display: "flex",
+      gap: 12,
+      flexWrap: "wrap"
+    }
+  }, active.map(techCard)), idle.length > 0 && e("div", {
+    style: {
+      marginTop: 14
+    }
+  }, e("div", {
+    style: {
+      fontSize: 9,
+      fontWeight: 700,
+      letterSpacing: "0.15em",
+      color: "#6b7a99",
+      marginBottom: 7
+    }
+  }, "NO ROPP ACTIVITY YET (" + idle.length + ")"), e("div", {
+    style: {
+      display: "flex",
+      gap: 7,
+      flexWrap: "wrap"
+    }
+  }, idle.map(n => e("span", {
+    key: n,
+    style: {
+      fontSize: 10.5,
+      color: "#7089ab",
+      background: "#12182a",
+      border: "1px solid #1e2d47",
+      borderRadius: 10,
+      padding: "4px 11px"
+    }
+  }, n))))), e("div", {
+    style: {
+      flex: "1 1 300px",
+      minWidth: 280,
+      background: "#12182a",
+      border: "1px solid #1e2d47",
+      borderRadius: 14,
+      padding: "14px 16px"
+    }
+  }, e("div", {
+    style: {
+      fontSize: 10,
+      fontWeight: 700,
+      letterSpacing: "0.15em",
+      color: "#9fb3cc",
+      marginBottom: 10
+    }
+  }, "📡 LIVE ACTIVITY"), events.length === 0 ? e("div", {
+    style: {
+      color: "#6b7a99",
+      fontSize: 11,
+      padding: "14px 0"
+    }
+  }, "Events appear here as calls, TGLs and revenue land through the day.") : e("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+      maxHeight: 560,
+      overflowY: "auto"
+    }
+  }, events.map((ev, i) => e("div", {
+    key: i,
+    style: {
+      display: "flex",
+      gap: 9,
+      alignItems: "flex-start",
+      background: i === 0 ? "#16203a" : "transparent",
+      border: i === 0 ? "1px solid #2E78C733" : "1px solid transparent",
+      borderRadius: 10,
+      padding: "6px 8px"
+    }
+  }, e("span", {
+    style: {
+      fontSize: 13,
+      lineHeight: "16px"
+    }
+  }, ev.i), e("div", {
+    style: {
+      flex: 1,
+      minWidth: 0
+    }
+  }, e("div", {
+    style: {
+      fontSize: 11.5,
+      color: ev.c || "#9fb3cc",
+      fontWeight: 600
+    }
+  }, ev.x), e("div", {
+    style: {
+      fontSize: 9,
+      color: "#5a6b8c",
+      marginTop: 1
+    }
+  }, ev.t)))))))));
+}
 function Root() {
   const [tab, setTab] = useState("overview");
   const [data, setData] = useState(INITIAL_DATA);
@@ -10332,6 +10841,10 @@ function Root() {
     id: "hourbyhour",
     label: "⏱ HOUR BY HOUR",
     sub: "Today · live"
+  }, {
+    id: "livefeed",
+    label: "📡 LIVE FEED",
+    sub: "SILO · live board"
   }, {
     id: "ytd",
     label: "📊 YTD",
@@ -10423,6 +10936,7 @@ function Root() {
     if (hourly && hourly.today) {
       const h = hourly.today;
       if (h.calls || h.tgls) b['hourbyhour'] = h.calls + '/' + h.tgls;
+      if (h.calls || h.tgls) b['livefeed'] = h.calls + '/' + h.tgls;
     }
     return b;
   })();
@@ -10677,6 +11191,9 @@ function Root() {
     setKpiVal: setKpiVal
   }), tab === "hourbyhour" && /*#__PURE__*/React.createElement(HourByHourTab, {
     hourly: hourly
+  }), tab === "livefeed" && /*#__PURE__*/React.createElement(LiveFeedTab, {
+    hourly: hourly,
+    countdown: countdown
   }), tab === "ytd" && /*#__PURE__*/React.createElement(PeriodTable, {
     period: "ytd",
     data: data

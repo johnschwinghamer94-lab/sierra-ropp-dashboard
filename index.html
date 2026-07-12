@@ -10376,7 +10376,7 @@ function LiveFeedTab() {
       e("span", { style: { color: opt ? "#f5c518" : "#42549c" } },
         opt ? "\u{1F6E0} " + opt.n + " opt" + (opt.n === 1 ? "" : "s") + " · " + money(opt.total) : "no options yet"),
       j.warn ? e("span", { className: "lf2-warnbadge" }, j.warn)
-             : sig ? e("span", { style: { color: "#4ade80", fontWeight: 700 } }, "✅ " + money(sig.total)) : null);
+             : sig ? e("span", { style: { color: "#4ade80", fontWeight: 700 } }, sig.total > 0 ? "✅ " + money(sig.total) : "✅ SIGNED ✍") : null);
     return e("div", { key: j.jobId, className: kls },
       e("div", { className: "lf2-cardtop" },
         e("div", { style: { minWidth: 0 } },

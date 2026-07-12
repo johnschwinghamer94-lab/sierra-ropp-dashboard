@@ -10337,7 +10337,7 @@ function LiveFeedTab({
   })();
   const inOps = vegasHour >= 7 && vegasHour < 22;
   const ageMin = lf && lf.generatedMs ? Math.floor((Date.now() - lf.generatedMs) / 60000) : null;
-  const stale = inOps && ageMin !== null && ageMin > 6;
+  const stale = inOps && ageMin !== null && ageMin > 8;
 
   const k = lf && lf.kpis || { jobs: 0, completed: 0, onSite: 0, enRoute: 0, optionsTotal: 0, optionsCount: 0, optionsJobs: 0, signedTotal: 0, signedJobs: 0 };
   const allJobs = lf && lf.jobs || [];

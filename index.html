@@ -9062,6 +9062,40 @@ function CountUp({
 }
 
 // ── Overview (MAX command-center landing) ───────────────────────────────────
+// ── TGLs Created Today strip (Overview) — fed by livefeed.json "tgls" ────────
+function TglStrip() {
+  const e = React.createElement;
+  const [tg, setTg] = React.useState(null);
+  React.useEffect(() => {
+    let alive = true;
+    const load = () => fetch("livefeed.json?t=" + Date.now()).then(r => r.ok ? r.json() : null)
+      .then(j => { if (alive && j) setTg(j.tgls || []); }).catch(() => {});
+    load();
+    const id = setInterval(load, 60000);
+    return () => { alive = false; clearInterval(id); };
+  }, []);
+  const list = tg || [];
+  return e("div", {
+    className: "riseIn liftCard",
+    style: { background: "#0d1638", border: "1px solid #22307a", borderRadius: 16, padding: "12px 18px", marginBottom: 14 }
+  }, e("div", { style: { display: "flex", alignItems: "center", gap: 9, flexWrap: "wrap" } },
+    e("span", { style: { fontSize: 9, color: "#F5B324", fontWeight: 700, letterSpacing: "0.22em", fontFamily: "'Chakra Petch',sans-serif" } }, "⚡ TGLS CREATED TODAY"),
+    e("span", { style: { fontSize: 17, fontWeight: 800, color: list.length ? "#4ADE80" : "#5d6fa8", fontFamily: "'Chakra Petch',sans-serif" } }, String(list.length)),
+    list.length === 0 && e("span", { style: { fontSize: 10, color: "#6b7a99" } }, "none yet today — the first turn lights this up"),
+    list.map((t, i) => e("a", {
+      key: i,
+      href: "https://go.servicetitan.com/#/Job/Index/" + t.src,
+      target: "_blank",
+      rel: "noopener",
+      title: t.mine === false ? "other manager's tech" : "your tech — on the bonus sheet",
+      style: { fontSize: 10.5, fontWeight: 700,
+               color: t.mine === false ? "#5d6fa8" : "#eaf1fb",
+               background: t.mine === false ? "#101a35" : "rgba(74,222,128,.10)",
+               border: "1px solid " + (t.mine === false ? "#22307a" : "#4ADE8055"),
+               borderRadius: 9, padding: "4px 10px", textDecoration: "none" }
+    }, "✅ " + (t.t ? t.t + " " : "") + t.first))));
+}
+
 function OverviewTab({
   data,
   hourly,
@@ -9466,7 +9500,7 @@ function OverviewTab({
       display: "inline-block",
       animation: "pulse 2s infinite"
     }
-  }), "LIVE")), /*#__PURE__*/React.createElement("div", {
+  }), "LIVE")), /*#__PURE__*/React.createElement(TglStrip, null), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 14,

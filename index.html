@@ -10578,28 +10578,26 @@ function LiveFeedTab({
   const nrmTech = t => (t || "").toLowerCase().replace(/\s+/g, " ").trim();
   const scorePanel = j => {
     if (!scCards.length) return null;
+    // John's spec: coaching shows ONLY on the job the call belongs to (the
+    // finished one) — never borrowed onto upcoming jobs. Coach on the next job
+    // by reading the card on the last completed one.
     const jn = String(j.jobNumber || "");
-    let c = jn ? scCards.find(x => x.jobNumber && String(x.jobNumber) === jn) : null;
-    const prev = !c;
-    if (!c) c = scCards.find(x => nrmTech(x.tech) === nrmTech(j.tech));   // newest-first → latest call
+    const c = jn ? scCards.find(x => x.jobNumber && String(x.jobNumber) === jn) : null;
     if (!c) return null;
     const oc = OUT_COL[c.outcome] || "#8fa3d9";
-    const fails = Object.keys(CRIT_LAB).filter(k2 => c.critical && c.critical[k2] === false);
+    const tip = c.tip || "";
+    const isWin = /^WIN\b/i.test(tip);
+    const isFix = /^FIX\b/i.test(tip);
+    const body = tip.replace(/^(WIN|FIX)\s*[—:\-]\s*/i, "");
+    const lab = isWin ? "\u{1F44F} WHAT WORKED" : isFix ? "\u{1F3AF} NEXT TIME" : "\u{1F3AF} COACH POINT";
+    const labCol = isWin ? "#4ade80" : "#ffb35c";
     return e("div", { className: "lf2-sc", onClick: ev => ev.stopPropagation() },
       e("div", { className: "lf2-sc-h" },
-        e("span", { className: "lf2-sc-t" }, "\u{1F4CB} " + (prev ? "LAST CALL" : "CALL SCORE") + (c.durationMin ? " · " + c.durationMin + "M" : "")),
+        e("span", { className: "lf2-sc-t" }, "\u{1F4CB} CALL COACHING" + (c.durationMin ? " · " + c.durationMin + "M" : "")),
         e("span", { className: "lf2-sc-out", style: { color: oc, borderColor: oc + "88", background: oc + "14" } }, (c.outcome || "?").toUpperCase())),
-      e("div", { className: "lf2-sc-bands" },
-        [["WELCOME", "welcome"], ["ASSESS", "assessment"], ["DECISION", "decision"], ["DELIVER", "deliver"]].map(bd => {
-          const bv = c.bands && c.bands[bd[1]];
-          const col = BAND_COL[bv] || "#8fa3d9";
-          return e("div", { key: bd[1], className: "lf2-sc-band", style: { borderColor: col + "66", background: col + "10" } },
-            e("div", { className: "lf2-sc-bl", style: { color: col } }, bd[0]),
-            e("div", { className: "lf2-sc-bv", style: { color: col } }, (bv || "—").toUpperCase()));
-        })),
-      fails.length ? e("div", { className: "lf2-sc-crit" },
-        fails.map(f => e("span", { key: f, className: "lf2-sc-cx" }, "✗ " + CRIT_LAB[f]))) : null,
-      c.tip ? e("div", { className: "lf2-sc-tip" }, "\u{1F3AF} " + c.tip) : null);
+      body ? e("div", { className: "lf2-sc-tip" },
+        e("span", { style: { color: labCol, fontWeight: 800, letterSpacing: ".08em", marginRight: 6 } }, lab + " —"),
+        body) : null);
   };
 
   const card = j => {

@@ -9099,6 +9099,7 @@ function TglStrip() {
 function OverviewTab({
   data,
   hourly,
+  deptTgls,
   kpiVal,
   setKpiVal
 }) {
@@ -9508,7 +9509,7 @@ function OverviewTab({
       marginBottom: 14,
       alignItems: "stretch"
     }
-  }, gaugeCard("TODAY" + (hourly && hourly.updated ? " · " + hourly.updated : ""), hourly && hourly.today ? hourly.today.rate : null, hourly && hourly.today ? hourly.today.calls : 0, hourly && hourly.today ? hourly.today.tgls : 0), gaugeCard("YTD CONVERSION", ytdRate, yc, yt), gaugeCard(CUR_MONTH.toUpperCase() + " MTD", mtdRate, mc, mt), /*#__PURE__*/React.createElement("div", {
+  }, gaugeCard("TODAY" + (hourly && hourly.updated ? " · " + hourly.updated : ""), hourly && hourly.today ? hourly.today.rate : null, hourly && hourly.today ? hourly.today.calls : 0, deptTgls != null ? deptTgls : hourly && hourly.today ? hourly.today.tgls : 0), gaugeCard("YTD CONVERSION", ytdRate, yc, yt), gaugeCard(CUR_MONTH.toUpperCase() + " MTD", mtdRate, mc, mt), /*#__PURE__*/React.createElement("div", {
     className: "riseIn liftCard",
     style: {
       background: "linear-gradient(160deg,#10231a,#0a1130)",
@@ -9924,7 +9925,8 @@ function OverviewTab({
 // ── ROOT ──────────────────────────────────────────────────────────────────────
 // ── Hour by Hour (live today, from hourly.json) ─────────────────────────────
 function HourByHourTab({
-  hourly
+  hourly,
+  deptTgls
 }) {
   const fmtHour = h => {
     const n = +h;
@@ -10060,7 +10062,8 @@ function HourByHourTab({
     big: true
   }), /*#__PURE__*/React.createElement(KPICard, {
     label: "TODAY TGLs",
-    value: t.tgls,
+    value: deptTgls != null ? deptTgls : t.tgls,
+    sub: deptTgls != null ? "created today · dept" : undefined,
     color: "#2E78C7",
     big: true
   }), /*#__PURE__*/React.createElement(KPICard, {
@@ -10756,6 +10759,7 @@ function Root() {
 
   // Live hourly snapshots
   const INTERVAL = 60 * 1000;
+  const [deptTgls, setDeptTgls] = useState(null);
   const loadHourly = React.useCallback(() => {
     setRefreshing(true);
     fetch("hourly.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
@@ -10796,6 +10800,16 @@ function Root() {
   useEffect(() => {
     loadHourly();
     const id = setInterval(loadHourly, INTERVAL);
+    return () => clearInterval(id);
+  }, []);
+
+  // dept TGLs created today (feeds the KPI boxes + Overview strip source)
+  useEffect(() => {
+    const loadLf = () => fetch("livefeed.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
+      if (j && Array.isArray(j.tgls)) setDeptTgls(j.tgls.length);
+    }).catch(() => {});
+    loadLf();
+    const id = setInterval(loadLf, 60000);
     return () => clearInterval(id);
   }, []);
 
@@ -10971,7 +10985,7 @@ function Root() {
     const b = {};
     if (hourly && hourly.today) {
       const h = hourly.today;
-      if (h.calls || h.tgls) b['hourbyhour'] = h.calls + '/' + h.tgls;
+      if (h.calls || h.tgls) b['hourbyhour'] = h.calls + '/' + (deptTgls != null ? deptTgls : h.tgls);
     }
     return b;
   })();
@@ -11222,10 +11236,12 @@ function Root() {
   }, tab === "overview" && /*#__PURE__*/React.createElement(OverviewTab, {
     data: data,
     hourly: hourly,
+    deptTgls: deptTgls,
     kpiVal: kpiVal,
     setKpiVal: setKpiVal
   }), tab === "hourbyhour" && /*#__PURE__*/React.createElement(HourByHourTab, {
-    hourly: hourly
+    hourly: hourly,
+    deptTgls: deptTgls
   }), tab === "livefeed" && /*#__PURE__*/React.createElement(LiveFeedTab, {
     hourly: hourly
   }), tab === "ytd" && /*#__PURE__*/React.createElement(PeriodTable, {

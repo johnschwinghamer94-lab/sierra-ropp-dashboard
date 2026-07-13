@@ -10581,6 +10581,8 @@ function LiveFeedTab({
     // John's spec: coaching shows ONLY on the job the call belongs to (the
     // finished one) — never borrowed onto upcoming jobs. Coach on the next job
     // by reading the card on the last completed one.
+    if (j.status !== "Done") return null;   // recording can end while the tech is
+    // still on site — coach only after the job is marked done (John's spec)
     const jn = String(j.jobNumber || "");
     const c = jn ? scCards.find(x => x.jobNumber && String(x.jobNumber) === jn) : null;
     if (!c) return null;

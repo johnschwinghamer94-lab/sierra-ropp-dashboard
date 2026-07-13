@@ -10500,12 +10500,24 @@ const LF_CSS = `
 .lf2-ev .x{font-size:10.5px;font-weight:600;line-height:1.35}
 .lf2-ev .t{font-size:8.5px;color:#5d6fa8;margin-top:1px}
 .lf2-empty{background:#0d1638;border:1px dashed #22307a;border-radius:10px;padding:34px 20px;text-align:center;color:#5d6fa8;font-size:12px;letter-spacing:.06em;grid-column:1/-1}
+.lf2-sc{margin-top:9px;border-top:1px solid #22307a;padding-top:8px;cursor:default}
+.lf2-sc-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:6px}
+.lf2-sc-t{font-size:8.5px;font-weight:700;letter-spacing:.2em;color:#8fa3d9;text-transform:uppercase;white-space:nowrap}
+.lf2-sc-out{font-size:8px;font-weight:800;letter-spacing:.12em;padding:2px 8px;border-radius:4px;border:1px solid;white-space:nowrap}
+.lf2-sc-bands{display:flex;gap:4px}
+.lf2-sc-band{flex:1 1 0;min-width:0;text-align:center;border-radius:5px;padding:3px 2px;border:1px solid}
+.lf2-sc-bl{font-size:6.5px;letter-spacing:.1em;font-weight:700;opacity:.8;text-transform:uppercase}
+.lf2-sc-bv{font-size:7.5px;font-weight:800;letter-spacing:.02em;margin-top:1px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lf2-sc-crit{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+.lf2-sc-cx{font-size:8px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:4px;color:#ff7b86;background:#2a0d1266;border:1px solid #e6394666}
+.lf2-sc-tip{margin-top:7px;font-size:9.5px;line-height:1.45;color:#cfd9f5;background:#0a1233;border:1px solid #22307a;border-left:3px solid #f5c518;border-radius:6px;padding:6px 9px}
 `;
 function LiveFeedTab({
   hourly
 }) {
   const e = React.createElement;
   const [lf, setLf] = React.useState(null);
+  const [sc, setSc] = React.useState(null);
   const [failed, setFailed] = React.useState(false);
   const [buFilter, setBuFilter] = React.useState("ALL");
   const [, setTick] = React.useState(0);
@@ -10516,6 +10528,10 @@ function LiveFeedTab({
         if (!alive) return;
         if (j) { setLf(j); setFailed(false); } else setFailed(true);
       }).catch(() => { if (alive) setFailed(true); });
+      // FSG live-coach scorecards (published by the Mac's silo-live-scorecards task) — optional file
+      fetch("scorecards.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
+        if (alive && j) setSc(j);
+      }).catch(() => {});
     };
     load();
     const id = setInterval(load, 45000);
@@ -10553,6 +10569,38 @@ function LiveFeedTab({
     e("div", { className: "lf2-nlab" }, lab),
     e("div", { className: "lf2-nsub", style: green && lit ? { color: "#4ade80" } : null }, lit ? sub || "✓" : "–"));
   const seg = lit => e("div", { className: "lf2-seg" + (lit ? " lit" : "") });
+
+  // ── FSG live-coach scorecards (word bands only — SILO convention) ──────────
+  const BAND_COL = { "Strong": "#4ade80", "Strong on wins": "#35d0c0", "Solid": "#7fb3e8", "Moderate": "#ffb35c", "Weak": "#ff7b86" };
+  const OUT_COL = { "closed": "#4ade80", "flipped": "#f5c518", "no-close": "#ff7b86", "unknown": "#8fa3d9" };
+  const CRIT_LAB = { expectations: "EXPECTATIONS", questions: "QUESTIONS", options: "OPTIONS", objections: "OBJECTIONS" };
+  const scCards = sc && sc.cards || [];
+  const nrmTech = t => (t || "").toLowerCase().replace(/\s+/g, " ").trim();
+  const scorePanel = j => {
+    if (!scCards.length) return null;
+    const jn = String(j.jobNumber || "");
+    let c = jn ? scCards.find(x => x.jobNumber && String(x.jobNumber) === jn) : null;
+    const prev = !c;
+    if (!c) c = scCards.find(x => nrmTech(x.tech) === nrmTech(j.tech));   // newest-first → latest call
+    if (!c) return null;
+    const oc = OUT_COL[c.outcome] || "#8fa3d9";
+    const fails = Object.keys(CRIT_LAB).filter(k2 => c.critical && c.critical[k2] === false);
+    return e("div", { className: "lf2-sc", onClick: ev => ev.stopPropagation() },
+      e("div", { className: "lf2-sc-h" },
+        e("span", { className: "lf2-sc-t" }, "\u{1F4CB} " + (prev ? "LAST CALL" : "CALL SCORE") + (c.durationMin ? " · " + c.durationMin + "M" : "")),
+        e("span", { className: "lf2-sc-out", style: { color: oc, borderColor: oc + "88", background: oc + "14" } }, (c.outcome || "?").toUpperCase())),
+      e("div", { className: "lf2-sc-bands" },
+        [["WELCOME", "welcome"], ["ASSESS", "assessment"], ["DECISION", "decision"], ["DELIVER", "deliver"]].map(bd => {
+          const bv = c.bands && c.bands[bd[1]];
+          const col = BAND_COL[bv] || "#8fa3d9";
+          return e("div", { key: bd[1], className: "lf2-sc-band", style: { borderColor: col + "66", background: col + "10" } },
+            e("div", { className: "lf2-sc-bl", style: { color: col } }, bd[0]),
+            e("div", { className: "lf2-sc-bv", style: { color: col } }, (bv || "—").toUpperCase()));
+        })),
+      fails.length ? e("div", { className: "lf2-sc-crit" },
+        fails.map(f => e("span", { key: f, className: "lf2-sc-cx" }, "✗ " + CRIT_LAB[f]))) : null,
+      c.tip ? e("div", { className: "lf2-sc-tip" }, "\u{1F3AF} " + c.tip) : null);
+  };
 
   const card = j => {
     const s = j.stages || {};
@@ -10597,7 +10645,7 @@ function LiveFeedTab({
             style: t.k === "recall" ? { color: "#ff8fa3", borderColor: "#e63946aa", background: "#2a0d1244" }
                                     : { color: "#7fb3e8", borderColor: "#2E78C766" }
           }, (t.k === "recall" ? "🔁 " : "🛡 ") + t.n)))),
-      timeline, bot);
+      timeline, bot, scorePanel(j));
   };
 
   const kpi = (l, v, sub, col) => e("div", { className: "lf2-kpi" },

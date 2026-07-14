@@ -10753,6 +10753,7 @@ function LiveFeedTab({
           e("span", { className: "th" }, t.first || "?"),
           e("span", { className: "cu", style: t.mine === false ? { color: "#5d6fa8" } : null }, t.cust || ""),
           t.sd ? e("span", { className: "sb", style: { color: "#f5c518", borderColor: "#f5c51888", background: "rgba(245,197,24,.10)" }, title: "estimate scheduled the same day it was created" }, "⚡ SAME-DAY") : null,
+          t.can ? e("span", { className: "sb", style: { color: "#ff7b86", borderColor: "#e63946aa", background: "#2a0d1266" }, title: "TGL estimate canceled" }, "🚫 CXL") : null,
           t.soldT ? e("span", { className: "sb" }, "💰 SOLD " + t.soldT) : null)))),
     buList.length > 1 && e("div", { className: "lf2-bus" },
       ["ALL"].concat(buList).map(b => e("button", { key: b, className: "lf2-bu" + (buFilter === b ? " on" : ""), onClick: () => setBuFilter(b) }, b))),

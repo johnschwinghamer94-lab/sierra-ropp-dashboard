@@ -10641,10 +10641,14 @@ function LiveFeedTab({
     const body = tip.replace(/^(WIN|FIX)\s*[—:\-]\s*/i, "");
     const lab = isWin ? "\u{1F44F} WHAT WORKED" : isFix ? "\u{1F3AF} NEXT TIME" : "\u{1F3AF} COACH POINT";
     const labCol = isWin ? "#4ade80" : "#ffb35c";
+    // this call's TGL sold (install booked) — from the live feed's TGL board data
+    const tglSold = (lf && lf.tgls || []).find(x => x.soldT && String(x.src) === String(j.jobId));
     return e("div", { className: "lf2-sc", onClick: ev => ev.stopPropagation() },
       e("div", { className: "lf2-sc-h" },
         e("span", { className: "lf2-sc-t" }, "\u{1F4CB} CALL COACHING" + (c.durationMin ? " · " + c.durationMin + "M" : "")),
-        e("span", { className: "lf2-sc-out", style: { color: oc, borderColor: oc + "88", background: oc + "14" } }, (c.outcome || "?").toUpperCase())),
+        e("span", { style: { display: "flex", gap: 5, alignItems: "center", flexShrink: 0 } },
+          tglSold ? e("span", { className: "lf2-sc-out", style: { color: "#4ade80", borderColor: "#4ade80cc", background: "rgba(74,222,128,.16)", boxShadow: "0 0 8px #4ade8044" } }, "\u{1F4B0} TGL SOLD " + tglSold.soldT) : null,
+          e("span", { className: "lf2-sc-out", style: { color: oc, borderColor: oc + "88", background: oc + "14" } }, (c.outcome || "?").toUpperCase()))),
       body ? e("div", { className: "lf2-sc-tip" },
         e("span", { style: { color: labCol, fontWeight: 800, letterSpacing: ".08em", marginRight: 6 } }, lab + " —"),
         body) : null);

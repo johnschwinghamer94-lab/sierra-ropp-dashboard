@@ -10548,6 +10548,17 @@ const LF_CSS = `
 .lf2-sc-crit{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
 .lf2-sc-cx{font-size:8px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:4px;color:#ff7b86;background:#2a0d1266;border:1px solid #e6394666}
 .lf2-sc-tip{margin-top:7px;font-size:9.5px;line-height:1.45;color:#cfd9f5;background:#0a1233;border:1px solid #22307a;border-left:3px solid #f5c518;border-radius:6px;padding:6px 9px}
+.lf2-tglbd{margin:12px 22px 0;background:linear-gradient(180deg,#0d1638,#0a1130);border:1px solid #22307a;border-radius:10px;padding:12px 16px}
+.lf2-tglbd-h{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.lf2-tglbd-t{font-size:10px;font-weight:700;letter-spacing:.24em;color:#f5c518;text-transform:uppercase}
+.lf2-tglbd-n{font-size:15px;font-weight:800;color:#4ade80;font-family:'Chakra Petch',sans-serif}
+.lf2-tglbd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:6px}
+.lf2-tglrow{display:flex;align-items:center;gap:8px;padding:5px 9px;border-radius:7px;border:1px solid #22307a;background:#0a1233;text-decoration:none;min-width:0}
+.lf2-tglrow.sold{border-color:#4ade8077;background:rgba(74,222,128,.07);box-shadow:0 0 10px #4ade8022}
+.lf2-tglrow .tm{font-size:9px;color:#8fa3d9;font-weight:700;flex-shrink:0;width:44px}
+.lf2-tglrow .th{font-size:10px;color:#f5c518;font-weight:800;letter-spacing:.05em;flex-shrink:0;text-transform:uppercase}
+.lf2-tglrow .cu{font-size:9.5px;color:#cfd9f5;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;text-transform:uppercase}
+.lf2-tglrow .sb{font-size:8px;font-weight:800;letter-spacing:.1em;color:#4ade80;border:1px solid #4ade8088;background:rgba(74,222,128,.12);border-radius:4px;padding:2px 7px;flex-shrink:0;white-space:nowrap}
 `;
 function LiveFeedTab({
   hourly
@@ -10716,8 +10727,26 @@ function LiveFeedTab({
       kpi("Jobs Today", k.jobs, k.completed + " completed"),
       kpi("On Site Now", k.onSite, k.enRoute + " en route", k.onSite > 0 ? "#f5c518" : null),
       kpi("Options In Play", money(k.optionsTotal), k.optionsCount + " options on " + k.optionsJobs + " jobs", "#f5c518"),
-      kpi("TGLs Created", k.signedJobs, k.signedTotal > 0 ? "lead jobs booked · 💵 +" + money(k.signedTotal) + " sold on calls" : "lead jobs booked from calls", "#4ade80"),
+      kpi("TGLs Created", k.tglLeads != null ? k.tglLeads : k.signedJobs, (k.tglSold ? "💰 " + k.tglSold + " SOLD · " : "") + "replacement leads only" + (k.signedTotal > 0 ? " · 💵 +" + money(k.signedTotal) + " sold on calls" : ""), "#4ade80"),
       kpi("Sold TGL Revenue", hourly && hourly.today ? money(hourly.today.rev) : "—", "sales from leads created today", "#f5c518")),
+    lf && lf.tgls && lf.tgls.length > 0 && e("div", { className: "lf2-tglbd riseIn" },
+      e("div", { className: "lf2-tglbd-h" },
+        e("span", { className: "lf2-tglbd-t" }, "⚡ TGL Board — Replacement Leads"),
+        e("span", { className: "lf2-tglbd-n" }, String(lf.tgls.length)),
+        (lf.tgls.filter(t => t.soldT).length > 0) && e("span", { style: { fontSize: 10, fontWeight: 800, color: "#4ade80", letterSpacing: ".08em" } },
+          "💰 " + lf.tgls.filter(t => t.soldT).length + " SOLD")),
+      e("div", { className: "lf2-tglbd-grid" },
+        lf.tgls.map((t, i) => e("a", {
+          key: i,
+          className: "lf2-tglrow" + (t.soldT ? " sold" : ""),
+          href: "https://go.servicetitan.com/#/Job/Index/" + (t.num || t.src),
+          target: "_blank", rel: "noopener",
+          title: t.mine === false ? "other manager's tech" : "your tech — on the bonus sheet"
+        },
+          e("span", { className: "tm" }, t.t || ""),
+          e("span", { className: "th" }, t.first || "?"),
+          e("span", { className: "cu", style: t.mine === false ? { color: "#5d6fa8" } : null }, t.cust || ""),
+          t.soldT ? e("span", { className: "sb" }, "💰 SOLD " + t.soldT) : null)))),
     buList.length > 1 && e("div", { className: "lf2-bus" },
       ["ALL"].concat(buList).map(b => e("button", { key: b, className: "lf2-bu" + (buFilter === b ? " on" : ""), onClick: () => setBuFilter(b) }, b))),
     e("div", { className: "lf2-main" },

@@ -10768,6 +10768,52 @@ function LiveFeedTab({
       feedRail));
 }
 
+// ── Global feed-health banner (John, 2026-07-16): red alert on EVERY tab when a
+//    feed goes stale or unreachable. Self-contained 2-min poll of hourly.json
+//    (Today tab, 3-min cadence, alert >20m inside 6a–10p) and livefeed.json
+//    (90s cadence, alert >10m inside 7a–9p). Two consecutive fetch failures =
+//    UNREACHABLE. scorecards.json is excluded on purpose — it only updates when
+//    a call finishes, so age is not a health signal. ─────────────────────────
+function HealthBanner() {
+  const e = React.createElement;
+  const [probs, setProbs] = React.useState([]);
+  React.useEffect(() => {
+    let alive = true;
+    const fails = { h: 0, l: 0 };
+    const check = () => {
+      const now = Date.now();
+      const grab = url => fetch(url + "?t=" + now).then(r => r.ok ? r.json() : null).catch(() => null);
+      Promise.all([grab("hourly.json"), grab("livefeed.json")]).then(res => {
+        if (!alive) return;
+        const [hj, lj] = res;
+        if (hj) fails.h = 0; else fails.h++;
+        if (lj) fails.l = 0; else fails.l++;
+        const hAge = hj && hj.generatedMs ? (now - hj.generatedMs) / 60000 : null;
+        const lAge = lj && lj.generatedMs ? (now - lj.generatedMs) / 60000 : null;
+        let hr = 12;
+        try { hr = +new Intl.DateTimeFormat("en-US", { hour: "numeric", hour12: false, timeZone: "America/Los_Angeles" }).format(new Date()); } catch (x) {}
+        const p = [];
+        if (fails.h >= 2) p.push("TODAY FEED UNREACHABLE");
+        else if (hr >= 6 && hr < 22 && hAge !== null && hAge > 20) p.push("TODAY FEED STALE " + Math.round(hAge) + "M");
+        if (fails.l >= 2) p.push("LIVE FEED UNREACHABLE");
+        else if (hr >= 7 && hr < 21 && lAge !== null && lAge > 10) p.push("LIVE FEED STALE " + Math.round(lAge) + "M");
+        setProbs(p);
+      });
+    };
+    check();
+    const id = setInterval(check, 120000);
+    return () => { alive = false; clearInterval(id); };
+  }, []);
+  if (!probs.length) return null;
+  return e("div", { style: { position: "fixed", top: 0, left: 0, right: 0, zIndex: 9999,
+      background: "linear-gradient(90deg,#3a0d12,#5c1219,#3a0d12)", borderBottom: "2px solid #e63946",
+      color: "#ff9aa5", fontFamily: "'Chakra Petch',sans-serif", fontWeight: 800, fontSize: 13,
+      letterSpacing: ".12em", textAlign: "center", padding: "9px 14px", textTransform: "uppercase",
+      animation: "hbGlow 1.4s infinite" } },
+    e("style", null, "@keyframes hbGlow{0%,100%{box-shadow:0 4px 18px #e6394633}50%{box-shadow:0 4px 30px #e63946bb}}"),
+    "⚠ Dashboard alert · " + probs.join(" · ") + " — numbers on screen may be behind");
+}
+
 function Root() {
   // survive refreshes on the current tab: URL hash (#livefeed = pin a TV) wins,
   // then the last tab this browser was on, then overview
@@ -11063,7 +11109,7 @@ function Root() {
       minHeight: "100vh",
       background: "#0a0e1a"
     }
-  }, showManage && /*#__PURE__*/React.createElement(ManagePanel, {
+  }, /*#__PURE__*/React.createElement(HealthBanner, null), showManage && /*#__PURE__*/React.createElement(ManagePanel, {
     data: data,
     setData: setData,
     onClose: () => setShowManage(false)

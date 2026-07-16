@@ -11445,7 +11445,13 @@ ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.
       setTimeout(tick, 60 * 1000);
       return;
     }
-    window.location.reload();
+    // Plain reload() may be served from the browser's cached copy of this page
+    // (GitHub Pages sets Cache-Control: max-age=600) — a full 10-min stale window
+    // is possible on the very first auto-refresh after a code deploy. Navigate to
+    // a cache-busted URL instead so this reload always fetches the live page.
+    var u = new URL(window.location.href);
+    u.searchParams.set("_r", Date.now());
+    window.location.href = u.toString();
   }
   setTimeout(tick, EVERY);
 })();

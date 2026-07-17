@@ -9477,7 +9477,7 @@ function OverviewTab({
       marginBottom: 14,
       alignItems: "stretch"
     }
-  }, gaugeCard("TODAY" + (hourly && hourly.updated ? " · " + hourly.updated : ""), hourly && hourly.today ? hourly.today.rate : null, hourly && hourly.today ? hourly.today.calls : 0, deptTgls != null ? deptTgls : hourly && hourly.today ? hourly.today.tgls : 0), gaugeCard("YTD CONVERSION", ytdRate, yc, yt), gaugeCard(CUR_MONTH.toUpperCase() + " MTD", mtdRate, mc, mt), /*#__PURE__*/React.createElement("div", {
+  }, gaugeCard("TODAY" + (hourly && hourly.updated ? " · " + hourly.updated : ""), (function(){var _c=hourly&&hourly.today?hourly.today.calls:0,_t=deptTgls!=null?deptTgls:hourly&&hourly.today?hourly.today.tgls:0;return _c>0?_t/_c*100:(hourly&&hourly.today?hourly.today.rate:null);})(), hourly && hourly.today ? hourly.today.calls : 0, deptTgls != null ? deptTgls : hourly && hourly.today ? hourly.today.tgls : 0), gaugeCard("YTD CONVERSION", ytdRate, yc, yt), gaugeCard(CUR_MONTH.toUpperCase() + " MTD", mtdRate, mc, mt), /*#__PURE__*/React.createElement("div", {
     className: "riseIn liftCard",
     style: {
       background: "linear-gradient(160deg,#10231a,#0a1130)",
@@ -10600,7 +10600,20 @@ function LiveFeedTab({
     if (j.status !== "Done") return null;   // recording can end while the tech is
     // still on site — coach only after the job is marked done (John's spec)
     const jn = String(j.jobNumber || "");
-    const c = jn ? scCards.find(x => x.jobNumber && String(x.jobNumber) === jn) : null;
+    let c = jn ? scCards.find(x => x.jobNumber && String(x.jobNumber) === jn) : null;
+    let isLastCall = false;
+    if (!c) {
+      // Siro cards usually have no ST jobNumber — fall back to the tech's most
+      // recent scored call ("LAST CALL") so coaching still surfaces.
+      const jt = nrmTech(j.tech);
+      if (jt) {
+        const matches = scCards.filter(x => nrmTech(x.tech) === jt);
+        if (matches.length) {
+          c = matches.reduce((a, b) => (new Date(b.dateCreated || 0) > new Date(a.dateCreated || 0) ? b : a));
+          isLastCall = true;
+        }
+      }
+    }
     if (!c) return null;
     const oc = OUT_COL[c.outcome] || "#8fa3d9";
     const tip = c.tip || "";
@@ -10613,7 +10626,7 @@ function LiveFeedTab({
     const tglSold = (lf && lf.tgls || []).find(x => x.soldT && String(x.src) === String(j.jobId));
     return e("div", { className: "lf2-sc", onClick: ev => ev.stopPropagation() },
       e("div", { className: "lf2-sc-h" },
-        e("span", { className: "lf2-sc-t" }, "\u{1F4CB} CALL COACHING" + (c.durationMin ? " · " + c.durationMin + "M" : "")),
+        e("span", { className: "lf2-sc-t" }, "\u{1F4CB} CALL COACHING" + (isLastCall ? " · LAST CALL" : "") + (c.durationMin ? " · " + c.durationMin + "M" : "")),
         e("span", { style: { display: "flex", gap: 5, alignItems: "center", flexShrink: 0 } },
           tglSold ? e("span", { className: "lf2-sc-out", style: { color: "#4ade80", borderColor: "#4ade80cc", background: "rgba(74,222,128,.16)", boxShadow: "0 0 8px #4ade8044" } }, "\u{1F4B0} TGL SOLD " + tglSold.soldT) : null,
           e("span", { className: "lf2-sc-out", style: { color: oc, borderColor: oc + "88", background: oc + "14" } }, (c.outcome || "?").toUpperCase()))),

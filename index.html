@@ -10870,8 +10870,9 @@ function Root() {
   // dept TGLs created today (feeds the KPI boxes + Overview strip source)
   useEffect(() => {
     const loadLf = () => fetch("livefeed.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
-      // canceled TGL estimates stay visible on the board (🚫 CXL) but must not count
-      if (j && Array.isArray(j.tgls)) setDeptTgls(j.tgls.filter(x => !x.can).length);
+      // canceled TGLs still count (John 2026-07-17) — mis-created tickets are
+      // dropped upstream by livefeed_sync's NOT_A_TGL list, never here
+      if (j && Array.isArray(j.tgls)) setDeptTgls(j.tgls.length);
     }).catch(() => {});
     loadLf();
     const id = setInterval(loadLf, 60000);

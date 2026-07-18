@@ -10897,6 +10897,23 @@ function Root() {
     return () => clearInterval(id);
   }, [lastUpdated]);
 
+  // ── Staleness guard: baked-in tabs (Yesterday/YTD/...) and the UI code only
+  // update on page load, so quietly reload old pages. Rules: any page >12h old;
+  // hidden tabs >4h; and a daily 5:50 AM refresh so wall TVs start each day
+  // on the newest build. Tab choice + boot-splash state survive the reload.
+  useEffect(() => {
+    const t0 = Date.now();
+    const id = setInterval(() => {
+      const ageH = (Date.now() - t0) / 3600000;
+      const now = new Date();
+      const preDay = now.getHours() === 5 && now.getMinutes() >= 50;
+      if (ageH > 12 || (ageH > 4 && document.hidden) || (ageH > 1 && preDay)) {
+        window.location.reload();
+      }
+    }, 300000);
+    return () => clearInterval(id);
+  }, []);
+
   // ── Data-sync flash: header glows green when a fresh capture lands ───────
   useEffect(() => {
     if (!hourly || !hourly.updated) return;

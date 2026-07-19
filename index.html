@@ -199,6 +199,18 @@ tbody tr:nth-child(even) td{background:rgba(255,255,255,.025);}
 .riseIn.liftCard{}
 table{border-collapse:collapse;}
 thead th{background:#0F0F12;border-bottom:2px solid #C89238;}
+/* THE WIRE — sportsbook ticker rail under the header */
+.tkr{display:flex;align-items:stretch;background:#0F0F12;border-bottom:1px solid #26262C;height:30px;overflow:hidden;position:relative;z-index:99;}
+.tkr-tag{flex:0 0 auto;display:flex;align-items:center;padding:0 14px;background:#F2B63B;color:#0B0B0D;font:600 10px 'Oswald',sans-serif;letter-spacing:.2em;text-transform:uppercase;}
+.tkr-tag.closed{background:#26262C;color:#9A97A0;}
+.tkr-clip{flex:1 1 auto;overflow:hidden;display:flex;align-items:center;}
+.tkr-track{display:inline-flex;align-items:center;white-space:nowrap;animation:marquee 60s linear infinite;will-change:transform;}
+.tkr:hover .tkr-track{animation-play-state:paused;}
+.tkr-it{display:inline-flex;align-items:center;font:500 10.5px 'Oswald',sans-serif;letter-spacing:.1em;color:#EDEAE2;text-transform:uppercase;font-variant-numeric:tabular-nums;}
+.tkr-it b{color:#F2B63B;font-weight:600;margin-right:6px;}
+.tkr-sep{color:#C89238;margin:0 16px;font-size:8px;}
+@media (prefers-reduced-motion: reduce){.tkr-track{animation:none!important;}}
+@media(max-width:640px){.tkr{display:none;}}
 </style>
 </head>
 <body>
@@ -10414,49 +10426,50 @@ function HourByHourTab({
 // ── LIVE FEED tab · SILO per-job command board (fed by livefeed.json — entity-API
 //    sync loop on John's PC, servicetitan/livefeed_sync.py, 2.5-min cycles) ─────
 const LF_CSS = `
-.lf2-wrap{font-family:'Oswald','Archivo',sans-serif;min-height:70vh;background:radial-gradient(ellipse 80% 50% at 50% -10%,#131316 0%,#0a1024 55%,#070b1a 100%);padding:0 0 44px}
-.lf2-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 22px;background:linear-gradient(90deg,#101013ee,#151517ee);border-bottom:1px solid #26262C}
-.lf2-logo{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#F2B63B,#C89238);display:flex;align-items:center;justify-content:center;font-weight:900;color:#0B0B0D;font-size:20px;box-shadow:0 0 14px #F2B63B33}
+.lf2-wrap{font-family:'Oswald','Archivo',sans-serif;min-height:70vh;background:#0B0B0D;padding:0 0 44px}
+.lf2-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 22px;background:#0F0F12;border-bottom:1px solid #26262C;box-shadow:0 1px 0 #C89238}
+.lf2-logo{width:36px;height:36px;border-radius:50%;background:#F2B63B;display:flex;align-items:center;justify-content:center;font-weight:600;color:#0B0B0D;font-size:20px;border:3px double #0B0B0D;outline:1px solid #C89238}
 .lf2-title{font-size:15px;font-weight:700;letter-spacing:.14em;color:#fff;text-transform:uppercase}
 .lf2-subtl{font-size:9px;letter-spacing:.3em;color:#F2B63B;margin-top:2px;font-weight:600;text-transform:uppercase}
 .lf2-chip-live{display:flex;align-items:center;gap:7px;background:#0F1A13;border:1px solid #35d07f66;border-radius:6px;padding:5px 13px;color:#35D07F;font-weight:700;font-size:10px;letter-spacing:.2em}
-.lf2-chip-night{background:#101b30;border:1px solid #F2B63B55;border-radius:6px;padding:5px 13px;color:#7fb3e8;font-weight:700;font-size:10px;letter-spacing:.14em}
+.lf2-chip-night{background:#131316;border:1px solid #26262C;border-radius:3px;padding:5px 13px;color:#C89238;font-weight:700;font-size:10px;letter-spacing:.14em}
 .lf2-chip-stale{background:#2a0d12;border:1px solid #E5484D;border-radius:6px;padding:5px 13px;color:#ff7b86;font-weight:700;font-size:10px;letter-spacing:.14em;animation:lf2Blink 1.2s infinite}
 .lf2-dot{width:7px;height:7px;border-radius:50%;background:#35D07F;animation:lf2Pulse 1.6s infinite}
 @keyframes lf2Pulse{0%{box-shadow:0 0 0 0 rgba(53,208,127,.6)}70%{box-shadow:0 0 0 8px rgba(53,208,127,0)}100%{box-shadow:0 0 0 0 rgba(53,208,127,0)}}
 @keyframes lf2Blink{50%{opacity:.45}}
 .lf2-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;padding:16px 22px 4px}
-.lf2-kpi{background:linear-gradient(180deg,#161619,#111114);border:1px solid #26262C;border-radius:10px;padding:12px 18px;box-shadow:inset 0 0 26px #101d5240}
+.lf2-kpi{background:#131316;border:1px solid #26262C;border-top:2px solid #C89238;border-radius:4px;padding:12px 18px}
 .lf2-kpi .l{font-size:9px;letter-spacing:.24em;color:#A9A5AD;font-weight:600;text-transform:uppercase}
-.lf2-kpi .v{font-size:27px;font-weight:700;color:#fff;margin-top:3px}
+.lf2-kpi .v{font-size:27px;font-weight:600;color:#EDEAE2;margin-top:3px;font-variant-numeric:tabular-nums}
 .lf2-kpi .s{font-size:9.5px;color:#8B8791;margin-top:2px;letter-spacing:.08em}
 .lf2-bus{display:flex;gap:8px;padding:12px 22px 0;flex-wrap:wrap}
 .lf2-bu{font-size:9.5px;font-weight:700;letter-spacing:.16em;padding:4px 14px;border-radius:5px;border:1px solid #26262C;color:#A9A5AD;cursor:pointer;background:#111114;text-transform:uppercase}
-.lf2-bu.on{border-color:#F2B63B;color:#F2B63B;background:#F2B63B11;box-shadow:0 0 10px #F2B63B22}
+.lf2-bu.on{border-color:#F2B63B;color:#F2B63B;background:#F2B63B11}
 .lf2-main{display:flex;gap:14px;padding:14px 22px;align-items:flex-start;flex-wrap:wrap}
 .lf2-grid{flex:2.6 1 560px;min-width:300px;display:grid;grid-template-columns:repeat(auto-fill,minmax(295px,1fr));gap:12px}
-.lf2-card{background:linear-gradient(180deg,#131316,#111114);border:1px solid #243380;border-radius:10px;padding:11px 13px 10px;box-shadow:0 0 16px #060b2088;cursor:pointer;transition:transform .12s,border-color .12s}
-.lf2-card:hover{transform:translateY(-2px);border-color:#F2B63Baa}
-.lf2-card.working{border-color:#F2B63B66;box-shadow:0 0 18px #F2B63B15}
-.lf2-card.warncard{border-color:#E5484Daa;box-shadow:0 0 18px #E5484D22}
-.lf2-card.done{opacity:.78}
+.lf2-card{background:#131316;border:1px solid #26262C;border-left:3px solid #2E2E35;border-radius:4px;padding:11px 13px 10px;cursor:pointer;transition:transform .12s,border-color .12s}
+.lf2-card:hover{transform:translateY(-2px);border-left-color:#F2B63B}
+.lf2-card.working{border-left-color:#F2B63B;background:#141412}
+.lf2-card.warncard{border-left-color:#E5484D}
+.lf2-card.done{opacity:.75;border-left-color:#35D07F55}
 .lf2-cardtop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.lf2-tech{font-size:11.5px;font-weight:700;letter-spacing:.08em;color:#F2B63B;text-transform:uppercase;line-height:1.25}
-.lf2-cust{font-size:10px;font-weight:600;color:#e7ecfa;text-transform:uppercase;margin-top:2px;letter-spacing:.04em}
+.lf2-tech{font-size:13px;font-weight:600;letter-spacing:.08em;color:#F2B63B;text-transform:uppercase;line-height:1.25;font-family:'Oswald',sans-serif}
+.lf2-cust{font-size:10px;font-weight:600;color:#EDEAE2;text-transform:uppercase;margin-top:2px;letter-spacing:.04em}
+.lf2-cust::before{content:"VS ";color:#8B8791;font-size:8px;font-weight:700;letter-spacing:.14em}
 .lf2-stat{font-size:9px;color:#A9A5AD;margin-top:3px;letter-spacing:.06em}
 .lf2-buchip{font-size:8px;font-weight:700;letter-spacing:.14em;border-radius:4px;padding:2px 8px;border:1px solid;white-space:nowrap;text-transform:uppercase}
 .lf2-tl{display:flex;align-items:flex-start;margin:12px 0 2px}
 .lf2-node{display:flex;flex-direction:column;align-items:center;flex:0 0 auto;width:50px}
 .lf2-ring{width:21px;height:21px;border-radius:50%;border:2px solid #2E2E35;display:flex;align-items:center;justify-content:center;font-size:9px;background:#111114;color:#5A5A64}
-.lf2-ring.lit{border-color:#F2B63B;color:#F2B63B;box-shadow:0 0 9px #F2B63B66}
-.lf2-ring.green{border-color:#35D07F;color:#35D07F;box-shadow:0 0 9px #35D07F66}
+.lf2-ring.lit{border-color:#F2B63B;color:#F2B63B}
+.lf2-ring.green{border-color:#35D07F;color:#35D07F}
 .lf2-seg{flex:1 1 6px;height:2px;background:#26262C;margin-top:10px}
-.lf2-seg.lit{background:linear-gradient(90deg,#F2B63Bcc,#F2B63B66);box-shadow:0 0 6px #F2B63B44}
+.lf2-seg.lit{background:#C89238}
 .lf2-nlab{font-size:6.8px;letter-spacing:.08em;color:#8B8791;margin-top:4px;font-weight:700;text-transform:uppercase;text-align:center}
-.lf2-nsub{font-size:8px;color:#9fb3d9;margin-top:1px;font-weight:600}
-.lf2-cardbot{display:flex;justify-content:space-between;align-items:center;margin-top:9px;font-size:9.5px;letter-spacing:.04em;min-height:14px}
+.lf2-nsub{font-size:8px;color:#A9A5AD;margin-top:1px;font-weight:600}
+.lf2-cardbot{display:flex;justify-content:space-between;align-items:center;margin-top:9px;font-size:10px;letter-spacing:.04em;min-height:14px;border-top:1px dashed #26262C;padding-top:7px;font-family:'Oswald',sans-serif;font-variant-numeric:tabular-nums}
 .lf2-warnbadge{color:#ff7b86;font-weight:700;font-size:9px;letter-spacing:.06em}
-.lf2-feed{flex:1 1 285px;min-width:275px;background:linear-gradient(180deg,#161619,#111114);border:1px solid #26262C;border-radius:10px;padding:13px 14px;max-height:680px;display:flex;flex-direction:column}
+.lf2-feed{flex:1 1 285px;min-width:275px;background:#131316;border:1px solid #26262C;border-top:2px solid #C89238;border-radius:4px;padding:13px 14px;max-height:680px;display:flex;flex-direction:column}
 .lf2-fh{font-size:10px;font-weight:700;letter-spacing:.24em;color:#F2B63B;margin-bottom:10px;text-transform:uppercase}
 .lf2-evs{overflow-y:auto;display:flex;flex-direction:column;gap:7px}
 .lf2-ev{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-radius:7px;border:1px solid transparent}
@@ -10475,17 +10488,17 @@ const LF_CSS = `
 .lf2-sc-bv{font-size:7.5px;font-weight:800;letter-spacing:.02em;margin-top:1px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lf2-sc-crit{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
 .lf2-sc-cx{font-size:8px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:4px;color:#ff7b86;background:#2a0d1266;border:1px solid #E5484D66}
-.lf2-sc-tip{margin-top:7px;font-size:9.5px;line-height:1.45;color:#cfd9f5;background:#111114;border:1px solid #26262C;border-left:3px solid #F2B63B;border-radius:6px;padding:6px 9px}
-.lf2-tglbd{margin:12px 22px 0;background:linear-gradient(180deg,#161619,#111114);border:1px solid #26262C;border-radius:10px;padding:12px 16px}
+.lf2-sc-tip{margin-top:7px;font-size:9.5px;line-height:1.45;color:#C9C5CD;background:#111114;border:1px solid #26262C;border-left:3px solid #F2B63B;border-radius:4px;padding:6px 9px;font-family:'Archivo',sans-serif}
+.lf2-tglbd{margin:12px 22px 0;background:#131316;border:1px solid #26262C;border-top:2px solid #35D07F;border-radius:4px;padding:12px 16px}
 .lf2-tglbd-h{display:flex;align-items:center;gap:10px;margin-bottom:9px}
 .lf2-tglbd-t{font-size:10px;font-weight:700;letter-spacing:.24em;color:#F2B63B;text-transform:uppercase}
 .lf2-tglbd-n{font-size:15px;font-weight:800;color:#35D07F;font-family:'Oswald',sans-serif}
 .lf2-tglbd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:6px}
 .lf2-tglrow{display:flex;align-items:center;gap:8px;padding:5px 9px;border-radius:7px;border:1px solid #26262C;background:#111114;text-decoration:none;min-width:0}
-.lf2-tglrow.sold{border-color:#35D07F77;background:rgba(53,208,127,.07);box-shadow:0 0 10px #35D07F22}
+.lf2-tglrow.sold{border-color:#35D07F77;background:rgba(53,208,127,.07)}
 .lf2-tglrow .tm{font-size:9px;color:#A9A5AD;font-weight:700;flex-shrink:0;width:44px}
 .lf2-tglrow .th{font-size:10px;color:#F2B63B;font-weight:800;letter-spacing:.05em;flex-shrink:0;text-transform:uppercase}
-.lf2-tglrow .cu{font-size:9.5px;color:#cfd9f5;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;text-transform:uppercase}
+.lf2-tglrow .cu{font-size:9.5px;color:#C9C5CD;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;text-transform:uppercase}
 .lf2-tglrow .sb{font-size:8px;font-weight:800;letter-spacing:.1em;color:#35D07F;border:1px solid #35D07F88;background:rgba(53,208,127,.12);border-radius:4px;padding:2px 7px;flex-shrink:0;white-space:nowrap}
 `;
 function LiveFeedTab({
@@ -10636,7 +10649,7 @@ function LiveFeedTab({
             key: "xt" + ti,
             className: "lf2-buchip",
             style: t.k === "recall" ? { color: "#ff8fa3", borderColor: "#E5484Daa", background: "#2a0d1244" }
-                                    : { color: "#7fb3e8", borderColor: "#F2B63B66" }
+                                    : { color: "#C9C5CD", borderColor: "#C8923866" }
           }, (t.k === "recall" ? "🔁 " : "🛡 ") + t.n)))),
       timeline, bot, scorePanel(j));
   };
@@ -10655,7 +10668,7 @@ function LiveFeedTab({
     lf && lf.feed && lf.feed.length ? e("div", { className: "lf2-evs" }, lf.feed.map((ev, i) => e("div", { key: i, className: "lf2-ev" + (i === 0 ? " first" : "") },
       e("span", { className: "ico" }, ev.i),
       e("div", { style: { minWidth: 0 } },
-        e("div", { className: "x", style: { color: ev.c || "#9fb3cc" } }, ev.x),
+        e("div", { className: "x", style: { color: ev.c || "#B9B5BD" } }, ev.x),
         e("div", { className: "t" }, ev.t)))))
     : e("div", { style: { color: "#8B8791", fontSize: 11, padding: "12px 0" } }, "Dispatches, options and signed jobs stream in here."));
 
@@ -10753,6 +10766,33 @@ function HealthBanner() {
     "⚠ Dashboard alert · " + probs.join(" · ") + " — numbers on screen may be behind");
 }
 
+// THE WIRE — sportsbook ticker rail under the header. Marquees today's feed
+// events + the day line; overnight it reads as a closed book. Data comes from
+// Root's existing 60s livefeed poll (no extra fetch).
+function TickerRail({ wire, deptTgls, hourly }) {
+  const e = React.createElement;
+  if (!wire) return null;
+  const live = !!wire.live;
+  const calls = hourly && hourly.today ? hourly.today.calls || 0 : 0;
+  const tgls = live ? (deptTgls != null ? deptTgls : wire.tgls) : 0;
+  const rate = live && calls > 0 ? Math.round(tgls / calls * 100) : null;
+  const items = [];
+  if (live) {
+    items.push({ b: "TODAY", x: calls + " ROPPS · " + tgls + " TGLS" + (rate !== null ? " · " + rate + "% VS THE 48 LINE" : "") });
+    (wire.feed || []).forEach(ev => items.push({ x: (ev.i ? ev.i + " " : "") + (ev.x || "") + (ev.t ? " · " + ev.t : "") }));
+    if (!wire.feed || !wire.feed.length) items.push({ x: "BOARD OPEN — FIRST ACTION POSTS HERE" });
+  } else {
+    items.push({ b: "BOOK CLOSED", x: "LINES REOPEN 6:50 AM" });
+    items.push({ b: "LAST BOARD", x: wire.date + " · " + wire.tgls + " TGLS POSTED" });
+  }
+  const seq = items.concat(items); // two copies = seamless -50% marquee loop
+  return e("div", { className: "tkr" },
+    e("span", { className: "tkr-tag" + (live ? "" : " closed") }, live ? "THE WIRE" : "CLOSED"),
+    e("div", { className: "tkr-clip" },
+      e("div", { className: "tkr-track" }, seq.map((it, i) => e("span", { key: i, className: "tkr-it" },
+        it.b ? e("b", null, it.b) : null, it.x, e("span", { className: "tkr-sep" }, "◆"))))));
+}
+
 function Root() {
   // survive refreshes on the current tab: URL hash (#livefeed = pin a TV) wins,
   // then the last tab this browser was on, then overview
@@ -10784,6 +10824,7 @@ function Root() {
   // Live hourly snapshots
   const INTERVAL = 60 * 1000;
   const [deptTgls, setDeptTgls] = useState(null);
+  const [wire, setWire] = useState(null);
   const loadHourly = React.useCallback(manual => {
     // spin the header ↻ only for a real click — the automatic 60s poll used
     // to flash it every minute (review find, 2026-07-19)
@@ -10883,6 +10924,10 @@ function Root() {
         const _nd = new Date();
         const _today = _nd.getFullYear() + "-" + _p2(_nd.getMonth() + 1) + "-" + _p2(_nd.getDate());
         if (Array.isArray(j.tgls)) setDeptTgls(j.date === _today ? j.tgls.length : 0);
+        // THE WIRE ticker rail: a light slice of the feed for the marquee
+        setWire({ date: j.date, live: j.date === _today,
+                  feed: (j.feed || []).slice(0, 20),
+                  tgls: Array.isArray(j.tgls) ? j.tgls.length : 0 });
         if (!TV_MODE || !j.feed || !j.feed.length) return;
         const ev = j.feed[0];
         const sig = ev.x + "|" + ev.t;
@@ -11260,7 +11305,11 @@ function Root() {
     className: "kbd"
   }, "←"), " / ", /*#__PURE__*/React.createElement("span", {
     className: "kbd"
-  }, "→"), "  navigate tabs")), /*#__PURE__*/React.createElement("div", {
+  }, "→"), "  navigate tabs")), /*#__PURE__*/React.createElement(TickerRail, {
+    wire: wire,
+    deptTgls: deptTgls,
+    hourly: hourly
+  }), /*#__PURE__*/React.createElement("div", {
     key: tab,
     className: "tab-fade",
     style: {

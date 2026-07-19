@@ -199,6 +199,12 @@ tbody tr:nth-child(even) td{background:rgba(255,255,255,.025);}
 .riseIn.liftCard{}
 table{border-collapse:collapse;}
 thead th{background:#0F0F12;border-bottom:2px solid #C89238;}
+/* line-move flashes: a number that changes pulses like an odds move */
+.cv{display:inline;}
+@keyframes lineUpFlash{0%{color:inherit}18%{color:#35D07F;text-shadow:0 0 12px rgba(53,208,127,.55)}70%{color:#35D07F}100%{color:inherit;text-shadow:none}}
+@keyframes lineDownFlash{0%{color:inherit}18%{color:#E5484D;text-shadow:0 0 12px rgba(229,72,77,.55)}70%{color:#E5484D}100%{color:inherit;text-shadow:none}}
+.line-up-flash{animation:lineUpFlash 1.6s ease both;}
+.line-down-flash{animation:lineDownFlash 1.6s ease both;}
 /* THE WIRE — sportsbook ticker rail under the header */
 .tkr{display:flex;align-items:stretch;background:#0F0F12;border-bottom:1px solid #26262C;height:30px;overflow:hidden;position:relative;z-index:99;}
 .tkr-tag{flex:0 0 auto;display:flex;align-items:center;padding:0 14px;background:#F2B63B;color:#0B0B0D;font:600 10px 'Oswald',sans-serif;letter-spacing:.2em;text-transform:uppercase;}
@@ -1082,25 +1088,40 @@ function CountVal({
   const target = m ? parseFloat(m[2].replace(/,/g, "")) : null;
   const dec = m && m[3] ? m[3].length : 0;
   const [n, setN] = React.useState(target);
+  // line-move behavior (2026-07-19): on a CHANGE, tween from the previous
+  // value (not zero) and flash green/red like an odds board
+  const prevRef = React.useRef(null);
+  const [flash, setFlash] = React.useState("");
   React.useEffect(() => {
     if (target === null || !isFinite(target)) return;
+    const prev = prevRef.current;
+    prevRef.current = target;
+    const from = prev !== null && isFinite(prev) && prev !== target ? prev : 0;
+    let ft = null;
+    if (prev !== null && isFinite(prev) && prev !== target) {
+      setFlash(target > prev ? " line-up-flash" : " line-down-flash");
+      ft = setTimeout(() => setFlash(""), 1600);
+    }
     let raf, t0 = null;
     const dur = 800;
     const step = ts => {
       if (t0 === null) t0 = ts;
       const p = Math.min(1, (ts - t0) / dur);
-      setN(target * (1 - Math.pow(1 - p, 3)));
+      setN(from + (target - from) * (1 - Math.pow(1 - p, 3)));
       if (p < 1) raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      if (ft) clearTimeout(ft);
+    };
   }, [target]);
   if (target === null || !isFinite(target)) return s;
   const num = (n == null ? target : n).toLocaleString(undefined, {
     minimumFractionDigits: dec,
     maximumFractionDigits: dec
   });
-  return m[1] + num + m[4];
+  return /*#__PURE__*/React.createElement("span", { className: "cv" + flash }, m[1] + num + m[4]);
 }
 
 // ── KPI Card ──────────────────────────────────────────────────────────────────
@@ -1346,6 +1367,17 @@ function Gauge({
   const circ = 2 * Math.PI * r;
   const dash = pct / 100 * circ;
   const color = rate === null ? "#EDEAE2" : rate >= KPI ? "#F2B63B" : rate >= KPI * 0.8 ? "#C89238" : "#E5484D";
+  // "the line" notches: physical marks on the dial at the 48 floor and the KPI
+  const notchAt = (p, col) => {
+    const th = p / 100 * 2 * Math.PI;
+    const cx = size / 2, cy = size / 2;
+    return /*#__PURE__*/React.createElement("line", {
+      key: "n" + p,
+      x1: cx + Math.cos(th) * (r - 5), y1: cy + Math.sin(th) * (r - 5),
+      x2: cx + Math.cos(th) * (r + 5), y2: cy + Math.sin(th) * (r + 5),
+      stroke: col, strokeWidth: 1.5
+    });
+  };
   return /*#__PURE__*/React.createElement("svg", {
     width: size,
     height: size,
@@ -1357,9 +1389,9 @@ function Gauge({
     cy: size / 2,
     r: r,
     fill: "none",
-    stroke: "#EDEAE2",
+    stroke: "#26262C",
     strokeWidth: 6
-  }), /*#__PURE__*/React.createElement("circle", {
+  }), notchAt(48, "#E5484D99"), notchAt(KPI, "#F2B63B"), /*#__PURE__*/React.createElement("circle", {
     cx: size / 2,
     cy: size / 2,
     r: r,
@@ -9222,7 +9254,7 @@ function OverviewTab({
     return /*#__PURE__*/React.createElement("div", {
       className: "riseIn liftCard",
       style: {
-        background: "linear-gradient(160deg,#131c30,#111114)",
+        background: "#131316",
         border: "1px solid #26262C",
         borderRadius: 18,
         padding: "14px 12px",
@@ -10690,7 +10722,7 @@ function LiveFeedTab({
     lf && lf.tgls && lf.tgls.length > 0 && e("div", { className: "lf2-tglbd riseIn" },
       e("div", { className: "lf2-tglbd-h" },
         e("span", { className: "lf2-tglbd-t" }, "⚡ TGL Board — Replacement Leads"),
-        e("span", { className: "lf2-tglbd-n" }, String(lf.tgls.length)),
+        e("span", { className: "lf2-tglbd-n line-up-flash", key: lf.tgls.length }, String(lf.tgls.length)),
         (lf.tgls.filter(t => t.sd).length > 0) && e("span", { style: { fontSize: 10, fontWeight: 800, color: "#F2B63B", letterSpacing: ".08em" } },
           "⚡ " + lf.tgls.filter(t => t.sd).length + " SAME-DAY"),
         (lf.tgls.filter(t => t.soldT).length > 0) && e("span", { style: { fontSize: 10, fontWeight: 800, color: "#35D07F", letterSpacing: ".08em" } },
@@ -10698,6 +10730,7 @@ function LiveFeedTab({
       e("div", { className: "lf2-tglbd-grid" },
         lf.tgls.map((t, i) => e("a", {
           key: i,
+          style: { animation: "riseIn .35s ease both", animationDelay: Math.min(i * 0.05, 0.6) + "s" },
           className: "lf2-tglrow" + (t.soldT ? " sold" : ""),
           href: "https://go.servicetitan.com/#/Job/Index/" + (t.num || t.src),
           target: "_blank", rel: "noopener",
@@ -11222,7 +11255,11 @@ function Root() {
   }), updLabel && /*#__PURE__*/React.createElement("span", {
     className: "upd-badge",
     title: "Time since last hourly.json fetch"
-  }, updLabel), countdown && /*#__PURE__*/React.createElement("span", {
+  }, updLabel), /*#__PURE__*/React.createElement("span", {
+    className: "countdown",
+    title: "Las Vegas time",
+    style: { color: "#F2B63B" }
+  }, new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/Los_Angeles" }) + " LV"), countdown && /*#__PURE__*/React.createElement("span", {
     className: "countdown",
     title: "Next hourly data refresh"
   }, "⏱ ", countdown), /*#__PURE__*/React.createElement("button", {

@@ -8,9 +8,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="engine.js"></script>
+<script src="engine.js" defer></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{background:#070b16;color:#eaf1fb;font-family:'Inter','Segoe UI',system-ui,sans-serif;min-height:100vh;}
@@ -297,7 +297,6 @@ const BLANK_TECH = () => ({
 
 const INITIAL_DATA = {"AJ-Alejandro Ruiz Padilla": {"ytd": {"calls": 216, "tgls": 140, "revenue": 1431313, "svc_calls": 157, "svc_tgls": 117, "maint_calls": 59, "maint_tgls": 23, "rate": 64.8}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 72, "tgls": 45}, "February": {"calls": 49, "tgls": 28}, "March": {"calls": 66, "tgls": 47}, "April": {"calls": 29, "tgls": 20}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Adrian Muniz": {"ytd": {"calls": 7, "tgls": 4, "revenue": 69557, "svc_calls": 3, "svc_tgls": 2, "maint_calls": 4, "maint_tgls": 2, "rate": 57.1}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 2, "tgls": 1}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 2, "tgls": 0}, "April": {"calls": 1, "tgls": 0}, "May": {"calls": 1, "tgls": 2}, "June": {"calls": 1, "tgls": 1}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Alex - Oleksiy Yakovchuk": {"ytd": {"calls": 287, "tgls": 163, "revenue": 1569605, "svc_calls": 155, "svc_tgls": 117, "maint_calls": 132, "maint_tgls": 46, "rate": 56.8}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 42, "tgls": 13}, "February": {"calls": 49, "tgls": 27}, "March": {"calls": 64, "tgls": 47}, "April": {"calls": 68, "tgls": 37}, "May": {"calls": 63, "tgls": 38}, "June": {"calls": 1, "tgls": 1}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Andrew Alonso": {"ytd": {"calls": 22, "tgls": 18, "revenue": 211637, "svc_calls": 18, "svc_tgls": 13, "maint_calls": 4, "maint_tgls": 5, "rate": 81.8}, "mtd": {"calls": 13, "tgls": 9, "revenue": 106749, "svc_calls": 12, "svc_tgls": 8, "maint_calls": 1, "maint_tgls": 1, "rate": 69.2}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 1}, "May": {"calls": 0, "tgls": 4}, "June": {"calls": 9, "tgls": 4}, "July": {"calls": 13, "tgls": 9}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Andrew Trujillo": {"ytd": {"calls": 269, "tgls": 95, "revenue": 946510, "svc_calls": 65, "svc_tgls": 25, "maint_calls": 204, "maint_tgls": 70, "rate": 35.3}, "mtd": {"calls": 26, "tgls": 12, "revenue": 123373, "svc_calls": 6, "svc_tgls": 3, "maint_calls": 20, "maint_tgls": 9, "rate": 46.2}, "monthly": {"January": {"calls": 16, "tgls": 1}, "February": {"calls": 17, "tgls": 5}, "March": {"calls": 43, "tgls": 16}, "April": {"calls": 60, "tgls": 22}, "May": {"calls": 54, "tgls": 24}, "June": {"calls": 53, "tgls": 15}, "July": {"calls": 26, "tgls": 12}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Benjamin Wyllie": {"ytd": {"calls": 247, "tgls": 111, "revenue": 947313, "svc_calls": 65, "svc_tgls": 38, "maint_calls": 182, "maint_tgls": 73, "rate": 44.9}, "mtd": {"calls": 35, "tgls": 20, "revenue": 178553, "svc_calls": 24, "svc_tgls": 15, "maint_calls": 11, "maint_tgls": 5, "rate": 57.1}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 16, "tgls": 6}, "April": {"calls": 53, "tgls": 26}, "May": {"calls": 67, "tgls": 24}, "June": {"calls": 76, "tgls": 35}, "July": {"calls": 35, "tgls": 20}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Brandon Moreno": {"ytd": {"calls": 127, "tgls": 66, "revenue": 595915, "svc_calls": 88, "svc_tgls": 57, "maint_calls": 39, "maint_tgls": 9, "rate": 52.0}, "mtd": {"calls": 37, "tgls": 22, "revenue": 215732, "svc_calls": 21, "svc_tgls": 17, "maint_calls": 16, "maint_tgls": 5, "rate": 59.5}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 8, "tgls": 5}, "June": {"calls": 82, "tgls": 39}, "July": {"calls": 37, "tgls": 22}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Christopher Moreno": {"ytd": {"calls": 19, "tgls": 7, "revenue": 26554, "svc_calls": 9, "svc_tgls": 7, "maint_calls": 10, "maint_tgls": 0, "rate": 36.8}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 3, "tgls": 1}, "February": {"calls": 3, "tgls": 1}, "March": {"calls": 2, "tgls": 0}, "April": {"calls": 0, "tgls": 1}, "May": {"calls": 4, "tgls": 2}, "June": {"calls": 7, "tgls": 2}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Cole Pantol": {"ytd": {"calls": 414, "tgls": 146, "revenue": 1517326, "svc_calls": 134, "svc_tgls": 80, "maint_calls": 280, "maint_tgls": 66, "rate": 35.3}, "mtd": {"calls": 50, "tgls": 24, "revenue": 262690, "svc_calls": 34, "svc_tgls": 21, "maint_calls": 16, "maint_tgls": 3, "rate": 48.0}, "monthly": {"January": {"calls": 70, "tgls": 27}, "February": {"calls": 28, "tgls": 6}, "March": {"calls": 52, "tgls": 17}, "April": {"calls": 64, "tgls": 17}, "May": {"calls": 68, "tgls": 16}, "June": {"calls": 82, "tgls": 39}, "July": {"calls": 50, "tgls": 24}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Corey Reding": {"ytd": {"calls": 19, "tgls": 19, "revenue": 86618, "svc_calls": 14, "svc_tgls": 17, "maint_calls": 5, "maint_tgls": 2, "rate": 100.0}, "mtd": {"calls": 2, "tgls": 2, "revenue": 14486, "svc_calls": 2, "svc_tgls": 2, "maint_calls": 0, "maint_tgls": 0, "rate": 100.0}, "monthly": {"January": {"calls": 6, "tgls": 2}, "February": {"calls": 2, "tgls": 3}, "March": {"calls": 2, "tgls": 4}, "April": {"calls": 2, "tgls": 1}, "May": {"calls": 4, "tgls": 4}, "June": {"calls": 1, "tgls": 3}, "July": {"calls": 2, "tgls": 2}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Daniel Nevarez-Lujan": {"ytd": {"calls": 2, "tgls": 2, "revenue": 0, "svc_calls": 1, "svc_tgls": 2, "maint_calls": 1, "maint_tgls": 0, "rate": 100.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 2, "tgls": 2}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Deshawn Ojeda": {"ytd": {"calls": 0, "tgls": 1, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 1, "rate": 0.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 1}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Dustin Romine": {"ytd": {"calls": 281, "tgls": 90, "revenue": 594585, "svc_calls": 114, "svc_tgls": 55, "maint_calls": 167, "maint_tgls": 35, "rate": 32.0}, "mtd": {"calls": 19, "tgls": 11, "revenue": 69099, "svc_calls": 5, "svc_tgls": 4, "maint_calls": 14, "maint_tgls": 7, "rate": 57.9}, "monthly": {"January": {"calls": 26, "tgls": 4}, "February": {"calls": 11, "tgls": 2}, "March": {"calls": 45, "tgls": 9}, "April": {"calls": 54, "tgls": 26}, "May": {"calls": 56, "tgls": 17}, "June": {"calls": 70, "tgls": 21}, "July": {"calls": 19, "tgls": 11}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Edward Sosa": {"ytd": {"calls": 4, "tgls": 1, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 4, "maint_tgls": 1, "rate": 25.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 4, "tgls": 1}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Elvin Cruz": {"ytd": {"calls": 0, "tgls": 1, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 1, "rate": 0.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 1}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Eric Cline": {"ytd": {"calls": 6, "tgls": 4, "revenue": 28819, "svc_calls": 1, "svc_tgls": 2, "maint_calls": 5, "maint_tgls": 2, "rate": 66.7}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 5, "tgls": 4}, "February": {"calls": 1, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Fabian Pantoja": {"ytd": {"calls": 54, "tgls": 13, "revenue": 34594, "svc_calls": 16, "svc_tgls": 12, "maint_calls": 38, "maint_tgls": 1, "rate": 24.1}, "mtd": {"calls": 3, "tgls": 1, "revenue": 0, "svc_calls": 1, "svc_tgls": 1, "maint_calls": 2, "maint_tgls": 0, "rate": 33.3}, "monthly": {"January": {"calls": 5, "tgls": 3}, "February": {"calls": 2, "tgls": 3}, "March": {"calls": 2, "tgls": 1}, "April": {"calls": 16, "tgls": 2}, "May": {"calls": 13, "tgls": 1}, "June": {"calls": 13, "tgls": 2}, "July": {"calls": 3, "tgls": 1}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Francisco Arreola Jr.": {"ytd": {"calls": 215, "tgls": 68, "revenue": 850694, "svc_calls": 53, "svc_tgls": 31, "maint_calls": 162, "maint_tgls": 37, "rate": 31.6}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 54, "tgls": 19}, "February": {"calls": 27, "tgls": 8}, "March": {"calls": 53, "tgls": 23}, "April": {"calls": 42, "tgls": 8}, "May": {"calls": 39, "tgls": 10}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Francisco Valencia": {"ytd": {"calls": 371, "tgls": 204, "revenue": 1880573, "svc_calls": 182, "svc_tgls": 126, "maint_calls": 189, "maint_tgls": 78, "rate": 55.0}, "mtd": {"calls": 38, "tgls": 29, "revenue": 199527, "svc_calls": 25, "svc_tgls": 21, "maint_calls": 13, "maint_tgls": 8, "rate": 76.3}, "monthly": {"January": {"calls": 37, "tgls": 13}, "February": {"calls": 39, "tgls": 13}, "March": {"calls": 61, "tgls": 38}, "April": {"calls": 59, "tgls": 33}, "May": {"calls": 64, "tgls": 38}, "June": {"calls": 73, "tgls": 40}, "July": {"calls": 38, "tgls": 29}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Jack Jonathon Vanos": {"ytd": {"calls": 0, "tgls": 1, "revenue": 0, "svc_calls": 0, "svc_tgls": 1, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "mtd": {"calls": 0, "tgls": 1, "revenue": 0, "svc_calls": 0, "svc_tgls": 1, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 1}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Jaden Szelestey": {"ytd": {"calls": 70, "tgls": 20, "revenue": 88856, "svc_calls": 15, "svc_tgls": 7, "maint_calls": 55, "maint_tgls": 13, "rate": 28.6}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 39, "tgls": 12}, "February": {"calls": 20, "tgls": 6}, "March": {"calls": 11, "tgls": 2}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Mario Castro": {"ytd": {"calls": 271, "tgls": 119, "revenue": 1232196, "svc_calls": 147, "svc_tgls": 80, "maint_calls": 124, "maint_tgls": 39, "rate": 43.9}, "mtd": {"calls": 35, "tgls": 18, "revenue": 101708, "svc_calls": 34, "svc_tgls": 18, "maint_calls": 1, "maint_tgls": 0, "rate": 51.4}, "monthly": {"January": {"calls": 23, "tgls": 10}, "February": {"calls": 38, "tgls": 13}, "March": {"calls": 27, "tgls": 8}, "April": {"calls": 54, "tgls": 18}, "May": {"calls": 20, "tgls": 7}, "June": {"calls": 74, "tgls": 45}, "July": {"calls": 35, "tgls": 18}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "James Goode": {"ytd": {"calls": 1, "tgls": 1, "revenue": 0, "svc_calls": 1, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 1, "rate": 100.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 1}, "May": {"calls": 1, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Jay Dagadag": {"ytd": {"calls": 2, "tgls": 1, "revenue": 20102, "svc_calls": 1, "svc_tgls": 1, "maint_calls": 1, "maint_tgls": 0, "rate": 50.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 1, "tgls": 0}, "February": {"calls": 1, "tgls": 1}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Joe Mendoza": {"ytd": {"calls": 339, "tgls": 161, "revenue": 1484207, "svc_calls": 173, "svc_tgls": 113, "maint_calls": 166, "maint_tgls": 48, "rate": 47.5}, "mtd": {"calls": 34, "tgls": 19, "revenue": 189131, "svc_calls": 25, "svc_tgls": 18, "maint_calls": 9, "maint_tgls": 1, "rate": 55.9}, "monthly": {"January": {"calls": 30, "tgls": 10}, "February": {"calls": 32, "tgls": 12}, "March": {"calls": 60, "tgls": 20}, "April": {"calls": 62, "tgls": 27}, "May": {"calls": 66, "tgls": 44}, "June": {"calls": 55, "tgls": 29}, "July": {"calls": 34, "tgls": 19}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Jose Huesca": {"ytd": {"calls": 0, "tgls": 1, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 1, "rate": 0.0}, "mtd": {"calls": 0, "tgls": 1, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 1, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 1}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Josue Arciga": {"ytd": {"calls": 33, "tgls": 7, "revenue": 86671, "svc_calls": 13, "svc_tgls": 7, "maint_calls": 20, "maint_tgls": 0, "rate": 21.2}, "mtd": {"calls": 2, "tgls": 0, "revenue": 0, "svc_calls": 1, "svc_tgls": 0, "maint_calls": 1, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 2, "tgls": 0}, "February": {"calls": 2, "tgls": 1}, "March": {"calls": 3, "tgls": 3}, "April": {"calls": 5, "tgls": 0}, "May": {"calls": 10, "tgls": 2}, "June": {"calls": 9, "tgls": 1}, "July": {"calls": 2, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Juan Tlatenchi": {"ytd": {"calls": 43, "tgls": 26, "revenue": 249646, "svc_calls": 31, "svc_tgls": 19, "maint_calls": 12, "maint_tgls": 7, "rate": 60.5}, "mtd": {"calls": 37, "tgls": 23, "revenue": 227006, "svc_calls": 29, "svc_tgls": 19, "maint_calls": 8, "maint_tgls": 4, "rate": 62.2}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 6, "tgls": 3}, "July": {"calls": 37, "tgls": 23}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Kevin Rodriguez": {"ytd": {"calls": 19, "tgls": 5, "revenue": 27678, "svc_calls": 3, "svc_tgls": 5, "maint_calls": 16, "maint_tgls": 0, "rate": 26.3}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 6, "tgls": 0}, "February": {"calls": 0, "tgls": 3}, "March": {"calls": 1, "tgls": 0}, "April": {"calls": 1, "tgls": 0}, "May": {"calls": 2, "tgls": 1}, "June": {"calls": 9, "tgls": 1}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Matthew Graves": {"ytd": {"calls": 7, "tgls": 2, "revenue": 0, "svc_calls": 5, "svc_tgls": 2, "maint_calls": 2, "maint_tgls": 0, "rate": 28.6}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 1, "tgls": 0}, "February": {"calls": 1, "tgls": 0}, "March": {"calls": 4, "tgls": 1}, "April": {"calls": 1, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 1}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Mauro Hernandez Lozada": {"ytd": {"calls": 4, "tgls": 1, "revenue": 0, "svc_calls": 3, "svc_tgls": 0, "maint_calls": 1, "maint_tgls": 1, "rate": 25.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 3, "tgls": 1}, "February": {"calls": 1, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Michael Washington": {"ytd": {"calls": 5, "tgls": 1, "revenue": 0, "svc_calls": 2, "svc_tgls": 1, "maint_calls": 3, "maint_tgls": 0, "rate": 20.0}, "mtd": {"calls": 1, "tgls": 0, "revenue": 0, "svc_calls": 1, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 1, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 2, "tgls": 0}, "June": {"calls": 1, "tgls": 1}, "July": {"calls": 1, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Mike (Jiangtao) Li": {"ytd": {"calls": 13, "tgls": 1, "revenue": 20432, "svc_calls": 6, "svc_tgls": 1, "maint_calls": 7, "maint_tgls": 0, "rate": 7.7}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 5, "tgls": 0}, "February": {"calls": 0, "tgls": 1}, "March": {"calls": 2, "tgls": 0}, "April": {"calls": 2, "tgls": 0}, "May": {"calls": 1, "tgls": 0}, "June": {"calls": 3, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Nathan Colquitt": {"ytd": {"calls": 98, "tgls": 44, "revenue": 308310, "svc_calls": 29, "svc_tgls": 18, "maint_calls": 69, "maint_tgls": 26, "rate": 44.9}, "mtd": {"calls": 35, "tgls": 16, "revenue": 149944, "svc_calls": 11, "svc_tgls": 7, "maint_calls": 24, "maint_tgls": 9, "rate": 45.7}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 8, "tgls": 2}, "June": {"calls": 55, "tgls": 26}, "July": {"calls": 35, "tgls": 16}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Nikko April": {"ytd": {"calls": 301, "tgls": 126, "revenue": 1322015, "svc_calls": 123, "svc_tgls": 81, "maint_calls": 178, "maint_tgls": 45, "rate": 41.9}, "mtd": {"calls": 30, "tgls": 13, "revenue": 176751, "svc_calls": 21, "svc_tgls": 13, "maint_calls": 9, "maint_tgls": 0, "rate": 43.3}, "monthly": {"January": {"calls": 46, "tgls": 13}, "February": {"calls": 21, "tgls": 11}, "March": {"calls": 50, "tgls": 27}, "April": {"calls": 47, "tgls": 12}, "May": {"calls": 61, "tgls": 25}, "June": {"calls": 46, "tgls": 25}, "July": {"calls": 30, "tgls": 13}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Noah Weng": {"ytd": {"calls": 190, "tgls": 150, "revenue": 1072538, "svc_calls": 110, "svc_tgls": 99, "maint_calls": 80, "maint_tgls": 51, "rate": 78.9}, "mtd": {"calls": 30, "tgls": 27, "revenue": 205193, "svc_calls": 25, "svc_tgls": 23, "maint_calls": 5, "maint_tgls": 4, "rate": 90.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 20, "tgls": 9}, "May": {"calls": 68, "tgls": 47}, "June": {"calls": 72, "tgls": 67}, "July": {"calls": 30, "tgls": 27}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Pedro Estrada Rios": {"ytd": {"calls": 2, "tgls": 1, "revenue": 0, "svc_calls": 1, "svc_tgls": 1, "maint_calls": 1, "maint_tgls": 0, "rate": 50.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 2, "tgls": 1}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Pedro Manzanares": {"ytd": {"calls": 1, "tgls": 2, "revenue": 14127, "svc_calls": 0, "svc_tgls": 2, "maint_calls": 1, "maint_tgls": 0, "rate": 200.0}, "mtd": {"calls": 0, "tgls": 2, "revenue": 14127, "svc_calls": 0, "svc_tgls": 2, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 1, "tgls": 0}, "July": {"calls": 0, "tgls": 2}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Raul Morales": {"ytd": {"calls": 0, "tgls": 1, "revenue": 49852, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 1, "rate": 0.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 1}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Robert Silinzy": {"ytd": {"calls": 55, "tgls": 28, "revenue": 330656, "svc_calls": 35, "svc_tgls": 24, "maint_calls": 20, "maint_tgls": 4, "rate": 50.9}, "mtd": {"calls": 29, "tgls": 19, "revenue": 214606, "svc_calls": 24, "svc_tgls": 18, "maint_calls": 5, "maint_tgls": 1, "rate": 65.5}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 26, "tgls": 9}, "July": {"calls": 29, "tgls": 19}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Saul Casanova": {"ytd": {"calls": 4, "tgls": 4, "revenue": 6013, "svc_calls": 0, "svc_tgls": 1, "maint_calls": 4, "maint_tgls": 3, "rate": 100.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 3, "tgls": 1}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 1, "tgls": 3}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Stanley Kim": {"ytd": {"calls": 17, "tgls": 3, "revenue": 28785, "svc_calls": 3, "svc_tgls": 3, "maint_calls": 14, "maint_tgls": 0, "rate": 17.6}, "mtd": {"calls": 1, "tgls": 1, "revenue": 28785, "svc_calls": 1, "svc_tgls": 1, "maint_calls": 0, "maint_tgls": 0, "rate": 100.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 1, "tgls": 0}, "May": {"calls": 2, "tgls": 1}, "June": {"calls": 13, "tgls": 1}, "July": {"calls": 1, "tgls": 1}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Ting Cheung": {"ytd": {"calls": 156, "tgls": 57, "revenue": 500663, "svc_calls": 45, "svc_tgls": 25, "maint_calls": 111, "maint_tgls": 32, "rate": 36.5}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 45, "tgls": 13}, "February": {"calls": 5, "tgls": 2}, "March": {"calls": 40, "tgls": 13}, "April": {"calls": 47, "tgls": 20}, "May": {"calls": 19, "tgls": 9}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Tyler Battershell": {"ytd": {"calls": 17, "tgls": 9, "revenue": 84248, "svc_calls": 11, "svc_tgls": 8, "maint_calls": 6, "maint_tgls": 1, "rate": 52.9}, "mtd": {"calls": 1, "tgls": 0, "revenue": 0, "svc_calls": 1, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 3, "tgls": 2}, "February": {"calls": 1, "tgls": 0}, "March": {"calls": 5, "tgls": 2}, "April": {"calls": 4, "tgls": 2}, "May": {"calls": 2, "tgls": 1}, "June": {"calls": 1, "tgls": 2}, "July": {"calls": 1, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Xavier Paredes": {"ytd": {"calls": 1, "tgls": 1, "revenue": 0, "svc_calls": 1, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 1, "rate": 100.0}, "mtd": {"calls": 0, "tgls": 1, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 1, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 1, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 1}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Bradley Espinoza": {"ytd": {"calls": 2, "tgls": 0, "revenue": 0, "svc_calls": 1, "svc_tgls": 0, "maint_calls": 1, "maint_tgls": 0, "rate": 0.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 1, "tgls": 0}, "June": {"calls": 1, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Bryce Hurley": {"ytd": {"calls": 2, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 2, "maint_tgls": 0, "rate": 0.0}, "mtd": {"calls": 1, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 1, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 1, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 1, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Esdras Aguilera": {"ytd": {"calls": 1, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 1, "maint_tgls": 0, "rate": 0.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 1, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "J Boothe": {"ytd": {"calls": 1, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 1, "maint_tgls": 0, "rate": 0.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 1, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Jasmine Jones": {"ytd": {"calls": 2, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 2, "maint_tgls": 0, "rate": 0.0}, "mtd": {"calls": 1, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 1, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 1, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 1, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Joseph Byrd": {"ytd": {"calls": 1, "tgls": 0, "revenue": 0, "svc_calls": 1, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 1, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Juan Bernal": {"ytd": {"calls": 1, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 1, "maint_tgls": 0, "rate": 0.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 1, "tgls": 0}, "June": {"calls": 0, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}, "Ryan Acevedo": {"ytd": {"calls": 1, "tgls": 0, "revenue": 0, "svc_calls": 1, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "mtd": {"calls": 0, "tgls": 0, "revenue": 0, "svc_calls": 0, "svc_tgls": 0, "maint_calls": 0, "maint_tgls": 0, "rate": 0.0}, "monthly": {"January": {"calls": 0, "tgls": 0}, "February": {"calls": 0, "tgls": 0}, "March": {"calls": 0, "tgls": 0}, "April": {"calls": 0, "tgls": 0}, "May": {"calls": 0, "tgls": 0}, "June": {"calls": 1, "tgls": 0}, "July": {"calls": 0, "tgls": 0}, "August": {"calls": 0, "tgls": 0}, "September": {"calls": 0, "tgls": 0}, "October": {"calls": 0, "tgls": 0}, "November": {"calls": 0, "tgls": 0}, "December": {"calls": 0, "tgls": 0}}}};
 
-const SILO_TECHS_LIST = ["AJ-Alejandro Ruiz Padilla", "Adrian Muniz", "Alex - Oleksiy Yakovchuk", "Andrew Alonso", "Andrew Trujillo", "Benjamin Wyllie", "Bradley Espinoza", "Brandon Moreno", "Bryce Hurley", "Christopher Moreno", "Cole Pantol", "Corey Reding", "Daniel Nevarez-Lujan", "Deshawn Ojeda", "Dustin Romine", "Dylan Jimenez", "Edward Sosa", "Elvin Cruz", "Eric Cline", "Esdras Aguilera", "Fabian Pantoja", "Francisco Arreola Jr.", "Francisco Valencia", "Jaden Szelestey", "James Goode", "Jasmine Jones", "Jay Dagadag", "Joe Mendoza", "Joseph Byrd", "Josue Arciga", "Juan Bernal", "Kevin Rodriguez", "Mario Castro", "Matthew Graves", "Mauro Hernandez Lozada", "Michael Washington", "Mike (Jiangtao) Li", "Nathan Colquitt", "Nikko April", "Noah Weng", "Pedro Estrada Rios", "Raul Morales", "Robert Silinzy", "Saul Casanova", "Stanley Kim", "Tanva Suvansilpakit", "Ting Cheung", "Tyler Battershell", "Xavier Paredes"];
 const SILO_12 = ["Alex - Oleksiy Yakovchuk","Noah Weng","Joe Mendoza","Benjamin Wyllie","Nikko April","Andrew Trujillo","Dustin Romine","Juan Tlatenchi","Brandon Moreno","Francisco Valencia","Mario Castro","Cole Pantol","Nathan Colquitt","Robert Silinzy"];
   const DEPT_TECHS = ["Cole Pantol","Francisco Valencia","Joe Mendoza","Nikko April","Alex - Oleksiy Yakovchuk","Dustin Romine","Mario Castro","Andrew Trujillo","Benjamin Wyllie","AJ-Alejandro Ruiz Padilla","Francisco Arreola Jr.","Noah Weng","Ting Cheung","Brandon Moreno","Nathan Colquitt","Jaden Szelestey","Robert Silinzy","Fabian Pantoja","Juan Tlatenchi","Josue Arciga","Andrew Alonso","Christopher Moreno","Corey Reding","Kevin Rodriguez","Stanley Kim","Tyler Battershell","Mike (Jiangtao) Li","Adrian Muniz","Matthew Graves","Eric Cline","Michael Washington","Edward Sosa","Mauro Hernandez Lozada","Saul Casanova","Daniel Nevarez-Lujan","Jay Dagadag","Pedro Estrada Rios","Bradley Espinoza","Bryce Hurley","Jasmine Jones","James Goode","Pedro Manzanares","Xavier Paredes","Esdras Aguilera","J Boothe","Joseph Byrd","Juan Bernal","Ryan Acevedo","Deshawn Ojeda","Elvin Cruz","Jack Jonathon Vanos","Jose Huesca","Raul Morales"];
 
@@ -923,7 +922,7 @@ function ManagePanel({
       key: tech,
       style: {
         marginBottom: 16,
-        background: ri % 2 === 0 ? "#101a35" : "#101a35",
+        background: "#101a35",
         borderRadius: 8,
         border: "1px solid #101a35",
         overflow: "hidden"
@@ -1579,7 +1578,7 @@ function TechRow({
       alignItems: "center",
       gap: 12,
       padding: "10px 16px",
-      background: expanded ? "#101a35" : idx % 2 === 0 ? "#101a35" : "#101a35",
+      background: "#101a35",
       cursor: "pointer",
       transition: "background 0.15s"
     }
@@ -1746,7 +1745,7 @@ function TechRow({
       flexWrap: "wrap"
     }
   }, MONTHS.map((m, mi) => {
-    const md = d.monthly[m];
+    const md = d.monthly[m] || { calls: 0, tgls: 0 };
     const mr = conv(md.calls, md.tgls);
     const mb = getBadge(mr);
     const barH = mr !== null ? Math.max(4, mr / 100 * 60) : 4;
@@ -1823,7 +1822,7 @@ function PeriodTable({
       rate,
       revenue: pd.revenue || 0
     };
-  }), [period]);
+  }), [period, data]);
   const filtered = techStats.filter(s => {
     if (search && !s.tech.toLowerCase().includes(search.toLowerCase())) return false;
     if (filter === "ALL") return true;
@@ -2179,8 +2178,8 @@ function CancellationTab() {
   const months = CANCEL_DATA.months || ["January", "February", "March", "April", "May", "June"];
   const weeks = ["W1", "W2", "W3", "W4"];
   const wl = CANCEL_DATA.weekLabels;
-  const ytdSched = DEPT_TECHS.reduce((a, t) => a + CANCEL_DATA.ytd[t].scheduled, 0);
-  const ytdCancelled = DEPT_TECHS.reduce((a, t) => a + CANCEL_DATA.ytd[t].cancelled, 0);
+  const ytdSched = DEPT_TECHS.reduce((a, t) => a + (CANCEL_DATA.ytd[t] || { scheduled: 0 }).scheduled, 0);
+  const ytdCancelled = DEPT_TECHS.reduce((a, t) => a + (CANCEL_DATA.ytd[t] || { cancelled: 0 }).cancelled, 0);
   const ytdRan = ytdSched - ytdCancelled;
   const ytdCancelRate = ytdSched > 0 ? parseFloat((ytdCancelled / ytdSched * 100).toFixed(1)) : null;
   const curMonthC = (CANCEL_DATA.months || ["June"]).slice(-1)[0];
@@ -2192,8 +2191,8 @@ function CancellationTab() {
   }).cancelled, 0);
   const mtdCancelRate = mtdSched > 0 ? parseFloat((mtdCancelled / mtdSched * 100).toFixed(1)) : null;
   const latestW = weeks[weeks.length - 1];
-  const lwSched = DEPT_TECHS.reduce((a, t) => a + CANCEL_DATA.weekly[t][latestW].scheduled, 0);
-  const lwCancelled = DEPT_TECHS.reduce((a, t) => a + CANCEL_DATA.weekly[t][latestW].cancelled, 0);
+  const lwSched = DEPT_TECHS.reduce((a, t) => a + (CANCEL_DATA.weekly[t][latestW] || { scheduled: 0 }).scheduled, 0);
+  const lwCancelled = DEPT_TECHS.reduce((a, t) => a + (CANCEL_DATA.weekly[t][latestW] || { cancelled: 0 }).cancelled, 0);
   const lwRate = lwSched > 0 ? parseFloat((lwCancelled / lwSched * 100).toFixed(1)) : null;
 
   // Cancel badge: lower is better (opposite of conv rate)
@@ -2224,7 +2223,7 @@ function CancellationTab() {
     padding: "10px 14px",
     textAlign: "center",
     fontSize: 12,
-    color: color || (bold ? "#FFFFFF" : "#FFFFFF"),
+    color: color || "#FFFFFF",
     borderBottom: "1px solid #101a35",
     fontWeight: bold ? 700 : 400
   });
@@ -2448,14 +2447,14 @@ function CancellationTab() {
       paddingLeft: i === 0 ? 20 : 14
     }
   }, h)))), /*#__PURE__*/React.createElement("tbody", null, DEPT_TECHS_SF.map((tech, i) => {
-    const d = CANCEL_DATA.ytd[tech];
+    const d = CANCEL_DATA.ytd[tech] || { scheduled: 0, cancelled: 0 };
     const rate = d.scheduled > 0 ? parseFloat((d.cancelled / d.scheduled * 100).toFixed(1)) : null;
     const badge = cancelBadge(rate);
     const ran = d.scheduled - d.cancelled;
     return /*#__PURE__*/React.createElement("tr", {
       key: tech,
       style: {
-        background: i % 2 === 0 ? "#101a35" : "#101a35"
+        background: "#101a35"
       }
     }, /*#__PURE__*/React.createElement("td", {
       style: {
@@ -2552,7 +2551,7 @@ function CancellationTab() {
       color: "#5BA4E6"
     }
   }, "TREND"))), /*#__PURE__*/React.createElement("tbody", null, DEPT_TECHS_SF.map((tech, i) => {
-    const ytd = CANCEL_DATA.ytd[tech];
+    const ytd = CANCEL_DATA.ytd[tech] || { scheduled: 0, cancelled: 0 };
     const yr = ytd.scheduled > 0 ? parseFloat((ytd.cancelled / ytd.scheduled * 100).toFixed(1)) : null;
     const _cRates = months.map(m => {
       const dd = CANCEL_DATA.monthly[tech][m] || {
@@ -2564,7 +2563,7 @@ function CancellationTab() {
     return /*#__PURE__*/React.createElement("tr", {
       key: tech,
       style: {
-        background: i % 2 === 0 ? "#101a35" : "#101a35"
+        background: "#101a35"
       }
     }, /*#__PURE__*/React.createElement("td", {
       style: {
@@ -2663,12 +2662,12 @@ function CancellationTab() {
   }, wl[w])), /*#__PURE__*/React.createElement("th", {
     style: thS
   }, "MTD"))), /*#__PURE__*/React.createElement("tbody", null, DEPT_TECHS_SF.map((tech, i) => {
-    const may = CANCEL_DATA.monthly[tech].May;
+    const may = CANCEL_DATA.monthly[tech][curMonthC] || { scheduled: 0, cancelled: 0 };
     const mr = may.scheduled > 0 ? parseFloat((may.cancelled / may.scheduled * 100).toFixed(1)) : null;
     return /*#__PURE__*/React.createElement("tr", {
       key: tech,
       style: {
-        background: i % 2 === 0 ? "#101a35" : "#101a35"
+        background: "#101a35"
       }
     }, /*#__PURE__*/React.createElement("td", {
       style: {
@@ -2678,7 +2677,7 @@ function CancellationTab() {
         paddingLeft: 20
       }
     }, tech), weeks.map(w => {
-      const d = CANCEL_DATA.weekly[tech][w];
+      const d = CANCEL_DATA.weekly[tech][w] || { scheduled: 0, cancelled: 0 };
       const rate = d.scheduled > 0 ? parseFloat((d.cancelled / d.scheduled * 100).toFixed(1)) : null;
       const badge = cancelBadge(rate);
       return /*#__PURE__*/React.createElement("td", {
@@ -3059,7 +3058,7 @@ function SameDayConversion() {
     return /*#__PURE__*/React.createElement("tr", {
       key: tech,
       style: {
-        background: i % 2 === 0 ? "#101a35" : "#101a35"
+        background: "#101a35"
       }
     }, /*#__PURE__*/React.createElement("td", {
       style: {
@@ -4043,7 +4042,10 @@ function PaceReport() {
     }
   }, "MONTHLY REVENUE"), /*#__PURE__*/React.createElement("svg", {
     width: "100%",
-    viewBox: "0 0 355 210",
+    // width follows the month count — a fixed 355 clipped May onward once the
+    // year had >4 months of bars (review find, 2026-07-19); +58 covers the
+    // dashed monthly-target label that hangs past the last bar
+    viewBox: "0 0 " + (padL + pd.monthly.length * (barW + barGap) + 58) + " 210",
     style: {
       display: "block"
     }
@@ -4208,7 +4210,7 @@ function PaceReport() {
       return /*#__PURE__*/React.createElement("tr", {
         key: m.month,
         style: {
-          background: i % 2 === 0 ? "#101a35" : "#101a35"
+          background: "#101a35"
         }
       }, /*#__PURE__*/React.createElement("td", {
         style: {
@@ -4424,7 +4426,7 @@ function RevenueTable({
       cursor: "pointer",
       fontFamily: "inherit"
     }
-  }, p === "ytd" ? "📊 YTD" : p === "mtd" ? "📅 MTD" : "⏱ L14")), /*#__PURE__*/React.createElement("span", {
+  }, p === "ytd" ? "📊 YTD" : "📅 MTD")), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 10,
       color: "#FFFFFF",
@@ -4626,7 +4628,7 @@ function RevenueTable({
     return /*#__PURE__*/React.createElement("tr", {
       key: s.tech,
       style: {
-        background: i % 2 === 0 ? "#101a35" : "#101a35"
+        background: "#101a35"
       }
     }, /*#__PURE__*/React.createElement("td", {
       style: {
@@ -4780,10 +4782,10 @@ function MonthlyBreakdown({
     const rate = conv(calls, md.total_tgls);
     return {
       tech,
+      ...md,
       calls,
       svc_calls: md.svc_calls || 0,
       maint_calls: md.maint_calls || 0,
-      ...md,
       rate
     };
   }).filter(r => r.total_tgls > 0 || r.calls > 0 || r.total_rev > 0);
@@ -4801,10 +4803,6 @@ function MonthlyBreakdown({
     total_tgls: acc.total_tgls + r.total_tgls,
     svc_tgls: acc.svc_tgls + r.svc_tgls,
     maint_tgls: acc.maint_tgls + r.maint_tgls,
-    svc_calls: acc.svc_calls + r.svc_calls,
-    maint_calls: acc.maint_calls + r.maint_calls,
-    svc_calls: acc.svc_calls + r.svc_calls,
-    maint_calls: acc.maint_calls + r.maint_calls,
     total_rev: acc.total_rev + r.total_rev,
     svc_rev: acc.svc_rev + r.svc_rev,
     maint_rev: acc.maint_rev + r.maint_rev
@@ -5188,7 +5186,7 @@ function MonthlyBreakdown({
     return /*#__PURE__*/React.createElement("tr", {
       key: s.tech,
       style: {
-        background: i % 2 === 0 ? "#101a35" : "#101a35"
+        background: "#101a35"
       }
     }, /*#__PURE__*/React.createElement("td", {
       style: {
@@ -5378,7 +5376,7 @@ function MonthlyBreakdown({
       key: m,
       onClick: () => setMonth(m),
       style: {
-        background: month === m ? "#101a35" : "#101a35",
+        background: "#101a35",
         border: `1px solid ${month === m ? "#F5B324" : mb.color + "33"}`,
         borderRadius: 10,
         padding: "10px 16px",
@@ -5470,7 +5468,7 @@ function AllTeamsTab() {
       r = period === "ytd" ? t.ytd_rate : t.mtd_rate;
     return /*#__PURE__*/React.createElement("tr", {
       style: {
-        background: i % 2 === 0 ? "#101a35" : "#101a35"
+        background: "#101a35"
       }
     }, /*#__PURE__*/React.createElement("td", {
       style: {
@@ -6604,13 +6602,12 @@ function SiloOnlyTab() {
     const calls = view === "ytd" ? t.ytd_calls : t.mtd_calls;
     const tgls = view === "ytd" ? t.ytd_tgls : t.mtd_tgls;
     const rate = view === "ytd" ? t.ytd_rate : t.mtd_rate;
-    const isSilo12 = ["Alex - Oleksiy Yakovchuk", "Andrew Trujillo", "Cole Pantol", "Dustin Romine", "Francisco Valencia", "Joe Mendoza", "Mario Castro", "Nikko April", "Benjamin Wyllie", "Noah Weng", "Brandon Moreno", "Nathan Colquitt"].includes(t.name);
     const isA = ["Noah Weng", "Joe Mendoza", "Benjamin Wyllie", "Nikko April", "Andrew Trujillo", "Dustin Romine"].includes(t.name);
     const teamColor = isA ? "#2E78C7" : "#F5B324";
     return /*#__PURE__*/React.createElement("tr", {
       key: t.name,
       style: {
-        background: i % 2 === 0 ? "#0a0e1a" : "#0a0e1a"
+        background: "#0a0e1a"
       }
     }, /*#__PURE__*/React.createElement("td", {
       style: {
@@ -6732,9 +6729,9 @@ function SiloOnlyTab() {
     style: {
       fontSize: 14,
       fontWeight: 800,
-      color: rc(cur_tot.rate || 0)
+      color: rc(cur_tot.calls > 0 ? Math.round(cur_tot.tgls / cur_tot.calls * 100) : 0)
     }
-  }, cur_tot.rate || 0, "%")), /*#__PURE__*/React.createElement("td", {
+  }, cur_tot.calls > 0 ? Math.round(cur_tot.tgls / cur_tot.calls * 100) : 0, "%")), /*#__PURE__*/React.createElement("td", {
     style: {
       padding: "9px 14px",
       fontSize: 12,
@@ -7227,7 +7224,7 @@ function CACloseRateTab() {
       padR = 14,
       padT = 18,
       padB = 22;
-    const maxV = Math.max(60, ...mo.map(m => m.cr), 46);
+    const maxV = Math.max(60, ...mo.map(m => m.cr));
     const X = i => padL + i * (W - padL - padR) / (mo.length - 1);
     const Y = v => padT + (1 - v / maxV) * (H - padT - padB);
     const pts = mo.map((m, i) => [X(i), Y(m.cr)]);
@@ -8093,8 +8090,8 @@ function DeptPaceReport() {
   const goalPct = Math.min(d.ytd_revenue / d.goal * 100, 100);
   const projPct = Math.min(d.projected_eoy / d.goal * 100, 100);
   const siloShare = d.ytd_revenue > 0 ? Math.round(d.silo_rev / d.ytd_revenue * 100) : 0;
-  const remJobs = Math.round(d.total_calls / d.days_elapsed * d.days_remaining);
-  const convNeed = d.rev_per_tgl > 0 ? (d.goal - d.ytd_revenue) / (remJobs * d.rev_per_tgl) * 100 : 0;
+  const remJobs = d.days_elapsed > 0 ? Math.round(d.total_calls / d.days_elapsed * d.days_remaining) : 0;
+  const convNeed = remJobs > 0 && d.rev_per_tgl > 0 ? (d.goal - d.ytd_revenue) / (remJobs * d.rev_per_tgl) * 100 : 0;
   const kpis = [{
     l: "YTD REVENUE",
     v: fmt(d.ytd_revenue),
@@ -8438,7 +8435,7 @@ function DeptPaceReport() {
     note: d.daily_actual >= d.daily_needed ? "✅ on pace" : "more/day needed"
   }, {
     l: "Extra TGLs/day needed",
-    v: (Math.max(0, d.daily_needed - d.daily_actual) / d.rev_per_tgl).toFixed(1),
+    v: d.rev_per_tgl > 0 ? (Math.max(0, d.daily_needed - d.daily_actual) / d.rev_per_tgl).toFixed(1) : "—",
     note: "avg $" + fmtN(d.rev_per_tgl) + "/TGL"
   }, {
     l: "Total gap remaining",
@@ -8873,7 +8870,7 @@ function WeeklyConvTab() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "1fr repeat(5,100px) 80px",
+      gridTemplateColumns: "1fr repeat(" + weeks.length + ",100px) 80px",
       gap: 4,
       alignItems: "center"
     }
@@ -8918,7 +8915,7 @@ function WeeklyConvTab() {
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         display: "grid",
-        gridTemplateColumns: "1fr repeat(5,100px) 80px",
+        gridTemplateColumns: "1fr repeat(" + weeks.length + ",100px) 80px",
         gap: 4,
         alignItems: "center"
       }
@@ -8979,7 +8976,7 @@ function WeeklyConvTab() {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "1fr repeat(5,100px) 80px",
+      gridTemplateColumns: "1fr repeat(" + weeks.length + ",100px) 80px",
       gap: 4,
       alignItems: "center"
     }
@@ -9058,7 +9055,7 @@ function CountUp({
       cancelAnimationFrame(raf);
       clearTimeout(fb);
     };
-  }, [value]);
+  }, [value, dur]);
   const disp = decimals > 0 ? v.toFixed(decimals) : Math.round(v).toLocaleString();
   return /*#__PURE__*/React.createElement("span", null, (prefix || "") + disp + (suffix || ""));
 }
@@ -9072,15 +9069,19 @@ function OverviewTab({
   setKpiVal
 }) {
   const techs = Object.values(data);
-  // Confetti when TODAY hits KPI
+  // Confetti when TODAY hits KPI — judged on the same board-based rate the
+  // gauge shows, so it can't fire while the gauge reads below KPI
   React.useEffect(() => {
-    if (hourly && hourly.today && hourly.today.rate >= kpiVal && hourly.today.calls > 3) {
+    const _t = deptTgls != null ? deptTgls : hourly && hourly.today ? hourly.today.tgls || 0 : 0;
+    const _r = hourly && hourly.today && hourly.today.calls > 0 ? _t / hourly.today.calls * 100 : 0;
+    if (_r >= kpiVal && hourly.today.calls > 3) {
       if (window.__celebrated !== hourly.updated) {
         window.__celebrated = hourly.updated;
-        setTimeout(() => window.__celebrate && window.__celebrate(), 400);
+        const id = setTimeout(() => window.__celebrate && window.__celebrate(), 400);
+        return () => clearTimeout(id);
       }
     }
-  }, [hourly, kpiVal]);
+  }, [hourly, kpiVal, deptTgls]);
   const yc = techs.reduce((a, d) => a + d.ytd.calls, 0);
   const yt = techs.reduce((a, d) => a + d.ytd.tgls, 0);
   const yr = techs.reduce((a, d) => a + (d.ytd.revenue || 0), 0);
@@ -9591,7 +9592,10 @@ function OverviewTab({
     // MTD rate stays the same (rate = tgls/calls; scaling both by same factor cancels)
     const projRate = projCalls && projTgls ? +(projTgls / projCalls * 100).toFixed(1) : mtdRate;
     const projColor = projRate === null ? "#7089ab" : projRate >= 60 ? "#2E78C7" : projRate >= 48 ? "#F5B324" : "#E63946";
-    const todayRate = hourly && hourly.today && hourly.today.calls > 0 ? hourly.today.rate : null;
+    // Board-based today numbers (deptTgls from livefeed) — same source as the
+    // TODAY gauge and 48% banner, so every tile on this screen agrees
+    const _bTgls = deptTgls != null ? deptTgls : hourly && hourly.today ? hourly.today.tgls || 0 : 0;
+    const todayRate = hourly && hourly.today && hourly.today.calls > 0 ? +(_bTgls / hourly.today.calls * 100).toFixed(1) : null;
     const tglsNeeded = projCalls ? Math.max(0, Math.ceil(projCalls * 0.60) - projTgls) : null;
     return /*#__PURE__*/React.createElement(React.Fragment, null, projRate !== null && /*#__PURE__*/React.createElement("div", {
       className: "riseIn liftCard proj-mtd"
@@ -9635,7 +9639,7 @@ function OverviewTab({
         color: "#F5B324"
       }
     }, "need ~" + tglsNeeded + " more TGLs to hit 60%"))), todayRate !== null && /*#__PURE__*/React.createElement("div", {
-      className: "riseIn liftCard proj-mtd" + (hourly.today.rate >= 60 ? " celebrate" : "")
+      className: "riseIn liftCard proj-mtd" + (todayRate >= 60 ? " celebrate" : "")
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 9,
@@ -9647,22 +9651,22 @@ function OverviewTab({
       style: {
         fontSize: 28,
         fontWeight: 800,
-        color: tierCol(hourly.today.rate),
+        color: tierCol(todayRate),
         margin: "5px 0 2px"
       }
-    }, hourly.today.rate.toFixed(1), "%", hourly.today.rate >= 60 && " 🎉"), /*#__PURE__*/React.createElement("div", {
+    }, todayRate.toFixed(1), "%", todayRate >= 60 && " 🎉"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 9,
         color: "#7089ab"
       }
-    }, "today · " + hourly.today.calls + " ROPPs · " + hourly.today.tgls + " TGLs"), /*#__PURE__*/React.createElement("div", {
+    }, "today · " + hourly.today.calls + " ROPPs · " + _bTgls + " TGLs"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 9,
-        color: tierCol(hourly.today.rate),
+        color: tierCol(todayRate),
         fontWeight: 700,
         marginTop: 2
       }
-    }, hourly.today.rate >= 60 ? "✓ HITTING KPI TODAY!" : "needs " + (Math.ceil(hourly.today.calls * 0.60) - hourly.today.tgls) + " more TGLs for 60%")));
+    }, todayRate >= 60 ? "✓ HITTING KPI TODAY!" : "needs " + (Math.ceil(hourly.today.calls * 0.60) - _bTgls) + " more TGLs for 60%")));
   })()), /*#__PURE__*/React.createElement("div", {
     className: "riseIn",
     style: {
@@ -9935,11 +9939,15 @@ function HourByHourTab({
     borderBottom: "1px solid #101a35"
   };
 
-  // EOD projection
-  const completedHrs = hrs.filter(h => h.calls > 0);
-  const avgCallsPerHr = completedHrs.length > 0 ? completedHrs.reduce((s, h) => s + h.calls, 0) / completedHrs.length : 0;
-  const avgRatePerHr = completedHrs.length > 0 ? completedHrs.reduce((s, h) => s + (h.rate || 0), 0) / completedHrs.length : 0;
-  const remainingHrs = hrs.filter(h => h.calls === 0).length;
+  // EOD projection — h.calls/h.rate are CUMULATIVE running totals; the
+  // per-hour figures are h.dcalls/h.dtgls. Averaging cumulative values
+  // inflated "PACE SO FAR" and over-projected EOD (review find, 2026-07-19).
+  const completedHrs = hrs.filter(h => (h.dcalls || 0) > 0);
+  const _sumDc = completedHrs.reduce((s, h) => s + (h.dcalls || 0), 0);
+  const _sumDt = completedHrs.reduce((s, h) => s + (h.dtgls || 0), 0);
+  const avgCallsPerHr = completedHrs.length > 0 ? _sumDc / completedHrs.length : 0;
+  const avgRatePerHr = _sumDc > 0 ? _sumDt / _sumDc * 100 : 0;
+  const remainingHrs = hrs.filter(h => (h.dcalls || 0) === 0).length;
   const eodCalls = Math.round((t.calls || 0) + avgCallsPerHr * remainingHrs);
   const eodTgls = Math.round((t.tgls || 0) + avgCallsPerHr * remainingHrs * avgRatePerHr / 100);
   const eodRate = eodCalls > 0 ? +(eodTgls / eodCalls * 100).toFixed(1) : null;
@@ -10782,9 +10790,9 @@ function HealthBanner() {
         let hr = 12;
         try { hr = +new Intl.DateTimeFormat("en-US", { hour: "numeric", hour12: false, timeZone: "America/Los_Angeles" }).format(new Date()); } catch (x) {}
         const p = [];
-        if (fails.h >= 2) p.push("TODAY FEED UNREACHABLE");
+        if (fails.h >= 2 && hr >= 6 && hr < 22) p.push("TODAY FEED UNREACHABLE");
         else if (hr >= 6 && hr < 22 && hAge !== null && hAge > 20) p.push("TODAY FEED STALE " + Math.round(hAge) + "M");
-        if (fails.l >= 2) p.push("LIVE FEED UNREACHABLE");
+        if (fails.l >= 2 && hr >= 7 && hr < 21) p.push("LIVE FEED UNREACHABLE");
         else if (hr >= 7 && hr < 21 && lAge !== null && lAge > 10) p.push("LIVE FEED STALE " + Math.round(lAge) + "M");
         setProbs(p);
       });
@@ -10834,8 +10842,10 @@ function Root() {
   // Live hourly snapshots
   const INTERVAL = 60 * 1000;
   const [deptTgls, setDeptTgls] = useState(null);
-  const loadHourly = React.useCallback(() => {
-    setRefreshing(true);
+  const loadHourly = React.useCallback(manual => {
+    // spin the header ↻ only for a real click — the automatic 60s poll used
+    // to flash it every minute (review find, 2026-07-19)
+    if (manual) setRefreshing(true);
     fetch("hourly.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
       if (!j) return;
       // 8 AM reset: if hourly.json is still from a prior day and it's past 8 AM, show a
@@ -10877,17 +10887,8 @@ function Root() {
     return () => clearInterval(id);
   }, []);
 
-  // dept TGLs created today (feeds the KPI boxes + Overview strip source)
-  useEffect(() => {
-    const loadLf = () => fetch("livefeed.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
-      // canceled TGLs still count (John 2026-07-17) — mis-created tickets are
-      // dropped upstream by livefeed_sync's NOT_A_TGL list, never here
-      if (j && Array.isArray(j.tgls)) setDeptTgls(j.tgls.length);
-    }).catch(() => {});
-    loadLf();
-    const id = setInterval(loadLf, 60000);
-    return () => clearInterval(id);
-  }, []);
+  // (dept-TGL livefeed poll merged into the TV-takeover poll below —
+  // one fetch per minute instead of two hitting the same file, 2026-07-19)
 
   // Countdown to next refresh
   useEffect(() => {
@@ -10907,22 +10908,9 @@ function Root() {
     return () => clearInterval(id);
   }, [lastUpdated]);
 
-  // ── Staleness guard: baked-in tabs (Yesterday/YTD/...) and the UI code only
-  // update on page load, so quietly reload old pages. Rules: any page >12h old;
-  // hidden tabs >4h; and a daily 5:50 AM refresh so wall TVs start each day
-  // on the newest build. Tab choice + boot-splash state survive the reload.
-  useEffect(() => {
-    const t0 = Date.now();
-    const id = setInterval(() => {
-      const ageH = (Date.now() - t0) / 3600000;
-      const now = new Date();
-      const preDay = now.getHours() === 5 && now.getMinutes() >= 50;
-      if (ageH > 12 || (ageH > 4 && document.hidden) || (ageH > 1 && preDay)) {
-        window.location.reload();
-      }
-    }, 300000);
-    return () => clearInterval(id);
-  }, []);
+  // (A React-side staleness guard used to live here — removed 2026-07-19:
+  // the tail-script 5-minute cache-busted auto-reload already owns page
+  // freshness, so the guard's thresholds could never be reached.)
 
   // ── Data-sync flash: header glows green when a fresh capture lands ───────
   useEffect(() => {
@@ -10938,11 +10926,15 @@ function Root() {
   const [takeover, setTakeover] = useState(null);
   const lastEvRef = React.useRef(null);
   useEffect(() => {
-    if (!TV_MODE) return;
     let alive = true;
     const poll = () => {
       fetch("livefeed.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
-        if (!alive || !j || !j.feed || !j.feed.length) return;
+        if (!alive || !j) return;
+        // dept TGLs created today (KPI boxes + Overview) — canceled TGLs still
+        // count (John 2026-07-17); mis-created tickets are dropped upstream by
+        // livefeed_sync's NOT_A_TGL list, never here
+        if (Array.isArray(j.tgls)) setDeptTgls(j.tgls.length);
+        if (!TV_MODE || !j.feed || !j.feed.length) return;
         const ev = j.feed[0];
         const sig = ev.x + "|" + ev.t;
         if (lastEvRef.current === null) {

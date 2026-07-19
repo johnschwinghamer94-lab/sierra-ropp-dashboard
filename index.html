@@ -10848,12 +10848,13 @@ function Root() {
     if (manual) setRefreshing(true);
     fetch("hourly.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
       if (!j) return;
-      // 8 AM reset: if hourly.json is still from a prior day and it's past 8 AM, show a
-      // clean zeroed slate (TODAY gauge, revenue, Hour-by-Hour) until today's first report lands.
+      // Midnight reset (John, 2026-07-19 — was 8 AM): if hourly.json is still
+      // from a prior day, show a clean zeroed slate (TODAY gauge, revenue,
+      // Hour-by-Hour) until today's first report lands. A new day starts at 0.
       const pad = n => String(n).padStart(2, "0");
       const now = new Date();
       const today = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
-      if (j.date && j.date !== today && now.getHours() >= 8) {
+      if (j.date && j.date !== today) {
         const z = JSON.parse(JSON.stringify(j));
         z.date = today;
         z.updated = "awaiting today's first report";
@@ -10932,8 +10933,14 @@ function Root() {
         if (!alive || !j) return;
         // dept TGLs created today (KPI boxes + Overview) — canceled TGLs still
         // count (John 2026-07-17); mis-created tickets are dropped upstream by
-        // livefeed_sync's NOT_A_TGL list, never here
-        if (Array.isArray(j.tgls)) setDeptTgls(j.tgls.length);
+        // livefeed_sync's NOT_A_TGL list, never here.
+        // DATE CHECK (John, 2026-07-19): the feed sleeps 10p–6:50a, so overnight
+        // livefeed.json still holds YESTERDAY's board — its TGL count paraded
+        // as today's (7 TGLs at 12:18 AM). A stale-dated feed counts as 0.
+        const _p2 = n => String(n).padStart(2, "0");
+        const _nd = new Date();
+        const _today = _nd.getFullYear() + "-" + _p2(_nd.getMonth() + 1) + "-" + _p2(_nd.getDate());
+        if (Array.isArray(j.tgls)) setDeptTgls(j.date === _today ? j.tgls.length : 0);
         if (!TV_MODE || !j.feed || !j.feed.length) return;
         const ev = j.feed[0];
         const sig = ev.x + "|" + ev.t;

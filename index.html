@@ -10523,7 +10523,7 @@ const LF_CSS = `
 .lf2-ev .x{font-size:10.5px;font-weight:600;line-height:1.35}
 .lf2-ev .t{font-size:8.5px;color:#5d6fa8;margin-top:1px}
 .lf2-empty{background:#0d1638;border:1px dashed #22307a;border-radius:10px;padding:34px 20px;text-align:center;color:#5d6fa8;font-size:12px;letter-spacing:.06em;grid-column:1/-1}
-.lf2-sc{margin-top:9px;border-top:1px solid #22307a;padding-top:8px;cursor:default}
+.lf2-sc{margin-top:10px;border:1px solid #2a3a7a;border-radius:8px;background:#0c1640;padding:8px 10px 9px;cursor:pointer;transition:border-color .12s,background .12s,box-shadow .12s}.lf2-sc:hover{border-color:#38bdf8cc;background:#0f1e50;box-shadow:0 0 16px #38bdf833}.lf2-card:has(.lf2-sc:hover){border-color:#243380!important;transform:none!important;box-shadow:0 0 16px #060b2088!important}.lf2-card:has(.lf2-sc:hover)::after{left:-85%!important}
 .lf2-sc-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:6px}
 .lf2-sc-t{font-size:8.5px;font-weight:700;letter-spacing:.2em;color:#8fa3d9;text-transform:uppercase;white-space:nowrap}
 .lf2-sc-out{font-size:8px;font-weight:800;letter-spacing:.12em;padding:2px 8px;border-radius:4px;border:1px solid;white-space:nowrap}
@@ -10663,7 +10663,7 @@ function LiveFeedTab({
             target: "_blank", rel: "noopener",
             onClick: ev => ev.stopPropagation(),
             title: "Open recording in Siro",
-            style: { fontSize: 10, fontWeight: 700, letterSpacing: ".04em", color: "#8fa3d9", textDecoration: "none", border: "1px solid #8fa3d955", borderRadius: 4, padding: "1px 5px" },
+            style: { fontSize: 10, fontWeight: 700, letterSpacing: ".04em", color: "#38bdf8", textDecoration: "none", border: "1px solid #38bdf866", borderRadius: 4, padding: "1px 5px" },
             onMouseEnter: ev => { ev.currentTarget.style.color = "#c7d4f0"; ev.currentTarget.style.borderColor = "#c7d4f0aa"; },
             onMouseLeave: ev => { ev.currentTarget.style.color = "#8fa3d9"; ev.currentTarget.style.borderColor = "#8fa3d955"; }
           }, "\u{1F3A7} SIRO") : null,

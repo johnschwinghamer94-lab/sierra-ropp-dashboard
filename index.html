@@ -10666,7 +10666,7 @@ function LiveFeedTab({
             style: { fontSize: 10, fontWeight: 700, letterSpacing: ".04em", color: "#38bdf8", textDecoration: "none", border: "1px solid #38bdf866", borderRadius: 4, padding: "1px 5px" },
             onMouseEnter: ev => { ev.currentTarget.style.color = "#c7d4f0"; ev.currentTarget.style.borderColor = "#c7d4f0aa"; },
             onMouseLeave: ev => { ev.currentTarget.style.color = "#8fa3d9"; ev.currentTarget.style.borderColor = "#8fa3d955"; }
-          }, "\u{1F3A7} SIRO") : null,
+          }, "\u{1F3A7} HEAR CALL") : null,
           tglSold ? e("span", { className: "lf2-sc-out", style: { color: "#4ade80", borderColor: "#4ade80cc", background: "rgba(74,222,128,.16)", boxShadow: "0 0 8px #4ade8044" } }, "\u{1F4B0} TGL SOLD " + tglSold.soldT) : null,
           e("span", { className: "lf2-sc-out", style: { color: oc, borderColor: oc + "88", background: oc + "14" } }, (c.outcome || "?").toUpperCase()))),
       body ? e("div", { className: "lf2-sc-tip" },
@@ -10714,7 +10714,7 @@ function LiveFeedTab({
               style: { fontSize: 10, fontWeight: 700, letterSpacing: ".04em", color: "#5d6fa8", textDecoration: "none", border: "1px solid #2E78C755", borderRadius: 4, padding: "1px 5px", flexShrink: 0 },
               onMouseEnter: ev => { ev.currentTarget.style.color = "#7fb3e8"; ev.currentTarget.style.borderColor = "#7fb3e8aa"; },
               onMouseLeave: ev => { ev.currentTarget.style.color = "#5d6fa8"; ev.currentTarget.style.borderColor = "#2E78C755"; }
-            }, "ST ↗") : null),
+            }, "ST JOB ↗") : null),
           e("div", { className: "lf2-cust" }, j.customer),
           e("div", { className: "lf2-stat" }, statusLine(j) + (j.jobType ? " · " + j.jobType : ""))),
         e("div", { style: { display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end", flexShrink: 0 } },

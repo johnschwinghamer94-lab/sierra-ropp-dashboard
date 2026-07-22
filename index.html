@@ -10654,12 +10654,12 @@ function LiveFeedTab({
     const labCol = isWin ? "#4ade80" : "#ffb35c";
     // this call's TGL sold (install booked) — from the live feed's TGL board data
     const tglSold = (lf && lf.tgls || []).find(x => x.soldT && String(x.src) === String(j.jobId));
-    return e("div", { className: "lf2-sc", title: c.recId ? "Open call recording in Siro" : null, style: c.recId ? { cursor: "pointer" } : null, onClick: ev => { ev.stopPropagation(); if (c.recId) window.open("https://salespro.siro.ai/recordings/" + c.recId.slice(0, 36), "_blank", "noopener"); } },
+    return e("div", { className: "lf2-sc", title: c.recId ? "Open call recording in Siro" : null, style: c.recId ? { cursor: "pointer" } : null, onClick: ev => { ev.stopPropagation(); if (c.recId) window.open("https://salespro.siro.ai/#/recordings/explore/" + c.recId, "_blank", "noopener"); } },
       e("div", { className: "lf2-sc-h" },
         e("span", { className: "lf2-sc-t" }, "\u{1F4CB} CALL COACHING" + (isLastCall ? " · LAST CALL" : "") + (c.durationMin ? " · " + c.durationMin + "M" : "")),
         e("span", { style: { display: "flex", gap: 5, alignItems: "center", flexShrink: 0 } },
           c.recId ? e("a", {
-            href: "https://salespro.siro.ai/recordings/" + c.recId.slice(0, 36),
+            href: "https://salespro.siro.ai/#/recordings/explore/" + c.recId,
             target: "_blank", rel: "noopener",
             onClick: ev => ev.stopPropagation(),
             title: "Open recording in Siro",

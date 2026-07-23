@@ -11421,9 +11421,10 @@ ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.
 })();
 
 // ── Cream drip engine (triggered by React via window.__celebrate) ─────────────
-// A glossy cream sheet melts down from the top edge: wide rounded tongues of
-// cream (flush sides, heavy rounded bottoms — melted-chocolate style) creep
-// down at staggered speeds, shed small teardrop droplets, then settle.
+// Slime-style paint runs (modeled on dripping-paint reference): a thick lumpy
+// cream sheet on the top edge sheds long NARROW runs that taper from a wide base
+// and end in a small rounded bulge, glossy throughout. Runs keep oozing and shed
+// big gooey blobs that stay tethered by a stretchy strand until it snaps.
 (function () {
   window.__celebrate = function () {
     var canvas = document.getElementById('cream-canvas') || document.createElement('canvas');
@@ -11432,129 +11433,167 @@ ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     var ctx = canvas.getContext('2d');
+    // newest fire owns the canvas; older loops stop drawing instead of
+    // removing the canvas out from under it
+    var run = window.__creamRun = (window.__creamRun || 0) + 1;
 
     var CREAM = '#FFF4DE'; // body
     var SHADE = '#E8D5AE'; // underside shadow
-    var GLOSS = '#FFFFFF'; // highlight
+    var GLOSS = '#FFFFFF'; // wet highlight
 
-    var LIP = Math.max(16, Math.round(canvas.height * 0.025)); // cream sheet depth
-    var slots = Math.max(9, Math.round(canvas.width / 95));
+    var H = canvas.height;
+    var LIP = Math.max(22, Math.round(H * 0.035)); // sheet depth
+    var slots = Math.max(9, Math.round(canvas.width / 105));
     var drips = Array.from({
       length: slots
     }, function (_, i) {
       var w = canvas.width / slots;
+      var stub = Math.random() < 0.3;
       return {
         x: w * i + w * (0.3 + Math.random() * 0.4),
-        w: 34 + Math.random() * 38,             // WIDE tongue — width ~ its roundness
+        wb: 14 + Math.random() * 22,            // wide base half-width
+        wr: 4.5 + Math.random() * 4.5,          // NARROW run half-width
         len: 0,
-        // long pours: some tongues reach ~a third of the screen
-        max: 50 + Math.random() * Math.max(200, canvas.height * 0.32),
-        spd: 1.1 + Math.random() * 2.2,
+        max: stub ? 30 + Math.random() * 60 : 80 + Math.random() * H * 0.35,
+        spd: 1.2 + Math.random() * 2.4,
         wait: Math.floor(Math.random() * 30),
         dropped: false
       };
     });
+    // extra lumps so the sheet edge reads thick and uneven
+    var lumps = Array.from({
+      length: slots * 2
+    }, function () {
+      return { x: Math.random() * canvas.width, r: 8 + Math.random() * 26 };
+    });
     var drops = [];
-    var frame = 0,
-      FRAMES = 280;
+    // time-based pacing: identical speed on 60Hz and 120Hz displays
+    var t0 = null, tp = null, DUR = 5200;
 
-    // wide tongue with flush sides and a heavy rounded bottom (no bulb, no point)
-    function tongue(x, w, tipY) {
-      var hw = w / 2;
-      var yTop = LIP - 2;
-      var yArc = Math.max(tipY - hw, yTop + 2); // bottom semicircle center
+    // paint run: wide base tapering to a narrow run, small rounded bulge tip
+    function paintRun(d, tipY) {
+      var x = d.x, wb = d.wb, wr = d.wr, h = tipY - LIP;
       ctx.beginPath();
-      ctx.moveTo(x - hw, yTop);
-      // sides bow OUT slightly near the bottom (liquid weight), never pinch in
-      ctx.bezierCurveTo(x - hw, yTop + (yArc - yTop) * 0.5,
-                        x - hw * 1.06, yArc - hw * 0.2, x - hw, yArc);
-      ctx.arc(x, yArc, hw, Math.PI, 0, true);
-      ctx.bezierCurveTo(x + hw * 1.06, yArc - hw * 0.2,
-                        x + hw, yTop + (yArc - yTop) * 0.5, x + hw, yTop);
+      ctx.moveTo(x - wb, LIP - 6);
+      ctx.bezierCurveTo(x - wb * 0.7, LIP + h * 0.12,
+                        x - wr, LIP + h * 0.28, x - wr, Math.max(tipY - wr, LIP + h * 0.3));
+      ctx.arc(x, tipY - wr * 0.35, wr * 1.18, Math.PI * 0.88, Math.PI * 0.12, true);
+      ctx.bezierCurveTo(x + wr, LIP + h * 0.28,
+                        x + wb * 0.7, LIP + h * 0.12, x + wb, LIP - 6);
       ctx.closePath();
       ctx.fillStyle = CREAM;
       ctx.fill();
-      // soft shadow hugging the rounded bottom = depth
-      var a = ctx.globalAlpha;
-      ctx.beginPath();
-      ctx.arc(x, yArc + hw * 0.12, hw * 0.82, Math.PI * 0.15, Math.PI * 0.85);
-      ctx.strokeStyle = SHADE;
-      ctx.lineWidth = Math.max(2, hw * 0.16);
-      ctx.globalAlpha = a * 0.55;
-      ctx.stroke();
-      // vertical gloss streak = wet shine
-      ctx.beginPath();
-      ctx.ellipse(x - hw * 0.45, yTop + (yArc - yTop) * 0.45,
-                  hw * 0.13, Math.max(6, (yArc - yTop) * 0.3), 0, 0, Math.PI * 2);
-      ctx.fillStyle = GLOSS;
-      ctx.globalAlpha = a * 0.4;
-      ctx.fill();
-      ctx.globalAlpha = a;
+      // wet gloss line down the run
+      if (h > 30) {
+        var a = ctx.globalAlpha;
+        ctx.beginPath();
+        ctx.moveTo(x - wr * 0.4, LIP + h * 0.18);
+        ctx.lineTo(x - wr * 0.4, tipY - wr * 2.2);
+        ctx.strokeStyle = GLOSS;
+        ctx.lineWidth = Math.max(1.2, wr * 0.4);
+        ctx.lineCap = 'round';
+        ctx.globalAlpha = a * 0.45;
+        ctx.stroke();
+        ctx.globalAlpha = a;
+      }
     }
 
-    // small falling droplet: pointed top, round bottom (classic teardrop)
-    function droplet(x, y, r) {
+    // big gooey blob that stretches vertically as it speeds up
+    function droplet(x, y, r, vy) {
+      var s = 1 + Math.min((vy || 0) * 0.05, 0.7);
       ctx.beginPath();
-      ctx.moveTo(x, y - r * 1.6);
-      ctx.quadraticCurveTo(x + r, y - r * 0.4, x + r * 0.9, y + r * 0.2);
-      ctx.arc(x, y + r * 0.2, r * 0.9, 0, Math.PI);
-      ctx.quadraticCurveTo(x - r, y - r * 0.4, x, y - r * 1.6);
+      ctx.moveTo(x, y - r * 1.5 * s);
+      ctx.quadraticCurveTo(x + r * 0.95, y - r * 0.4 * s, x + r * 0.92, y + r * 0.15);
+      ctx.arc(x, y + r * 0.15, r * 0.92, 0, Math.PI);
+      ctx.quadraticCurveTo(x - r * 0.95, y - r * 0.4 * s, x, y - r * 1.5 * s);
       ctx.closePath();
       ctx.fillStyle = CREAM;
       ctx.fill();
     }
 
-    function draw() {
+    function draw(ts) {
+      if (run !== window.__creamRun) return; // a newer fire took over
+      if (t0 === null) { t0 = tp = ts; }
+      var k = Math.min(ts - tp, 50) / 16.67; // physics step in 60fps units
+      tp = ts;
+      var el = ts - t0;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      var fade = frame > FRAMES - 40 ? Math.max(0, (FRAMES - frame) / 40) : 1;
+      var fade = el > DUR - 700 ? Math.max(0, (DUR - el) / 700) : 1;
       ctx.globalAlpha = fade;
 
-      // cream sheet with an uneven melted edge (shallow scallops between tongues)
+      // thick sheet with a lumpy, uneven melted edge
       ctx.fillStyle = CREAM;
       ctx.fillRect(0, 0, canvas.width, LIP);
-      drips.forEach(function (d) {
+      lumps.forEach(function (L) {
         ctx.beginPath();
-        ctx.arc(d.x + d.w * 1.1, LIP, d.w * 0.32, 0, Math.PI);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(d.x - d.w * 0.9, LIP, d.w * 0.22, 0, Math.PI);
+        ctx.arc(L.x, LIP, L.r, 0, Math.PI);
         ctx.fill();
       });
+      ctx.fillStyle = GLOSS;
+      ctx.globalAlpha = fade * 0.22;
+      ctx.fillRect(0, 0, canvas.width, LIP * 0.4);
       ctx.fillStyle = SHADE;
-      ctx.globalAlpha = fade * 0.45;
+      ctx.globalAlpha = fade * 0.4;
       ctx.fillRect(0, LIP - 3, canvas.width, 3);
       ctx.globalAlpha = fade;
 
       drips.forEach(function (d) {
         if (d.wait > 0) {
-          d.wait--;
+          d.wait -= k;
         } else if (d.len < d.max) {
-          d.len += d.spd;
-          d.spd *= 0.994;
+          d.len += d.spd * k;
+          d.spd *= Math.pow(0.995, k);
         } else if (!d.dropped) {
           d.dropped = true;
-          drops.push({ x: d.x, y: LIP + d.len + 4, r: 4 + Math.random() * 3, vy: 1.4 });
+          if (d.len > 90) {
+            // big blob lets go, tethered by a slime strand
+            drops.push({ x: d.x, y: LIP + d.len + 6, r: 9 + Math.random() * 8, vy: 1.1, src: d });
+          }
+          if (d.len < H * 0.45) {
+            // slime keeps oozing — run some more and shed again
+            d.max = d.len + 50 + Math.random() * 110;
+            d.dropped = false;
+            d.spd = 0.7 + Math.random() * 1.2;
+          }
         }
-        if (d.len > 2) tongue(d.x, d.w, LIP + d.len);
+        if (d.len > 2) paintRun(d, LIP + d.len);
       });
 
       drops.forEach(function (p) {
-        p.y += p.vy;
-        p.vy += 0.3;
-        droplet(p.x, p.y, p.r);
+        p.y += p.vy * k;
+        p.vy += 0.3 * k;
+        // stretchy strand back to the run tip; thins out, then snaps
+        if (p.src) {
+          var tipY = LIP + p.src.len;
+          var dy = p.y - p.r - tipY;
+          if (dy >= 220) {
+            p.src = null;
+          } else if (dy > -10) {
+            var t = Math.max(0, 1 - dy / 220);
+            var w0 = p.src.wr * 0.8 * t + 1.5;
+            ctx.beginPath();
+            ctx.moveTo(p.src.x - w0, tipY - 6);
+            ctx.quadraticCurveTo(p.src.x - w0 * 0.3, tipY + dy * 0.5, p.x - 1.4, p.y - p.r * 0.5);
+            ctx.lineTo(p.x + 1.4, p.y - p.r * 0.5);
+            ctx.quadraticCurveTo(p.src.x + w0 * 0.3, tipY + dy * 0.5, p.src.x + w0, tipY - 6);
+            ctx.closePath();
+            ctx.fillStyle = CREAM;
+            ctx.fill();
+          }
+        }
+        droplet(p.x, p.y, p.r, p.vy);
       });
       drops = drops.filter(function (p) {
         return p.y - p.r * 2 < canvas.height;
       });
 
       ctx.globalAlpha = 1;
-      frame++;
-      if (frame < FRAMES) requestAnimationFrame(draw);else {
+      if (el < DUR) requestAnimationFrame(draw);else {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         canvas.remove();
       }
     }
-    draw();
+    requestAnimationFrame(draw);
   };
 })();
 

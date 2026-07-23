@@ -11421,8 +11421,9 @@ ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.
 })();
 
 // ── Cream drip engine (triggered by React via window.__celebrate) ─────────────
-// Cream oozes from the top edge, drips stretch down, let go of a droplet, then
-// snap back. Replaces the old confetti burst.
+// Cream sheet with a wavy scalloped edge runs along the top; drips taper down
+// to a narrow point (wide at the base, icicle-style — no bulb tip), shed tiny
+// teardrop droplets, then relax back. Replaces the old confetti burst.
 (function () {
   window.__celebrate = function () {
     var canvas = document.getElementById('cream-canvas') || document.createElement('canvas');
@@ -11434,21 +11435,21 @@ ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.
 
     var CREAM = '#FFF4DE'; // body
     var SHADE = '#EBD9B4'; // underside
-    var GLOSS = '#FFFFFF'; // highlight
 
-    var LIP = Math.max(18, Math.round(canvas.height * 0.03)); // cream layer on the top edge
-    var slots = Math.max(6, Math.round(canvas.width / 150));
+    var LIP = Math.max(16, Math.round(canvas.height * 0.025)); // cream sheet depth
+    var slots = Math.max(8, Math.round(canvas.width / 110));
     var drips = Array.from({
       length: slots
     }, function (_, i) {
       var w = canvas.width / slots;
       return {
-        x: w * i + w * (0.3 + Math.random() * 0.4),
-        r: 12 + Math.random() * 18,
+        x: w * i + w * (0.25 + Math.random() * 0.5),
+        base: 16 + Math.random() * 26,          // wide at the sheet
         len: 0,
-        max: 60 + Math.random() * 190,
-        spd: 0.9 + Math.random() * 1.6,
+        max: 40 + Math.random() * 150,
+        spd: 0.8 + Math.random() * 1.5,
         wait: Math.floor(Math.random() * 26),
+        wob: 8 + Math.random() * 14,            // scallop radius around this drip
         dropped: false
       };
     });
@@ -11456,32 +11457,50 @@ ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.
     var frame = 0,
       FRAMES = 230;
 
-    function blob(x, y, r) {
-      var a = ctx.globalAlpha;
+    // long teardrop: full base width at the sheet, tapering to a rounded point
+    function taper(x, baseW, tipY) {
       ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.moveTo(x - baseW, LIP - 2);
+      ctx.bezierCurveTo(x - baseW * 0.9, LIP + (tipY - LIP) * 0.35,
+                        x - baseW * 0.28, tipY - 6, x, tipY);
+      ctx.bezierCurveTo(x + baseW * 0.28, tipY - 6,
+                        x + baseW * 0.9, LIP + (tipY - LIP) * 0.35, x + baseW, LIP - 2);
+      ctx.closePath();
       ctx.fillStyle = CREAM;
       ctx.fill();
+    }
+
+    // small falling droplet: pointed top, round bottom (classic teardrop)
+    function droplet(x, y, r) {
       ctx.beginPath();
-      ctx.arc(x, y + r * 0.28, r * 0.72, 0, Math.PI);
-      ctx.fillStyle = SHADE;
+      ctx.moveTo(x, y - r * 1.6);
+      ctx.quadraticCurveTo(x + r, y - r * 0.4, x + r * 0.9, y + r * 0.2);
+      ctx.arc(x, y + r * 0.2, r * 0.9, 0, Math.PI);
+      ctx.quadraticCurveTo(x - r, y - r * 0.4, x, y - r * 1.6);
+      ctx.closePath();
+      ctx.fillStyle = CREAM;
       ctx.fill();
-      ctx.beginPath();
-      ctx.ellipse(x - r * 0.32, y - r * 0.38, r * 0.26, r * 0.16, -0.5, 0, Math.PI * 2);
-      ctx.fillStyle = GLOSS;
-      ctx.globalAlpha = a * 0.75;
-      ctx.fill();
-      ctx.globalAlpha = a;
     }
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.globalAlpha = frame > FRAMES - 40 ? Math.max(0, (FRAMES - frame) / 40) : 1;
 
+      // cream sheet + wavy scalloped bottom edge (organic, uneven)
       ctx.fillStyle = CREAM;
       ctx.fillRect(0, 0, canvas.width, LIP);
+      drips.forEach(function (d) {
+        ctx.beginPath();
+        ctx.arc(d.x, LIP, d.wob, 0, Math.PI);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(d.x + d.base * 1.6, LIP, d.wob * 0.6, 0, Math.PI);
+        ctx.fill();
+      });
       ctx.fillStyle = SHADE;
-      ctx.fillRect(0, LIP - 4, canvas.width, 4);
+      ctx.globalAlpha *= 0.5;
+      ctx.fillRect(0, LIP - 3, canvas.width, 3);
+      ctx.globalAlpha = frame > FRAMES - 40 ? Math.max(0, (FRAMES - frame) / 40) : 1;
 
       drips.forEach(function (d) {
         if (d.wait > 0) {
@@ -11491,30 +11510,20 @@ ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.
           d.spd *= 0.995;
         } else if (!d.dropped) {
           d.dropped = true;
-          drops.push({ x: d.x, y: LIP + d.len, r: d.r * 0.8, vy: 1.2 });
-          d.max = d.len * 0.55; // snap back after letting go
+          drops.push({ x: d.x, y: LIP + d.len, r: 4 + Math.random() * 3, vy: 1.4 });
+          d.max = d.len * 0.7; // relax upward slightly after shedding
         }
-        if (d.len > d.max) d.len += (d.max - d.len) * 0.08;
-
-        var tipY = LIP + d.len;
-        ctx.beginPath();
-        ctx.moveTo(d.x - d.r * 0.85, LIP - 2);
-        ctx.quadraticCurveTo(d.x - d.r * 0.95, tipY - d.r, d.x - d.r * 0.72, tipY);
-        ctx.lineTo(d.x + d.r * 0.72, tipY);
-        ctx.quadraticCurveTo(d.x + d.r * 0.95, tipY - d.r, d.x + d.r * 0.85, LIP - 2);
-        ctx.closePath();
-        ctx.fillStyle = CREAM;
-        ctx.fill();
-        blob(d.x, tipY, d.r * 0.78);
+        if (d.len > d.max) d.len += (d.max - d.len) * 0.05;
+        if (d.len > 1) taper(d.x, d.base, LIP + d.len);
       });
 
       drops.forEach(function (p) {
         p.y += p.vy;
-        p.vy += 0.35;
-        blob(p.x, p.y, p.r);
+        p.vy += 0.3;
+        droplet(p.x, p.y, p.r);
       });
       drops = drops.filter(function (p) {
-        return p.y - p.r < canvas.height;
+        return p.y - p.r * 2 < canvas.height;
       });
 
       ctx.globalAlpha = 1;

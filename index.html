@@ -11421,9 +11421,9 @@ ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.
 })();
 
 // ── Cream drip engine (triggered by React via window.__celebrate) ─────────────
-// Cream sheet with a wavy scalloped edge runs along the top; drips taper down
-// to a narrow point (wide at the base, icicle-style — no bulb tip), shed tiny
-// teardrop droplets, then relax back. Replaces the old confetti burst.
+// A glossy cream sheet melts down from the top edge: wide rounded tongues of
+// cream (flush sides, heavy rounded bottoms — melted-chocolate style) creep
+// down at staggered speeds, shed small teardrop droplets, then settle.
 (function () {
   window.__celebrate = function () {
     var canvas = document.getElementById('cream-canvas') || document.createElement('canvas');
@@ -11434,40 +11434,62 @@ ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.
     var ctx = canvas.getContext('2d');
 
     var CREAM = '#FFF4DE'; // body
-    var SHADE = '#EBD9B4'; // underside
+    var SHADE = '#E8D5AE'; // underside shadow
+    var GLOSS = '#FFFFFF'; // highlight
 
     var LIP = Math.max(16, Math.round(canvas.height * 0.025)); // cream sheet depth
-    var slots = Math.max(8, Math.round(canvas.width / 110));
+    var slots = Math.max(9, Math.round(canvas.width / 95));
     var drips = Array.from({
       length: slots
     }, function (_, i) {
       var w = canvas.width / slots;
       return {
-        x: w * i + w * (0.25 + Math.random() * 0.5),
-        base: 16 + Math.random() * 26,          // wide at the sheet
+        x: w * i + w * (0.3 + Math.random() * 0.4),
+        w: 34 + Math.random() * 38,             // WIDE tongue — width ~ its roundness
         len: 0,
-        max: 40 + Math.random() * 150,
-        spd: 0.8 + Math.random() * 1.5,
-        wait: Math.floor(Math.random() * 26),
-        wob: 8 + Math.random() * 14,            // scallop radius around this drip
+        // long pours: some tongues reach ~a third of the screen
+        max: 50 + Math.random() * Math.max(200, canvas.height * 0.32),
+        spd: 1.1 + Math.random() * 2.2,
+        wait: Math.floor(Math.random() * 30),
         dropped: false
       };
     });
     var drops = [];
     var frame = 0,
-      FRAMES = 230;
+      FRAMES = 280;
 
-    // long teardrop: full base width at the sheet, tapering to a rounded point
-    function taper(x, baseW, tipY) {
+    // wide tongue with flush sides and a heavy rounded bottom (no bulb, no point)
+    function tongue(x, w, tipY) {
+      var hw = w / 2;
+      var yTop = LIP - 2;
+      var yArc = Math.max(tipY - hw, yTop + 2); // bottom semicircle center
       ctx.beginPath();
-      ctx.moveTo(x - baseW, LIP - 2);
-      ctx.bezierCurveTo(x - baseW * 0.9, LIP + (tipY - LIP) * 0.35,
-                        x - baseW * 0.28, tipY - 6, x, tipY);
-      ctx.bezierCurveTo(x + baseW * 0.28, tipY - 6,
-                        x + baseW * 0.9, LIP + (tipY - LIP) * 0.35, x + baseW, LIP - 2);
+      ctx.moveTo(x - hw, yTop);
+      // sides bow OUT slightly near the bottom (liquid weight), never pinch in
+      ctx.bezierCurveTo(x - hw, yTop + (yArc - yTop) * 0.5,
+                        x - hw * 1.06, yArc - hw * 0.2, x - hw, yArc);
+      ctx.arc(x, yArc, hw, Math.PI, 0, true);
+      ctx.bezierCurveTo(x + hw * 1.06, yArc - hw * 0.2,
+                        x + hw, yTop + (yArc - yTop) * 0.5, x + hw, yTop);
       ctx.closePath();
       ctx.fillStyle = CREAM;
       ctx.fill();
+      // soft shadow hugging the rounded bottom = depth
+      var a = ctx.globalAlpha;
+      ctx.beginPath();
+      ctx.arc(x, yArc + hw * 0.12, hw * 0.82, Math.PI * 0.15, Math.PI * 0.85);
+      ctx.strokeStyle = SHADE;
+      ctx.lineWidth = Math.max(2, hw * 0.16);
+      ctx.globalAlpha = a * 0.55;
+      ctx.stroke();
+      // vertical gloss streak = wet shine
+      ctx.beginPath();
+      ctx.ellipse(x - hw * 0.45, yTop + (yArc - yTop) * 0.45,
+                  hw * 0.13, Math.max(6, (yArc - yTop) * 0.3), 0, 0, Math.PI * 2);
+      ctx.fillStyle = GLOSS;
+      ctx.globalAlpha = a * 0.4;
+      ctx.fill();
+      ctx.globalAlpha = a;
     }
 
     // small falling droplet: pointed top, round bottom (classic teardrop)
@@ -11484,37 +11506,36 @@ ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.globalAlpha = frame > FRAMES - 40 ? Math.max(0, (FRAMES - frame) / 40) : 1;
+      var fade = frame > FRAMES - 40 ? Math.max(0, (FRAMES - frame) / 40) : 1;
+      ctx.globalAlpha = fade;
 
-      // cream sheet + wavy scalloped bottom edge (organic, uneven)
+      // cream sheet with an uneven melted edge (shallow scallops between tongues)
       ctx.fillStyle = CREAM;
       ctx.fillRect(0, 0, canvas.width, LIP);
       drips.forEach(function (d) {
         ctx.beginPath();
-        ctx.arc(d.x, LIP, d.wob, 0, Math.PI);
+        ctx.arc(d.x + d.w * 1.1, LIP, d.w * 0.32, 0, Math.PI);
         ctx.fill();
         ctx.beginPath();
-        ctx.arc(d.x + d.base * 1.6, LIP, d.wob * 0.6, 0, Math.PI);
+        ctx.arc(d.x - d.w * 0.9, LIP, d.w * 0.22, 0, Math.PI);
         ctx.fill();
       });
       ctx.fillStyle = SHADE;
-      ctx.globalAlpha *= 0.5;
+      ctx.globalAlpha = fade * 0.45;
       ctx.fillRect(0, LIP - 3, canvas.width, 3);
-      ctx.globalAlpha = frame > FRAMES - 40 ? Math.max(0, (FRAMES - frame) / 40) : 1;
+      ctx.globalAlpha = fade;
 
       drips.forEach(function (d) {
         if (d.wait > 0) {
           d.wait--;
         } else if (d.len < d.max) {
           d.len += d.spd;
-          d.spd *= 0.995;
+          d.spd *= 0.994;
         } else if (!d.dropped) {
           d.dropped = true;
-          drops.push({ x: d.x, y: LIP + d.len, r: 4 + Math.random() * 3, vy: 1.4 });
-          d.max = d.len * 0.7; // relax upward slightly after shedding
+          drops.push({ x: d.x, y: LIP + d.len + 4, r: 4 + Math.random() * 3, vy: 1.4 });
         }
-        if (d.len > d.max) d.len += (d.max - d.len) * 0.05;
-        if (d.len > 1) taper(d.x, d.base, LIP + d.len);
+        if (d.len > 2) tongue(d.x, d.w, LIP + d.len);
       });
 
       drops.forEach(function (p) {

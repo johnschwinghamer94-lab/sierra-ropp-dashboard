@@ -94,7 +94,7 @@ input[type=range].kpi-range::-webkit-slider-thumb{-webkit-appearance:none;width:
 /* Celebration */
 @keyframes celebPop{0%{transform:scale(1)}30%{transform:scale(1.12)}60%{transform:scale(.97)}100%{transform:scale(1)}}
 .celebrate{animation:celebPop .5s ease;}
-#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;}
+#cream-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;}
 /* Days left chip */
 .days-left{font-size:9px;color:#7089ab;font-weight:600;background:rgba(255,255,255,.05);
   border:1px solid #22307a;padding:2px 8px;border-radius:12px;}
@@ -9069,7 +9069,7 @@ function OverviewTab({
   setKpiVal
 }) {
   const techs = Object.values(data);
-  // Confetti when TODAY hits KPI — judged on the same board-based rate the
+  // Cream drip when TODAY hits KPI — judged on the same board-based rate the
   // gauge shows, so it can't fire while the gauge reads below KPI
   React.useEffect(() => {
     const _t = deptTgls != null ? deptTgls : hourly && hourly.today ? hourly.today.tgls || 0 : 0;
@@ -11420,46 +11420,106 @@ ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.
   });
 })();
 
-// ── Confetti engine (triggered by React via window.__celebrate) ───────────────
+// ── Cream drip engine (triggered by React via window.__celebrate) ─────────────
+// Cream oozes from the top edge, drips stretch down, let go of a droplet, then
+// snap back. Replaces the old confetti burst.
 (function () {
   window.__celebrate = function () {
-    var canvas = document.getElementById('confetti-canvas') || document.createElement('canvas');
-    canvas.id = 'confetti-canvas';
+    var canvas = document.getElementById('cream-canvas') || document.createElement('canvas');
+    canvas.id = 'cream-canvas';
     document.body.appendChild(canvas);
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     var ctx = canvas.getContext('2d');
-    var pieces = Array.from({
-      length: 120
-    }, function () {
+
+    var CREAM = '#FFF4DE'; // body
+    var SHADE = '#EBD9B4'; // underside
+    var GLOSS = '#FFFFFF'; // highlight
+
+    var LIP = Math.max(18, Math.round(canvas.height * 0.03)); // cream layer on the top edge
+    var slots = Math.max(6, Math.round(canvas.width / 150));
+    var drips = Array.from({
+      length: slots
+    }, function (_, i) {
+      var w = canvas.width / slots;
       return {
-        x: Math.random() * canvas.width,
-        y: -10,
-        r: 4 + Math.random() * 6,
-        vx: -2 + Math.random() * 4,
-        vy: 3 + Math.random() * 5,
-        color: ['#F5B324', '#2E78C7', '#4ADE80', '#E63946', '#a78bfa'][Math.floor(Math.random() * 5)],
-        rot: Math.random() * 360,
-        rspd: -3 + Math.random() * 6
+        x: w * i + w * (0.3 + Math.random() * 0.4),
+        r: 12 + Math.random() * 18,
+        len: 0,
+        max: 60 + Math.random() * 190,
+        spd: 0.9 + Math.random() * 1.6,
+        wait: Math.floor(Math.random() * 26),
+        dropped: false
       };
     });
-    var frame = 0;
+    var drops = [];
+    var frame = 0,
+      FRAMES = 230;
+
+    function blob(x, y, r) {
+      var a = ctx.globalAlpha;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = CREAM;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(x, y + r * 0.28, r * 0.72, 0, Math.PI);
+      ctx.fillStyle = SHADE;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(x - r * 0.32, y - r * 0.38, r * 0.26, r * 0.16, -0.5, 0, Math.PI * 2);
+      ctx.fillStyle = GLOSS;
+      ctx.globalAlpha = a * 0.75;
+      ctx.fill();
+      ctx.globalAlpha = a;
+    }
+
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      pieces.forEach(function (p) {
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rot * Math.PI / 180);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r);
-        ctx.restore();
-        p.x += p.vx;
-        p.y += p.vy;
-        p.rot += p.rspd;
-        p.vy += 0.07;
+      ctx.globalAlpha = frame > FRAMES - 40 ? Math.max(0, (FRAMES - frame) / 40) : 1;
+
+      ctx.fillStyle = CREAM;
+      ctx.fillRect(0, 0, canvas.width, LIP);
+      ctx.fillStyle = SHADE;
+      ctx.fillRect(0, LIP - 4, canvas.width, 4);
+
+      drips.forEach(function (d) {
+        if (d.wait > 0) {
+          d.wait--;
+        } else if (d.len < d.max) {
+          d.len += d.spd;
+          d.spd *= 0.995;
+        } else if (!d.dropped) {
+          d.dropped = true;
+          drops.push({ x: d.x, y: LIP + d.len, r: d.r * 0.8, vy: 1.2 });
+          d.max = d.len * 0.55; // snap back after letting go
+        }
+        if (d.len > d.max) d.len += (d.max - d.len) * 0.08;
+
+        var tipY = LIP + d.len;
+        ctx.beginPath();
+        ctx.moveTo(d.x - d.r * 0.85, LIP - 2);
+        ctx.quadraticCurveTo(d.x - d.r * 0.95, tipY - d.r, d.x - d.r * 0.72, tipY);
+        ctx.lineTo(d.x + d.r * 0.72, tipY);
+        ctx.quadraticCurveTo(d.x + d.r * 0.95, tipY - d.r, d.x + d.r * 0.85, LIP - 2);
+        ctx.closePath();
+        ctx.fillStyle = CREAM;
+        ctx.fill();
+        blob(d.x, tipY, d.r * 0.78);
       });
+
+      drops.forEach(function (p) {
+        p.y += p.vy;
+        p.vy += 0.35;
+        blob(p.x, p.y, p.r);
+      });
+      drops = drops.filter(function (p) {
+        return p.y - p.r < canvas.height;
+      });
+
+      ctx.globalAlpha = 1;
       frame++;
-      if (frame < 160) requestAnimationFrame(draw);else {
+      if (frame < FRAMES) requestAnimationFrame(draw);else {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         canvas.remove();
       }

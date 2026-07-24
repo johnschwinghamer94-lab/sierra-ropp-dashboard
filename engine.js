@@ -27,10 +27,11 @@ function setReportingMonth(rm){
 }
 const SILO_12 = ["Alex - Oleksiy Yakovchuk","Andrew Trujillo","Cole Pantol",
   "Dustin Romine","Francisco Valencia","Joe Mendoza","Mario Castro",
-  "Nikko April","Benjamin Wyllie","Noah Weng","Brandon Moreno","Nathan Colquitt"];
+  "Nikko April","Benjamin Wyllie","Noah Weng","Brandon Moreno","Nathan Colquitt",
+  "David Canales"];
 const SILO_14 = SILO_12.concat(["Juan Tlatenchi","Robert Silinzy"]);
 const TEAM_A = ["Noah Weng","Joe Mendoza","Benjamin Wyllie","Nikko April",
-  "Andrew Trujillo","Dustin Romine","Juan Tlatenchi"];
+  "Andrew Trujillo","Dustin Romine","Juan Tlatenchi","David Canales"];
 const TEAM_B = ["Brandon Moreno","Francisco Valencia","Mario Castro","Cole Pantol",
   "Nathan Colquitt","Robert Silinzy"];        // + Alonso (scoped)
 const ALONSO_START = {y:2026,m:6,d:14};

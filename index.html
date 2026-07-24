@@ -10534,6 +10534,13 @@ const LF_CSS = `
 .lf2-sc-crit{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
 .lf2-sc-cx{font-size:8px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:4px;color:#ff7b86;background:#2a0d1266;border:1px solid #e6394666}
 .lf2-sc-tip{margin-top:7px;font-size:9.5px;line-height:1.45;color:#cfd9f5;background:#0a1233;border:1px solid #22307a;border-left:3px solid #f5c518;border-radius:6px;padding:6px 9px}
+.ben-splash{position:fixed;inset:0;z-index:9999;pointer-events:none;display:flex;align-items:center;justify-content:center;overflow:hidden;animation:ben-fade 3.5s ease forwards}
+.ben-blob{position:absolute;background:#FFFDF5;filter:drop-shadow(0 6px 14px rgba(0,0,0,.35));opacity:0;animation:ben-burst .25s ease-out forwards}
+.ben-blob.drip{animation:ben-burst .25s ease-out forwards,ben-drip 2.6s ease-in .25s forwards}
+.ben-txt{position:relative;z-index:2;font-weight:900;font-size:38px;letter-spacing:.06em;color:#0a1e5c;text-shadow:0 2px 0 #fff,0 4px 10px rgba(0,0,0,.25);text-align:center;opacity:0;animation:ben-burst .3s ease-out .08s forwards}
+@keyframes ben-burst{from{opacity:0;transform:scale(.1) translate(0,0)}to{opacity:1;transform:scale(1) translate(var(--bx,0),var(--by,0))}}
+@keyframes ben-drip{0%{}60%{transform:scale(1) translate(var(--bx,0),var(--by,0))}100%{transform:scale(1) translate(var(--bx,0),calc(var(--by,0) + 60px))}}
+@keyframes ben-fade{0%{opacity:1}80%{opacity:1}100%{opacity:0}}
 .lf2-tglbd{margin:12px 22px 0;background:linear-gradient(180deg,#0d1638,#0a1130);border:1px solid #22307a;border-radius:10px;padding:12px 16px}
 .lf2-tglbd-h{display:flex;align-items:center;gap:10px;margin-bottom:9px}
 .lf2-tglbd-t{font-size:10px;font-weight:700;letter-spacing:.24em;color:#f5c518;text-transform:uppercase}
@@ -10954,6 +10961,20 @@ function Root() {
     return () => clearTimeout(t);
   }, [hourly && hourly.updated]);
 
+  // ── Ben Wyllie TGL splash: white paint-splash overlay on every tab when a
+  // NEW TGL appears on the board with first name BEN/BENJAMIN (John, 2026-07-24).
+  const [benSplash, setBenSplash] = useState(false);
+  const seenTglRef = React.useRef(null);
+  useEffect(() => {
+    window.__benSplash = () => {
+      setBenSplash(true);
+      setTimeout(() => setBenSplash(false), 3500);
+    };
+    return () => {
+      delete window.__benSplash;
+    };
+  }, []);
+
   // ── TV takeover: full-screen splash when a new TGL lands (?tv=1 only) ────
   const [takeover, setTakeover] = useState(null);
   const lastEvRef = React.useRef(null);
@@ -10972,6 +10993,27 @@ function Root() {
         const _nd = new Date();
         const _today = _nd.getFullYear() + "-" + _p2(_nd.getMonth() + 1) + "-" + _p2(_nd.getDate());
         if (Array.isArray(j.tgls)) setDeptTgls(j.date === _today ? j.tgls.length : 0);
+        // Ben Wyllie TGL splash: identify entries by lead job number ("num"),
+        // falling back to "src". First fetch of the page just seeds the seen
+        // set silently — no splash on load/refresh.
+        if (Array.isArray(j.tgls)) {
+          if (seenTglRef.current === null) {
+            seenTglRef.current = new Set(j.tgls.map(x => String(x.num || x.src)));
+          } else {
+            let benHit = false;
+            j.tgls.forEach(x => {
+              const key = String(x.num || x.src);
+              if (!seenTglRef.current.has(key)) {
+                if (x.first && /^BEN/i.test(x.first)) benHit = true;
+                seenTglRef.current.add(key);
+              }
+            });
+            if (benHit) {
+              setBenSplash(true);
+              setTimeout(() => setBenSplash(false), 3500);
+            }
+          }
+        }
         if (!TV_MODE || !j.feed || !j.feed.length) return;
         const ev = j.feed[0];
         const sig = ev.x + "|" + ev.t;
@@ -11396,7 +11438,40 @@ function Root() {
     className: "tvt-txt"
   }, takeover.text), /*#__PURE__*/React.createElement("div", {
     className: "tvt-t"
-  }, takeover.t)));
+  }, takeover.t)), benSplash ? e(BenSplashOverlay, null) : null);
+}
+
+// ── Ben Wyllie TGL splash overlay: fullscreen white paint-splash burst ────────
+function BenSplashOverlay() {
+  const e = React.createElement;
+  const blobs = [
+    { top: "38%", left: "46%", w: 130, h: 100, bx: -220, by: -140, rot: -12 },
+    { top: "30%", left: "58%", w: 100, h: 90, bx: 200, by: -170, rot: 18 },
+    { top: "55%", left: "35%", w: 110, h: 130, bx: -260, by: 40, rot: 8 },
+    { top: "60%", left: "62%", w: 95, h: 95, bx: 240, by: 60, rot: -20, drip: true },
+    { top: "20%", left: "40%", w: 80, h: 70, bx: -120, by: -230, rot: 25 },
+    { top: "22%", left: "60%", w: 75, h: 85, bx: 140, by: -220, rot: -30 },
+    { top: "68%", left: "48%", w: 120, h: 90, bx: -20, by: 220, rot: 5, drip: true },
+    { top: "45%", left: "25%", w: 90, h: 100, bx: -320, by: -20, rot: -8 },
+    { top: "45%", left: "72%", w: 95, h: 90, bx: 320, by: -10, rot: 14 },
+    { top: "72%", left: "30%", w: 85, h: 75, bx: -180, by: 200, rot: -15, drip: true },
+    { top: "72%", left: "68%", w: 90, h: 80, bx: 190, by: 210, rot: 22 },
+    { top: "15%", left: "50%", w: 70, h: 60, bx: 0, by: -260, rot: 0 }
+  ];
+  return e("div", { className: "ben-splash" }, blobs.map((b, i) => e("div", {
+    key: i,
+    className: "ben-blob" + (b.drip ? " drip" : ""),
+    style: {
+      top: b.top,
+      left: b.left,
+      width: b.w,
+      height: b.h,
+      borderRadius: "48% 52% 55% 45%/50% 45% 55% 50%",
+      transform: "rotate(" + b.rot + "deg)",
+      "--bx": b.bx + "px",
+      "--by": b.by + "px"
+    }
+  })), e("div", { className: "ben-txt" }, "⚡ BEN WYLLIE TGL ⚡"));
 }
 ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.createElement(Root, null));
 

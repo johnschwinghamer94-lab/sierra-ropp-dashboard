@@ -17,7 +17,9 @@ permissions:
 # busy mornings (site lagged 20+ min). Queued runs check out the newest tree at
 # start, so the final deploy always carries the freshest data anyway.
 concurrency:
-  group: pages
+  group: pages-deploys    # renamed 2026-07-24: old "pages" group wedged (runs stuck
+                          # pending forever) after a cancellation storm; fresh group
+                          # name = fresh queue state
   cancel-in-progress: false
 
 jobs:

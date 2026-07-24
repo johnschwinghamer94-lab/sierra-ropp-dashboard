@@ -10191,14 +10191,15 @@ function HourByHourTab({
     // Full SILO roster (Team A + Team B, matches engine.js SILO_14), alphabetical
     // by first name — mirrors the SILO DAILY sheet's fixed batting order.
     // Every tech shows every day, zeros when no activity today.
-    const TECH_ROSTER = ["Alex - Oleksiy Yakovchuk", "Andrew Alonso", "Andrew Trujillo", "Benjamin Wyllie", "Brandon Moreno", "Cole Pantol", "David Canales", "Dustin Romine", "Francisco Valencia", "Joe Mendoza", "Juan Tlatenchi", "Mario Castro", "Nathan Colquitt", "Nikko April", "Noah Weng", "Robert Silinzy"];
+    const TECH_ROSTER = ["Andrew Alonso", "Andrew Trujillo", "Benjamin Wyllie", "Brandon Moreno", "Cole Pantol", "David Canales", "Francisco Valencia", "Joe Mendoza", "Juan Tlatenchi", "Mario Castro", "Nathan Colquitt", "Nikko April", "Noah Weng", "Robert Silinzy"];
     const byName = {};
     (t.techs || []).forEach(tc => {
       byName[tc.name] = tc;
     });
     // Safety net: never hide activity — techs in today's data but missing from
     // the fixed roster (new hires, name variants) get appended after the roster.
-    const extras = Object.keys(byName).filter(n => TECH_ROSTER.indexOf(n) < 0).sort();
+    const TECH_HIDE = ["Alex - Oleksiy Yakovchuk", "Dustin Romine"]; // John 2026-07-24: not board techs
+    const extras = Object.keys(byName).filter(n => TECH_ROSTER.indexOf(n) < 0 && TECH_HIDE.indexOf(n) < 0).sort();
     const ALL_ROWS = TECH_ROSTER.concat(extras);
     const rows = ALL_ROWS.map(name => {
       const tc = byName[name] || {

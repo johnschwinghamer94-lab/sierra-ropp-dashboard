@@ -10007,7 +10007,7 @@ function HourByHourTab({
       fontWeight: 700,
       letterSpacing: "0.2em"
     }
-  }, "⏱ HOUR BY HOUR · TODAY"), /*#__PURE__*/React.createElement("div", {
+  }, "⏱ TECH BOARD · TODAY"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11,
       color: "#6b7a99",
@@ -10187,158 +10187,139 @@ function HourByHourTab({
     color: "#F5B324",
     kind: "pct",
     kpi: 60
-  }), /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "#0d1638",
-      border: "1px solid #22307a",
-      borderRadius: 16,
-      overflow: "hidden"
-    }
-  }, /*#__PURE__*/React.createElement("table", {
-    style: {
-      width: "100%",
-      borderCollapse: "collapse"
-    }
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    style: {
-      ...thS,
-      textAlign: "left",
-      paddingLeft: 20
-    }
-  }, "HOUR"), /*#__PURE__*/React.createElement("th", {
-    style: thS
-  }, "ROPPs (total)"), /*#__PURE__*/React.createElement("th", {
-    style: thS
-  }, "TGLs (total)"), /*#__PURE__*/React.createElement("th", {
-    style: thS
-  }, "CONV%"), /*#__PURE__*/React.createElement("th", {
-    style: thS
-  }, "+ROPPs"), /*#__PURE__*/React.createElement("th", {
-    style: thS
-  }, "+TGLs"), /*#__PURE__*/React.createElement("th", {
-    style: thS
-  }, "THIS HR %"))), /*#__PURE__*/React.createElement("tbody", null, (() => {
-    const curHr = new Date().getHours();
-    return hrs.map(x => {
-      const isCur = parseInt(x.hour) === curHr;
-      return /*#__PURE__*/React.createElement("tr", {
-        key: x.hour,
-        className: isCur ? 'cur-hour trow' : 'trow'
-      }, /*#__PURE__*/React.createElement("td", {
+  }), (function() {
+    // Full SILO roster (Team A + Team B, matches engine.js SILO_14), alphabetical
+    // by first name — mirrors the SILO DAILY sheet's fixed batting order.
+    // Every tech shows every day, zeros when no activity today.
+    const TECH_ROSTER = ["Alex - Oleksiy Yakovchuk", "Andrew Trujillo", "Benjamin Wyllie", "Brandon Moreno", "Cole Pantol", "David Canales", "Dustin Romine", "Francisco Valencia", "Joe Mendoza", "Juan Tlatenchi", "Mario Castro", "Nathan Colquitt", "Nikko April", "Noah Weng", "Robert Silinzy"];
+    const byName = {};
+    (t.techs || []).forEach(tc => {
+      byName[tc.name] = tc;
+    });
+    const rows = TECH_ROSTER.map(name => {
+      const tc = byName[name] || {
+        name: name,
+        calls: 0,
+        tgls: 0,
+        rate: 0,
+        rev: 0
+      };
+      return {
+        name: tc.name,
+        calls: tc.calls || 0,
+        tgls: tc.tgls || 0,
+        rev: Number(tc.rev || 0)
+      };
+    });
+    const totals = rows.reduce((a, r) => ({
+      calls: a.calls + r.calls,
+      tgls: a.tgls + r.tgls,
+      rev: a.rev + r.rev
+    }), {
+      calls: 0,
+      tgls: 0,
+      rev: 0
+    });
+    const dim = "#445071";
+    const pctOf = (n, d) => d > 0 ? n / d * 100 : null;
+    const perRopp = (rev, calls) => calls > 0 ? "$" + Math.round(rev / calls).toLocaleString() : "—";
+    const rowCells = (r, isTotal) => {
+      const pct = pctOf(r.tgls, r.calls);
+      const nameStyle = {
+        ...tdS,
+        textAlign: "left",
+        paddingLeft: 20,
+        fontWeight: 700,
+        color: isTotal ? "#F5B324" : "#FFFFFF"
+      };
+      return [/*#__PURE__*/React.createElement("td", {
+        style: nameStyle
+      }, isTotal ? "DAILY TOTALS" : r.name), /*#__PURE__*/React.createElement("td", {
         style: {
           ...tdS,
-          textAlign: "left",
-          paddingLeft: 20,
-          fontWeight: 700,
-          color: "#FFFFFF"
+          color: r.calls ? "#FFFFFF" : dim,
+          fontWeight: isTotal ? 700 : 400
         }
-      }, fmtHour(x.hour)), /*#__PURE__*/React.createElement("td", {
+      }, r.calls), /*#__PURE__*/React.createElement("td", {
         style: {
           ...tdS,
-          color: "#FFFFFF"
+          color: r.tgls ? "#F5B324" : dim,
+          fontWeight: isTotal ? 700 : 400
         }
-      }, x.calls), /*#__PURE__*/React.createElement("td", {
+      }, r.tgls), /*#__PURE__*/React.createElement("td", {
         style: {
           ...tdS,
-          color: "#F5B324"
-        }
-      }, x.tgls), /*#__PURE__*/React.createElement("td", {
-        style: {
-          ...tdS,
-          color: tierCol(x.rate),
+          color: pct == null ? dim : tierCol(pct),
           fontWeight: 700
         }
-      }, fmtPct(x.rate)), /*#__PURE__*/React.createElement("td", {
+      }, pct == null ? "—" : fmtPct(pct)), /*#__PURE__*/React.createElement("td", {
         style: {
           ...tdS,
-          color: "#6b7a99"
+          color: r.rev ? "#4ADE80" : dim,
+          fontWeight: isTotal ? 700 : 400
         }
-      }, x.dcalls), /*#__PURE__*/React.createElement("td", {
+      }, "$" + Number(r.rev || 0).toLocaleString()), /*#__PURE__*/React.createElement("td", {
         style: {
           ...tdS,
-          color: "#6b7a99"
+          color: r.rev && r.calls ? "#4ADE80" : dim,
+          fontWeight: isTotal ? 700 : 400
         }
-      }, x.dtgls), /*#__PURE__*/React.createElement("td", {
-        style: {
-          ...tdS,
-          color: tierCol(x.drate)
-        }
-      }, x.dcalls > 0 ? fmtPct(x.drate) : "—"));
-    });
-  })()))), t.techs && t.techs.length ? /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "#0d1638",
-      border: "1px solid #22307a",
-      borderRadius: 16,
-      overflow: "hidden"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      padding: "13px 20px 3px",
-      fontSize: 9,
-      color: "#F5B324",
-      fontFamily: "'Chakra Petch',sans-serif",
-      textShadow: "0 0 12px rgba(245,179,36,.35)",
-      fontWeight: 700,
-      letterSpacing: "0.2em"
-    }
-  }, "BY TECHNICIAN · TODAY"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      padding: "0 20px 8px",
-      fontSize: 11,
-      color: "#6b7a99"
-    }
-  }, "Individual ROPPs / TGLs from today's reports"), /*#__PURE__*/React.createElement("table", {
-    style: {
-      width: "100%",
-      borderCollapse: "collapse"
-    }
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    style: {
-      ...thS,
-      textAlign: "left",
-      paddingLeft: 20
-    }
-  }, "TECH"), /*#__PURE__*/React.createElement("th", {
-    style: thS
-  }, "ROPPs"), /*#__PURE__*/React.createElement("th", {
-    style: thS
-  }, "TGLs"), /*#__PURE__*/React.createElement("th", {
-    style: thS
-  }, "CONV%"), /*#__PURE__*/React.createElement("th", {
-    style: thS
-  }, "TGL REV"))), /*#__PURE__*/React.createElement("tbody", null, t.techs.map(tc => /*#__PURE__*/React.createElement("tr", {
-    key: tc.name
-  }, /*#__PURE__*/React.createElement("td", {
-    style: {
-      ...tdS,
-      textAlign: "left",
-      paddingLeft: 20,
-      fontWeight: 700,
-      color: "#FFFFFF"
-    }
-  }, tc.name), /*#__PURE__*/React.createElement("td", {
-    style: {
-      ...tdS,
-      color: "#FFFFFF"
-    }
-  }, tc.calls), /*#__PURE__*/React.createElement("td", {
-    style: {
-      ...tdS,
-      color: "#F5B324"
-    }
-  }, tc.tgls), /*#__PURE__*/React.createElement("td", {
-    style: {
-      ...tdS,
-      color: tierCol(tc.rate),
-      fontWeight: 700
-    }
-  }, fmtPct(tc.rate)), /*#__PURE__*/React.createElement("td", {
-    style: {
-      ...tdS,
-      color: "#4ADE80"
-    }
-  }, "$" + Number(tc.rev || 0).toLocaleString())))))) : null, t.sched ? /*#__PURE__*/React.createElement("div", {
+      }, perRopp(r.rev, r.calls))];
+    };
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#0d1638",
+        border: "1px solid #22307a",
+        borderRadius: 16,
+        overflow: "hidden"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: "13px 20px 3px",
+        fontSize: 9,
+        color: "#F5B324",
+        fontFamily: "'Chakra Petch',sans-serif",
+        textShadow: "0 0 12px rgba(245,179,36,.35)",
+        fontWeight: 700,
+        letterSpacing: "0.2em"
+      }
+    }, "BY TECHNICIAN · TODAY"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: "0 20px 8px",
+        fontSize: 11,
+        color: "#6b7a99"
+      }
+    }, "Full SILO roster · individual ROPPs / TGLs from today's reports · zeros = no activity yet"), /*#__PURE__*/React.createElement("table", {
+      style: {
+        width: "100%",
+        borderCollapse: "collapse"
+      }
+    }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
+      style: {
+        ...thS,
+        textAlign: "left",
+        paddingLeft: 20
+      }
+    }, "TECH"), /*#__PURE__*/React.createElement("th", {
+      style: thS
+    }, "ROPPS RUN"), /*#__PURE__*/React.createElement("th", {
+      style: thS
+    }, "TGLS"), /*#__PURE__*/React.createElement("th", {
+      style: thS
+    }, "TGL %"), /*#__PURE__*/React.createElement("th", {
+      style: thS
+    }, "TGL REV"), /*#__PURE__*/React.createElement("th", {
+      style: thS
+    }, "$/ROPP"))), /*#__PURE__*/React.createElement("tbody", null, rows.map(r => /*#__PURE__*/React.createElement("tr", {
+      key: r.name
+    }, ...rowCells(r, false))), /*#__PURE__*/React.createElement("tr", {
+      key: "__totals",
+      style: {
+        background: "#141d47",
+        borderTop: "2px solid #22307a"
+      }
+    }, ...rowCells(totals, true)))));
+  })(), t.sched ? /*#__PURE__*/React.createElement("div", {
     style: {
       background: "#0d1638",
       border: "1px solid #22307a",
@@ -11016,7 +10997,7 @@ function Root() {
     sub: "SILO · job board"
   }, {
     id: "hourbyhour",
-    label: "⏱ HOUR BY HOUR",
+    label: "⏱ TECH BOARD",
     sub: "Today · live"
   }, {
     id: "ytd",

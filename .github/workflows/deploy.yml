@@ -12,12 +12,13 @@ permissions:
   pages: write
   id-token: write
 
-# The hourly pipeline pushes hourly_state.json then hourly.json as two separate
-# commits, each firing a deploy. cancel-in-progress lets the newest deploy (which
-# has the fresh hourly.json) win, so a stale-tree deploy can't overwrite it.
+# Deploys QUEUE rather than cancel: with the relay pushing every 1-2 min and a
+# deploy taking about as long, cancel-in-progress starved deploys entirely on
+# busy mornings (site lagged 20+ min). Queued runs check out the newest tree at
+# start, so the final deploy always carries the freshest data anyway.
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:

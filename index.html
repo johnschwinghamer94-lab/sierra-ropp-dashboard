@@ -9597,9 +9597,20 @@ function OverviewTab({
     const _bTgls = deptTgls != null ? deptTgls : hourly && hourly.today ? hourly.today.tgls || 0 : 0;
     const todayRate = hourly && hourly.today && hourly.today.calls > 0 ? +(_bTgls / hourly.today.calls * 100).toFixed(1) : null;
     const tglsNeeded = projCalls ? Math.max(0, Math.ceil(projCalls * 0.60) - projTgls) : null;
-    // Monthly TGL budget box: 530 TGLs for the month; calls needed assumes
-    // the current MTD conversion rate holds
-    const BUDGET_TGLS = 530;
+    // Monthly TGL budgets — set each month's target here ("YYYY-MM": tgls).
+    // A month with no entry shows an estimate of ~23 flips per budget day
+    // and flags the label with (EST.) until the real number is added.
+    const TGL_BUDGETS = {
+      "2026-07": 530
+    };
+    let budDaysTotal = 0;
+    for (let _d = 1; _d <= daysInMonth; _d++) {
+      const _dw = new Date(now.getFullYear(), now.getMonth(), _d).getDay();
+      if (_dw !== 0 && _dw !== 6) budDaysTotal++;
+    }
+    const _budKey = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+    const budIsSet = TGL_BUDGETS[_budKey] != null;
+    const BUDGET_TGLS = budIsSet ? TGL_BUDGETS[_budKey] : Math.round(23 * budDaysTotal);
     const budTglsLeft = Math.max(0, BUDGET_TGLS - mt);
     const budCallsLeft = mt > 0 && mc > 0 ? Math.ceil(budTglsLeft / (mt / mc)) : null;
     const budOnPace = projTgls !== null && projTgls >= BUDGET_TGLS;
@@ -9689,7 +9700,7 @@ function OverviewTab({
         letterSpacing: "0.1em",
         fontWeight: 700
       }
-    }, "🎯 " + BUDGET_TGLS + " TGL BUDGET"), /*#__PURE__*/React.createElement("div", {
+    }, "🎯 " + BUDGET_TGLS + " TGL BUDGET" + (budIsSet ? "" : " (EST.)")), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 28,
         fontWeight: 800,

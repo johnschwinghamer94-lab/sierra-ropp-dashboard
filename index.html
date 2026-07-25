@@ -9604,6 +9604,13 @@ function OverviewTab({
     const budCallsLeft = mt > 0 && mc > 0 ? Math.ceil(budTglsLeft / (mt / mc)) : null;
     const budOnPace = projTgls !== null && projTgls >= BUDGET_TGLS;
     const budColor = budTglsLeft === 0 ? "#4ADE80" : budOnPace ? "#2E78C7" : "#F5B324";
+    // Budget days = weekdays only (23 this month); per-day needs divide by
+    // weekdays remaining through month end, counting today if it's a weekday
+    let budDaysLeft = 0;
+    for (let _d = dayOfMonth; _d <= daysInMonth; _d++) {
+      const _dw = new Date(now.getFullYear(), now.getMonth(), _d).getDay();
+      if (_dw !== 0 && _dw !== 6) budDaysLeft++;
+    }
     return /*#__PURE__*/React.createElement(React.Fragment, null, projRate !== null && /*#__PURE__*/React.createElement("div", {
       className: "riseIn liftCard proj-mtd"
     }, /*#__PURE__*/React.createElement("div", {
@@ -9703,11 +9710,18 @@ function OverviewTab({
     }, budCallsLeft !== null ? "~" + budCallsLeft.toLocaleString() + " calls needed at current " + (mtdRate !== null ? mtdRate.toFixed(1) : "—") + "% rate" : "no MTD data yet"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 9,
+        color: "#eaf1fb",
+        fontWeight: 700,
+        marginTop: 2
+      }
+    }, budTglsLeft > 0 && budCallsLeft !== null && budDaysLeft > 0 ? "~" + Math.ceil(budCallsLeft / budDaysLeft) + " calls/day · ~" + Math.ceil(budTglsLeft / budDaysLeft) + " flips/day · " + budDaysLeft + " budget days left" : null), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 9,
         color: budColor,
         fontWeight: 700,
         marginTop: 2
       }
-    }, budTglsLeft === 0 ? "✓ BUDGET HIT — " + mt + " TGLs booked" : budOnPace ? "✓ ON PACE — projected " + projTgls : "▼ BEHIND — projected " + (projTgls !== null ? projTgls : "—") + (daysLeft > 0 ? " · need ~" + Math.ceil(budTglsLeft / daysLeft) + "/day" : ""))));
+    }, budTglsLeft === 0 ? "✓ BUDGET HIT — " + mt + " TGLs booked" : budOnPace ? "✓ ON PACE — projected " + projTgls : "▼ BEHIND — projected " + (projTgls !== null ? projTgls : "—"))));
   })()), /*#__PURE__*/React.createElement("div", {
     className: "riseIn",
     style: {

@@ -10896,6 +10896,9 @@ const COACH_CSS = `
 `;
 function CoachingTab() {
   const e = React.createElement;
+  // Same palettes as LiveFeedTab's (those are locals there, out of scope here).
+  const BAND_COL = { "Strong": "#4ade80", "Strong on wins": "#35d0c0", "Solid": "#7fb3e8", "Moderate": "#ffb35c", "Weak": "#ff7b86" };
+  const CRIT_LAB = { expectations: "EXPECTATIONS", questions: "QUESTIONS", options: "OPTIONS", objections: "OBJECTIONS" };
   const [data, setData] = React.useState(null);
   const [err, setErr] = React.useState(false);
   React.useEffect(() => {

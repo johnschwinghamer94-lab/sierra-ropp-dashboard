@@ -10905,6 +10905,11 @@ const COACH_CSS = `
 .co-archgrid{display:flex;flex-wrap:wrap;gap:6px}
 .co-archrep{font-size:11px;font-weight:700;color:#9fb3cc;border:1px solid #2E78C744;border-radius:6px;padding:5px 10px;cursor:pointer;user-select:none;background:rgba(46,120,199,.06)}
 .co-archrep:hover,.co-archrep.open{color:#f5c518;border-color:#f5c51866}
+.co-week{margin-bottom:12px}
+.co-weeklabel{font-size:11px;font-weight:800;color:#9fb3cc;margin-bottom:5px}
+.co-weekbtns{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.co-archrep-link{font-size:11px;font-weight:700;color:#9fb3cc;border:1px solid #2E78C744;border-radius:6px;padding:5px 10px;cursor:pointer;user-select:none;background:rgba(46,120,199,.06);text-decoration:none;display:inline-block}
+.co-archrep-link:hover{color:#f5c518;border-color:#f5c51866}
 `;
 function CoachingTab() {
   const e = React.createElement;
@@ -11015,6 +11020,20 @@ function CoachingTab() {
         }, n))),
       Object.keys(history).sort().filter(n => openRep === "arch:" + n).map(n =>
         e("div", { key: n, style: { marginTop: 10, maxWidth: 420 } }, histPanel(n)))) : null,
+    (data.weekly || []).length ? e("div", { className: "co-arch" },
+      e("div", { className: "ah" }, "\u{1F4C4} WEEKLY ROLLUPS"),
+      (data.weekly || []).slice(0, 8).map((w, wi) => e("div", { key: wi, className: "co-week" },
+        e("div", { className: "co-weeklabel" }, w.week || w.end || ""),
+        e("div", { className: "co-weekbtns" },
+          w.crossrep ? e("a", {
+            className: "co-btn", href: w.crossrep, target: "_blank", rel: "noopener"
+          }, "TEAM REPORT") : null,
+          Object.keys(w.reps || {}).sort().map(n => e("a", {
+            key: n,
+            className: "co-archrep-link",
+            href: w.reps[n],
+            target: "_blank", rel: "noopener"
+          }, n)))))) : null,
     skipped.length ? e("div", { className: "co-skipped" },
       e("div", { className: "h" }, "Skipped recordings"),
       skipped.map((s, si) => e("div", { key: si }, (s.rep || "Unknown") + " — " + (s.reason || "no reason given")))) : null);

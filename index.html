@@ -3235,6 +3235,123 @@ function SameDayConversion() {
   })))))))));
 }
 
+// ── Weekly TGL Report panel (static, from reports/weekly-latest.json) ──────
+const WR_CSS = ".wr-wrap{padding:16px 24px 4px;max-width:1400px;margin:0 auto}" +
+  ".wr-card{background:linear-gradient(180deg,#0d1330,#0a0e24);border:1px solid #22307a;border-radius:10px;padding:16px 18px;margin-bottom:18px}" +
+  ".wr-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:14px}" +
+  ".wr-title{font-family:'Chakra Petch',sans-serif;font-size:16px;font-weight:800;letter-spacing:.04em;color:#f5c518}" +
+  ".wr-sub{font-size:11px;color:#6b7a99;margin-top:3px}" +
+  ".wr-btn{font-size:11px;font-weight:700;letter-spacing:.04em;color:#7fb3e8;text-decoration:none;border:1px solid #2E78C766;border-radius:6px;padding:6px 11px;background:rgba(46,120,199,.10);white-space:nowrap}" +
+  ".wr-btn:hover{color:#c7d4f0;border-color:#7fb3e8aa}" +
+  ".wr-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px}" +
+  ".wr-tile{background:rgba(255,255,255,.03);border:1px solid #1c2650;border-radius:8px;padding:10px 12px}" +
+  ".wr-tile-label{font-size:9px;letter-spacing:.08em;color:#6b7a99;font-weight:700;margin-bottom:6px}" +
+  ".wr-tile-val{font-size:20px;font-weight:800;color:#e8ecf7;font-family:'Chakra Petch',sans-serif}" +
+  ".wr-tile-subtext{font-size:9px;color:#4a5570;margin-top:2px}" +
+  ".wr-chip{display:inline-block;font-size:10px;font-weight:700;border-radius:5px;padding:2px 6px;margin-top:6px}" +
+  ".wr-chip-good{color:#4ADE80;background:rgba(74,222,128,.12)}" +
+  ".wr-chip-bad{color:#E63946;background:rgba(230,57,70,.12)}" +
+  ".wr-chip-flat{color:#8a97b8;background:rgba(138,151,184,.12)}" +
+  ".wr-tblwrap{overflow-x:auto}" +
+  ".wr-tbl{width:100%;border-collapse:collapse;font-size:12px}" +
+  ".wr-tbl th{text-align:left;font-size:9px;letter-spacing:.08em;color:#6b7a99;font-weight:700;padding:6px 10px;border-bottom:1px solid #22307a;white-space:nowrap}" +
+  ".wr-tbl td{padding:6px 10px;color:#c7d0e8;border-bottom:1px solid #161b38;white-space:nowrap}" +
+  ".wr-tbl tr.wr-total td{font-weight:800;color:#e8ecf7;border-top:1px solid #22307a;border-bottom:none}" +
+  ".wr-close-good{font-weight:800;color:#4ADE80}";
+
+function WeeklyReportPanel() {
+  const [rep, setRep] = React.useState(null);
+  React.useEffect(() => {
+    fetch("reports/weekly-latest.json?t=" + Date.now())
+      .then(r => r.ok ? r.json() : null)
+      .then(j => { if (j) setRep(j); })
+      .catch(() => {});
+  }, []);
+  if (!rep) return null;
+  const lw = rep.lastWeek || {};
+  const pw = rep.priorWeek || {};
+  const wk = rep.week || {};
+  const pct = (n, d) => (d > 0 ? Math.round(n / d * 1000) / 10 : 0);
+  const closeRate = lw.close != null ? lw.close : pct(lw.sold, lw.ran);
+  const priorClose = pw.close != null ? pw.close : pct(pw.sold, pw.ran);
+  const flipRate = lw.fliprate != null ? lw.fliprate : pct(lw.created, lw.calls);
+  const priorFlip = pw.fliprate != null ? pw.fliprate : pct(pw.created, pw.calls);
+  const chip = (cur, prior, higherIsGood, isPct) => {
+    const c = typeof cur === "number" ? cur : 0;
+    const p = typeof prior === "number" ? prior : 0;
+    const d = Math.round((c - p) * 10) / 10;
+    const good = d === 0 ? null : (higherIsGood ? d > 0 : d < 0);
+    const cls = d === 0 ? "wr-chip-flat" : good ? "wr-chip-good" : "wr-chip-bad";
+    const arrow = d > 0 ? "▲" : d < 0 ? "▼" : "→";
+    const sign = d > 0 ? "+" : "";
+    return /*#__PURE__*/React.createElement("span", { className: "wr-chip " + cls },
+      arrow + " " + sign + d + (isPct ? " pts" : ""));
+  };
+  const tiles = [
+    { label: "TGLs CREATED", val: lw.created, prior: pw.created, good: true },
+    { label: "SOLD", val: lw.sold, prior: pw.sold, good: true },
+    { label: "CLOSE RATE", val: closeRate, prior: priorClose, good: true, pct: true, sub: "Sold ÷ Ran" },
+    { label: "CANCELED", val: lw.canceled, prior: pw.canceled, good: false },
+    { label: "FLIP RATE", val: flipRate, prior: priorFlip, good: true, pct: true, sub: "TGLs ÷ calls ran" },
+    { label: "SAME-DAY FLIP", val: lw.sameday_rate, prior: pw.sameday_rate, good: true, pct: true },
+    { label: "SAME/NEXT DAY", val: lw.samenext_rate, prior: pw.samenext_rate, good: true, pct: true }
+  ];
+  const perTech = Array.isArray(rep.perTech) ? rep.perTech : [];
+  const totals = perTech.reduce((a, t) => {
+    a.created += (t.created || 0);
+    a.ran += (t.ran || 0);
+    a.sold += (t.sold || 0);
+    return a;
+  }, { created: 0, ran: 0, sold: 0 });
+  return /*#__PURE__*/React.createElement("div", { className: "wr-wrap" },
+    /*#__PURE__*/React.createElement("style", null, WR_CSS),
+    /*#__PURE__*/React.createElement("div", { className: "wr-card" },
+      /*#__PURE__*/React.createElement("div", { className: "wr-head" },
+        /*#__PURE__*/React.createElement("div", null,
+          /*#__PURE__*/React.createElement("div", { className: "wr-title" }, "\u{1F4C4} WEEKLY TGL REPORT"),
+          /*#__PURE__*/React.createElement("div", { className: "wr-sub" },
+            "Week of " + (wk.start || "?") + "–" + (wk.end || "?") + " vs prior")),
+        /*#__PURE__*/React.createElement("a", {
+          className: "wr-btn", href: "reports/weekly-latest.pdf", target: "_blank", rel: "noopener"
+        }, "\u{1F4C4} OPEN PDF")),
+      /*#__PURE__*/React.createElement("div", { className: "wr-tiles" },
+        tiles.map((t, i) => /*#__PURE__*/React.createElement("div", { className: "wr-tile", key: i },
+          /*#__PURE__*/React.createElement("div", { className: "wr-tile-label" }, t.label),
+          /*#__PURE__*/React.createElement("div", { className: "wr-tile-val" },
+            (t.val != null ? t.val : 0) + (t.pct ? "%" : "")),
+          t.sub ? /*#__PURE__*/React.createElement("div", { className: "wr-tile-subtext" }, t.sub) : null,
+          chip(t.val, t.prior, t.good, t.pct)))),
+      /*#__PURE__*/React.createElement("div", { className: "wr-tblwrap" },
+        /*#__PURE__*/React.createElement("table", { className: "wr-tbl" },
+          /*#__PURE__*/React.createElement("thead", null,
+            /*#__PURE__*/React.createElement("tr", null,
+              /*#__PURE__*/React.createElement("th", null, "TECH"),
+              /*#__PURE__*/React.createElement("th", null, "CREATED"),
+              /*#__PURE__*/React.createElement("th", null, "RAN"),
+              /*#__PURE__*/React.createElement("th", null, "SOLD"),
+              /*#__PURE__*/React.createElement("th", null, "CLOSE %"))),
+          /*#__PURE__*/React.createElement("tbody", null,
+            perTech.map((t, i) => {
+              const ran = t.ran || 0;
+              const sold = t.sold || 0;
+              const cp = ran > 0 ? Math.round(sold / ran * 1000) / 10 : null;
+              return /*#__PURE__*/React.createElement("tr", { key: i },
+                /*#__PURE__*/React.createElement("td", null, t.tech || "—"),
+                /*#__PURE__*/React.createElement("td", null, t.created || 0),
+                /*#__PURE__*/React.createElement("td", null, ran),
+                /*#__PURE__*/React.createElement("td", null, sold),
+                /*#__PURE__*/React.createElement("td", { className: cp != null && cp >= 50 ? "wr-close-good" : "" },
+                  cp != null ? cp + "%" : "—"));
+            }),
+            /*#__PURE__*/React.createElement("tr", { className: "wr-total" },
+              /*#__PURE__*/React.createElement("td", null, "TOTAL"),
+              /*#__PURE__*/React.createElement("td", null, totals.created),
+              /*#__PURE__*/React.createElement("td", null, totals.ran),
+              /*#__PURE__*/React.createElement("td", null, totals.sold),
+              /*#__PURE__*/React.createElement("td", null,
+                totals.ran > 0 ? Math.round(totals.sold / totals.ran * 1000) / 10 + "%" : "—")))))));
+}
+
 // ── Week over Week (interactive Chart.js) ──────────────────────────────────
 function WeeklyTrends() {
   const WC = WEEKLY_CONV_DATA;
@@ -11000,7 +11117,7 @@ function CoachingTab() {
         e("div", { className: "co-title" }, "\u{1F393} DAILY COACHING PLANS"),
         e("div", { className: "co-sub" }, (data.date || "") + (data.generated ? " · generated " + data.generated : ""))),
       e("div", { className: "co-btns" },
-        e("a", { className: "co-btn", href: "reports/weekly-latest.pdf", target: "_blank", rel: "noopener" }, "\u{1F4C4} WEEKLY ROLLUP"),
+        e("a", { className: "co-btn", href: "reports/weekly-latest.pdf", target: "_blank", rel: "noopener" }, "\u{1F4CA} WEEKLY STATS PDF"),
         dates.length > 1 ? e("div", { className: "co-dates" },
           dates.slice(1).map((d, di) => e("a", {
             key: di,
@@ -11683,7 +11800,7 @@ function Root() {
     data: data
   }), tab === "monthly_breakdown" && /*#__PURE__*/React.createElement(MonthlyBreakdown, {
     data: data
-  }), tab === "weekly" && /*#__PURE__*/React.createElement(WeeklyTrends, null), tab === "pace" && /*#__PURE__*/React.createElement(PaceReport, null), tab === "deptpace" && /*#__PURE__*/React.createElement(DeptPaceReport, null), tab === "sameday" && /*#__PURE__*/React.createElement(SameDayConversion, null), tab === "cancel" && /*#__PURE__*/React.createElement(CancellationTab, null), tab === "allteams" && /*#__PURE__*/React.createElement(AllTeamsTab, null), tab === "siloonly" && /*#__PURE__*/React.createElement(SiloOnlyTab, null), tab === "caclose" && /*#__PURE__*/React.createElement(CACloseRateTab, null), tab === "yesterday" && /*#__PURE__*/React.createElement(YesterdayTab, null)), /*#__PURE__*/React.createElement("div", {
+  }), tab === "weekly" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(WeeklyReportPanel, null), /*#__PURE__*/React.createElement(WeeklyTrends, null)), tab === "pace" && /*#__PURE__*/React.createElement(PaceReport, null), tab === "deptpace" && /*#__PURE__*/React.createElement(DeptPaceReport, null), tab === "sameday" && /*#__PURE__*/React.createElement(SameDayConversion, null), tab === "cancel" && /*#__PURE__*/React.createElement(CancellationTab, null), tab === "allteams" && /*#__PURE__*/React.createElement(AllTeamsTab, null), tab === "siloonly" && /*#__PURE__*/React.createElement(SiloOnlyTab, null), tab === "caclose" && /*#__PURE__*/React.createElement(CACloseRateTab, null), tab === "yesterday" && /*#__PURE__*/React.createElement(YesterdayTab, null)), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "12px 24px",
       borderTop: "1px solid #0a0e1a",

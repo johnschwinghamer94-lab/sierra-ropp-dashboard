@@ -10856,6 +10856,124 @@ function LiveFeedTab({
       feedRail));
 }
 
+// ── Coaching gateway tab — daily SILO word-band coaching plans (John, 2026-07-25)
+//    Fetches coaching.json (may not exist yet — friendly empty state on 404/fail).
+//    Word bands only, per SILO convention — never numeric scores.
+const COACH_CSS = `
+.co-wrap{padding:24px;max-width:1400px;margin:0 auto}
+.co-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:18px}
+.co-title{font-family:'Chakra Petch',sans-serif;font-size:20px;font-weight:800;letter-spacing:.04em;color:#f5c518}
+.co-sub{font-size:12px;color:#8fa3d9;margin-top:2px}
+.co-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.co-btn{font-size:11px;font-weight:700;letter-spacing:.04em;color:#7fb3e8;text-decoration:none;border:1px solid #2E78C766;border-radius:6px;padding:6px 11px;background:rgba(46,120,199,.10);white-space:nowrap}
+.co-btn:hover{color:#c7d4f0;border-color:#7fb3e8aa}
+.co-dates{display:flex;gap:6px;flex-wrap:wrap}
+.co-datelink{font-size:10px;color:#5d6fa8;text-decoration:none;border:1px solid #2E78C744;border-radius:4px;padding:3px 7px}
+.co-datelink:hover{color:#8fa3d9;border-color:#2E78C788}
+.co-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+.co-card{background:linear-gradient(160deg,#111a35,#0d1428);border:1px solid #2E78C744;border-radius:10px;padding:14px 16px}
+.co-cardtop{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.co-name{font-weight:800;color:#e8edfb;font-size:14px}
+.co-meta{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.co-rate{font-size:12px;font-weight:800;color:#4ade80;border:1px solid #4ade8066;border-radius:5px;padding:2px 7px;background:rgba(74,222,128,.10)}
+.co-calls{font-size:10px;color:#8fa3d9}
+.co-sw{font-size:11px;color:#9fb3cc;margin-bottom:8px}
+.co-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.co-pill{font-size:9.5px;font-weight:700;letter-spacing:.03em;border-radius:5px;padding:2px 7px;color:#0a0e1a}
+.co-crits{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.co-crit{font-size:9px;font-weight:800;letter-spacing:.05em;border-radius:4px;padding:2px 6px}
+.co-crit.on{color:#4ade80;border:1px solid #4ade8066;background:rgba(74,222,128,.10)}
+.co-crit.off{color:#ff7b86;border:1px solid #e6394666;background:rgba(230,57,70,.10)}
+.co-gap{font-size:11px;color:#8fa3d9;margin-bottom:8px;line-height:1.4}
+.co-focus{list-style:none;padding:0;margin:0 0 10px;display:flex;flex-direction:column;gap:3px}
+.co-focus li{font-size:10.5px;color:#cfd9f5}
+.co-plan{display:inline-block;font-size:11px;font-weight:700;color:#f5c518;text-decoration:none;border:1px solid #f5c51866;border-radius:6px;padding:5px 10px;background:rgba(245,197,24,.08)}
+.co-plan:hover{border-color:#f5c518aa}
+.co-skipped{margin-top:22px;font-size:11px;color:#5d6fa8}
+.co-skipped .h{font-weight:700;color:#8fa3d9;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;font-size:10px}
+.co-empty{text-align:center;color:#5d6fa8;padding:80px 20px;font-size:13px;line-height:1.6}
+.co-empty .ico{font-size:40px;margin-bottom:12px}
+`;
+function CoachingTab() {
+  const e = React.createElement;
+  const [data, setData] = React.useState(null);
+  const [err, setErr] = React.useState(false);
+  React.useEffect(() => {
+    let alive = true;
+    const load = () => {
+      fetch("coaching.json?t=" + Date.now()).then(r => r.ok ? r.json() : Promise.reject()).then(j => {
+        if (!alive) return;
+        if (j && typeof j === "object") { setData(j); setErr(false); } else setErr(true);
+      }).catch(() => { if (alive) setErr(true); });
+    };
+    load();
+    const id = setInterval(load, 300000);
+    return () => { alive = false; clearInterval(id); };
+  }, []);
+
+  if (err || !data) {
+    return e("div", { className: "co-wrap riseIn" },
+      e("style", null, COACH_CSS),
+      e("div", { className: "co-empty" },
+        e("div", { className: "ico" }, "\u{1F393}"),
+        e("div", null, "Coaching plans publish here every morning at 7 AM.")));
+  }
+
+  const reps = data.reps || [];
+  const skipped = data.skipped || [];
+  const dates = data.dates || [];
+  const capFirst = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+
+  const repCard = (r, i) => {
+    const bands = r.bands || {};
+    const crit = r.critical || null;
+    const focus = r.focus || [];
+    return e("div", { key: i, className: "co-card" },
+      e("div", { className: "co-cardtop" },
+        e("div", { className: "co-name" }, r.name || "Unknown"),
+        e("div", { className: "co-meta" },
+          r.closeRate ? e("span", { className: "co-rate" }, r.closeRate) : null,
+          r.calls != null ? e("span", { className: "co-calls" }, r.calls + " call" + (r.calls === 1 ? "" : "s")) : null)),
+      (r.strongest || r.weakest) ? e("div", { className: "co-sw" },
+        (r.strongest ? "Strongest: " + r.strongest : "") + (r.strongest && r.weakest ? " · " : "") + (r.weakest ? "Weakest: " + r.weakest : "")) : null,
+      Object.keys(bands).length ? e("div", { className: "co-pills" },
+        Object.keys(bands).map(k => e("span", {
+          key: k,
+          className: "co-pill",
+          style: { background: BAND_COL[bands[k]] || "#5d6fa8" }
+        }, capFirst(k) + ": " + bands[k]))) : null,
+      crit ? e("div", { className: "co-crits" },
+        Object.keys(CRIT_LAB).map(k => crit[k] === undefined ? null : e("span", {
+          key: k,
+          className: "co-crit " + (crit[k] ? "on" : "off")
+        }, CRIT_LAB[k]))) : null,
+      r.headlineGap ? e("div", { className: "co-gap" }, r.headlineGap) : null,
+      focus.length ? e("ul", { className: "co-focus" }, focus.map((f, fi) => e("li", { key: fi }, f))) : null,
+      r.plan ? e("a", { className: "co-plan", href: r.plan, target: "_blank", rel: "noopener" }, "\u{1F4CB} FULL PLAN") : null);
+  };
+
+  return e("div", { className: "co-wrap riseIn" },
+    e("style", null, COACH_CSS),
+    e("div", { className: "co-head" },
+      e("div", null,
+        e("div", { className: "co-title" }, "\u{1F393} DAILY COACHING PLANS"),
+        e("div", { className: "co-sub" }, (data.date || "") + (data.generated ? " · generated " + data.generated : ""))),
+      e("div", { className: "co-btns" },
+        e("a", { className: "co-btn", href: "reports/weekly-latest.pdf", target: "_blank", rel: "noopener" }, "\u{1F4C4} WEEKLY ROLLUP"),
+        dates.length > 1 ? e("div", { className: "co-dates" },
+          dates.slice(1).map((d, di) => e("a", {
+            key: di,
+            className: "co-datelink",
+            href: "coaching/plans/" + d + "/_index.html",
+            target: "_blank", rel: "noopener"
+          }, d))) : null)),
+    reps.length ? e("div", { className: "co-grid" }, reps.map(repCard))
+      : e("div", { style: { color: "#5d6fa8", fontSize: 12, padding: "30px 0" } }, "No rep plans published for this date."),
+    skipped.length ? e("div", { className: "co-skipped" },
+      e("div", { className: "h" }, "Skipped recordings"),
+      skipped.map((s, si) => e("div", { key: si }, (s.rep || "Unknown") + " — " + (s.reason || "no reason given")))) : null);
+}
+
 // ── Global feed-health banner (John, 2026-07-16): red alert on EVERY tab when a
 //    feed goes stale or unreachable. Self-contained 2-min poll of hourly.json
 //    (Today tab, 3-min cadence, alert >20m inside 6a–10p) and livefeed.json
@@ -10930,7 +11048,7 @@ function TglSplashOverlay({ name }) {
 function Root() {
   // survive refreshes on the current tab: URL hash (#livefeed = pin a TV) wins,
   // then the last tab this browser was on, then overview
-  const TAB_IDS = ["overview", "livefeed", "hourbyhour", "ytd", "mtd", "weeklyconv", "revenue", "monthly_breakdown", "weekly", "pace", "deptpace", "sameday", "cancel", "allteams", "siloonly", "caclose", "yesterday"];
+  const TAB_IDS = ["overview", "livefeed", "coaching", "hourbyhour", "ytd", "mtd", "weeklyconv", "revenue", "monthly_breakdown", "weekly", "pace", "deptpace", "sameday", "cancel", "allteams", "siloonly", "caclose", "yesterday"];
   const [tab, setTab] = useState(() => {
     try {
       const h = (window.location.hash || "").replace("#", "");
@@ -11133,6 +11251,10 @@ function Root() {
     id: "livefeed",
     label: "📡 LIVE FEED",
     sub: "SILO · job board"
+  }, {
+    id: "coaching",
+    label: "🎓 COACHING",
+    sub: "Daily plans"
   }, {
     id: "hourbyhour",
     label: "⏱ TECH BOARD",
@@ -11486,7 +11608,7 @@ function Root() {
     deptTgls: deptTgls
   }), tab === "livefeed" && /*#__PURE__*/React.createElement(LiveFeedTab, {
     hourly: hourly
-  }), tab === "ytd" && /*#__PURE__*/React.createElement(PeriodTable, {
+  }), tab === "coaching" && /*#__PURE__*/React.createElement(CoachingTab, null), tab === "ytd" && /*#__PURE__*/React.createElement(PeriodTable, {
     period: "ytd",
     data: data
   }), tab === "mtd" && /*#__PURE__*/React.createElement(PeriodTable, {

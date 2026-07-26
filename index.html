@@ -11051,7 +11051,7 @@ function TglSplashOverlay({ name }) {
 function Root() {
   // survive refreshes on the current tab: URL hash (#livefeed = pin a TV) wins,
   // then the last tab this browser was on, then overview
-  const TAB_IDS = ["overview", "livefeed", "coaching", "hourbyhour", "ytd", "mtd", "weeklyconv", "revenue", "monthly_breakdown", "weekly", "pace", "deptpace", "sameday", "cancel", "allteams", "siloonly", "caclose", "yesterday"];
+  const TAB_IDS = ["overview", "livefeed", "hourbyhour", "ytd", "mtd", "weeklyconv", "revenue", "monthly_breakdown", "weekly", "pace", "deptpace", "sameday", "cancel", "allteams", "siloonly", "caclose", "yesterday", "coaching"];
   const [tab, setTab] = useState(() => {
     try {
       const h = (window.location.hash || "").replace("#", "");
@@ -11255,10 +11255,6 @@ function Root() {
     label: "📡 LIVE FEED",
     sub: "SILO · job board"
   }, {
-    id: "coaching",
-    label: "🎓 COACHING",
-    sub: "Daily plans"
-  }, {
     id: "hourbyhour",
     label: "⏱ TECH BOARD",
     sub: "Today · live"
@@ -11318,6 +11314,10 @@ function Root() {
     id: "yesterday",
     label: "📆 YESTERDAY",
     sub: "Team A/B as of prior day"
+  }, {
+    id: "coaching",
+    label: "🎓 COACHING",
+    sub: "Daily plans"
   }];
 
   // ── Keyboard navigation ──────────────────────────────────────────────────

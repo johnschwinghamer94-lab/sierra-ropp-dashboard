@@ -1,0 +1,149 @@
+{
+ "generated": "2026-07-26",
+ "week": {
+  "start": "2026-07-13",
+  "end": "2026-07-19"
+ },
+ "prior": {
+  "start": "2026-07-06",
+  "end": "2026-07-12"
+ },
+ "lastWeek": {
+  "created": 116,
+  "calls": 198,
+  "ran": 91,
+  "sold": 50,
+  "canceled": 17,
+  "close": 55,
+  "fliprate": 59,
+  "sameday_rate": 79,
+  "samenext_rate": 90
+ },
+ "priorWeek": {
+  "created": 109,
+  "calls": 181,
+  "ran": 87,
+  "sold": 47,
+  "canceled": 10,
+  "close": 54,
+  "fliprate": 60,
+  "sameday_rate": 72,
+  "samenext_rate": 86
+ },
+ "perTech": [
+  {
+   "tech": "Noah Weng",
+   "created": 18,
+   "ran": 12,
+   "sold": 5
+  },
+  {
+   "tech": "Cole Pantol",
+   "created": 12,
+   "ran": 12,
+   "sold": 7
+  },
+  {
+   "tech": "Juan Tlatenchi",
+   "created": 12,
+   "ran": 6,
+   "sold": 5
+  },
+  {
+   "tech": "Joe Mendoza",
+   "created": 11,
+   "ran": 10,
+   "sold": 6
+  },
+  {
+   "tech": "Robert Silinzy",
+   "created": 9,
+   "ran": 9,
+   "sold": 5
+  },
+  {
+   "tech": "Andrew Alonso",
+   "created": 9,
+   "ran": 7,
+   "sold": 4
+  },
+  {
+   "tech": "Francisco Valencia",
+   "created": 9,
+   "ran": 7,
+   "sold": 2
+  },
+  {
+   "tech": "Nathan Colquitt",
+   "created": 8,
+   "ran": 3,
+   "sold": 2
+  },
+  {
+   "tech": "Benjamin Wyllie",
+   "created": 6,
+   "ran": 6,
+   "sold": 5
+  },
+  {
+   "tech": "Brandon Moreno",
+   "created": 6,
+   "ran": 6,
+   "sold": 3
+  },
+  {
+   "tech": "Nikko April",
+   "created": 4,
+   "ran": 4,
+   "sold": 2
+  },
+  {
+   "tech": "Andrew Trujillo",
+   "created": 4,
+   "ran": 3,
+   "sold": 1
+  },
+  {
+   "tech": "Xavier Paredes",
+   "created": 2,
+   "ran": 1,
+   "sold": 1
+  },
+  {
+   "tech": "Mario Castro",
+   "created": 2,
+   "ran": 3,
+   "sold": 0
+  },
+  {
+   "tech": "Pedro Manzanares",
+   "created": 1,
+   "ran": 1,
+   "sold": 1
+  },
+  {
+   "tech": "Corey Reding",
+   "created": 1,
+   "ran": 0,
+   "sold": 0
+  },
+  {
+   "tech": "Jack Jonathon Vanos",
+   "created": 1,
+   "ran": 0,
+   "sold": 0
+  },
+  {
+   "tech": "Jose Huesca",
+   "created": 1,
+   "ran": 0,
+   "sold": 0
+  },
+  {
+   "tech": "Stanley Kim",
+   "created": 0,
+   "ran": 1,
+   "sold": 1
+  }
+ ]
+}

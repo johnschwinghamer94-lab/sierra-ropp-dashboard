@@ -10893,6 +10893,18 @@ const COACH_CSS = `
 .co-skipped .h{font-weight:700;color:#8fa3d9;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;font-size:10px}
 .co-empty{text-align:center;color:#5d6fa8;padding:80px 20px;font-size:13px;line-height:1.6}
 .co-empty .ico{font-size:40px;margin-bottom:12px}
+.co-namebtn{cursor:pointer;user-select:none}
+.co-namebtn:hover{color:#f5c518}
+.co-caret{font-size:9px;color:#5d6fa8;margin-left:5px}
+.co-hist{margin:6px 0 8px;padding:8px 10px;background:rgba(46,120,199,.08);border:1px solid #2E78C733;border-radius:7px}
+.co-hist .hh{font-size:9px;font-weight:800;letter-spacing:.06em;color:#8fa3d9;text-transform:uppercase;margin-bottom:5px}
+.co-histlink{display:block;font-size:11px;color:#7fb3e8;text-decoration:none;padding:2px 0}
+.co-histlink:hover{color:#f5c518}
+.co-arch{margin-top:26px}
+.co-arch .ah{font-size:10px;font-weight:800;letter-spacing:.06em;color:#8fa3d9;text-transform:uppercase;margin-bottom:8px}
+.co-archgrid{display:flex;flex-wrap:wrap;gap:6px}
+.co-archrep{font-size:11px;font-weight:700;color:#9fb3cc;border:1px solid #2E78C744;border-radius:6px;padding:5px 10px;cursor:pointer;user-select:none;background:rgba(46,120,199,.06)}
+.co-archrep:hover,.co-archrep.open{color:#f5c518;border-color:#f5c51866}
 `;
 function CoachingTab() {
   const e = React.createElement;
@@ -10901,6 +10913,7 @@ function CoachingTab() {
   const CRIT_LAB = { expectations: "EXPECTATIONS", questions: "QUESTIONS", options: "OPTIONS", objections: "OBJECTIONS" };
   const [data, setData] = React.useState(null);
   const [err, setErr] = React.useState(false);
+  const [openRep, setOpenRep] = React.useState(null);
   React.useEffect(() => {
     let alive = true;
     const load = () => {
@@ -10927,16 +10940,36 @@ function CoachingTab() {
   const dates = data.dates || [];
   const capFirst = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 
+  const history = data.history || {};
+  const repHist = name => history[name] || [];
+  const histPanel = name => {
+    const h = repHist(name);
+    if (!h.length) return e("div", { className: "co-hist" },
+      e("div", { className: "hh" }, "Plan archive"),
+      e("div", { style: { fontSize: 11, color: "#5d6fa8" } }, "No archived plans yet."));
+    return e("div", { className: "co-hist" },
+      e("div", { className: "hh" }, "Plan archive · " + h.length + " plan" + (h.length === 1 ? "" : "s")),
+      h.map((p, pi) => e("a", {
+        key: pi, className: "co-histlink", href: p.plan, target: "_blank", rel: "noopener"
+      }, "\u{1F4CB} " + (p.date || "") )));
+  };
+
   const repCard = (r, i) => {
     const bands = r.bands || {};
     const crit = r.critical || null;
     const focus = r.focus || [];
+    const isOpen = openRep === r.name;
     return e("div", { key: i, className: "co-card" },
       e("div", { className: "co-cardtop" },
-        e("div", { className: "co-name" }, r.name || "Unknown"),
+        e("div", {
+          className: "co-name co-namebtn",
+          title: "Click for all of this rep's coaching plans",
+          onClick: () => setOpenRep(isOpen ? null : r.name)
+        }, (r.name || "Unknown"), e("span", { className: "co-caret" }, isOpen ? "▾" : "▸")),
         e("div", { className: "co-meta" },
           r.closeRate ? e("span", { className: "co-rate" }, r.closeRate) : null,
           r.calls != null ? e("span", { className: "co-calls" }, r.calls + " call" + (r.calls === 1 ? "" : "s")) : null)),
+      isOpen ? histPanel(r.name) : null,
       (r.strongest || r.weakest) ? e("div", { className: "co-sw" },
         (r.strongest ? "Strongest: " + r.strongest : "") + (r.strongest && r.weakest ? " · " : "") + (r.weakest ? "Weakest: " + r.weakest : "")) : null,
       Object.keys(bands).length ? e("div", { className: "co-pills" },
@@ -10972,6 +11005,16 @@ function CoachingTab() {
           }, d))) : null)),
     reps.length ? e("div", { className: "co-grid" }, reps.map(repCard))
       : e("div", { style: { color: "#5d6fa8", fontSize: 12, padding: "30px 0" } }, "No rep plans published for this date."),
+    Object.keys(history).length ? e("div", { className: "co-arch" },
+      e("div", { className: "ah" }, "Plan archive — all reps (click a name)"),
+      e("div", { className: "co-archgrid" },
+        Object.keys(history).sort().map(n => e("div", {
+          key: n,
+          className: "co-archrep" + (openRep === "arch:" + n ? " open" : ""),
+          onClick: () => setOpenRep(openRep === "arch:" + n ? null : "arch:" + n)
+        }, n))),
+      Object.keys(history).sort().filter(n => openRep === "arch:" + n).map(n =>
+        e("div", { key: n, style: { marginTop: 10, maxWidth: 420 } }, histPanel(n)))) : null,
     skipped.length ? e("div", { className: "co-skipped" },
       e("div", { className: "h" }, "Skipped recordings"),
       skipped.map((s, si) => e("div", { key: si }, (s.rep || "Unknown") + " — " + (s.reason || "no reason given")))) : null);

@@ -12065,6 +12065,39 @@ ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.
   o.addEventListener("click", kill);
   setTimeout(kill, 1550);
 })();
+
+// ── Scroll-position restore across refreshes (John, 2026-07-26): the tabs
+//    render async, so the browser's native restore fires while the page is
+//    still short and lands at the top. We save scrollY per session and
+//    re-apply it once the page has grown tall enough. Real user input
+//    (wheel/touch/keys) cancels the restore so it never fights the user.
+(function () {
+  try { history.scrollRestoration = "manual"; } catch (e) {}
+  var KEY = "silo_scroll";
+  var save = function () {
+    try { sessionStorage.setItem(KEY, JSON.stringify({ y: window.scrollY || 0, t: Date.now() })); } catch (e) {}
+  };
+  var deb; window.addEventListener("scroll", function () { clearTimeout(deb); deb = setTimeout(save, 150); }, { passive: true });
+  window.addEventListener("beforeunload", save);
+  var st = null;
+  try { st = JSON.parse(sessionStorage.getItem(KEY)); } catch (e) {}
+  if (st && st.y > 0) {
+    var done = false;
+    var cancel = function () { done = true; };
+    ["wheel", "touchstart", "keydown"].forEach(function (ev) {
+      window.addEventListener(ev, cancel, { passive: true, once: true });
+    });
+    var tries = 0;
+    var tick = setInterval(function () {
+      tries++;
+      if (done || tries > 48) { clearInterval(tick); return; }
+      if (document.body.scrollHeight >= st.y + window.innerHeight) {
+        window.scrollTo(0, st.y);
+        clearInterval(tick);
+      }
+    }, 250);
+  }
+})();
 </script>
 </body>
 </html>

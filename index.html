@@ -10234,6 +10234,13 @@ function HourByHourTab({
     big: true
   }), /*#__PURE__*/React.createElement(KPICard, {
     label: "TODAY TGLs",
+    // Board (deptTgls, from livefeed.json) = TGL lead-jobs CREATED today —
+    // authoritative per John (2026-07-17, reaffirmed 2026-07-26), matches the
+    // Overview Today box. Report (hourly.today.tgls) counts by SCHEDULED date
+    // and includes older TGLs run today, so it can read higher. deptTgls is
+    // set to 0 (not null) when livefeed.json is date-stale overnight — see
+    // Root's date-check on setDeptTgls — so this falls back to the report
+    // figure only while deptTgls is genuinely unset (null), same as Overview.
     value: deptTgls != null ? deptTgls : t.tgls,
     sub: deptTgls != null ? "created today · dept" : undefined,
     color: "#2E78C7",
@@ -10411,6 +10418,14 @@ function HourByHourTab({
       tgls: 0,
       rev: 0
     });
+    // DAILY TOTALS TGL count: board (deptTgls, from livefeed.json "tgls" array
+    // — lead-jobs CREATED today) is authoritative per John (2026-07-17/07-26),
+    // matching the Overview Today box. The report sum above (hourly.json,
+    // scheduled-today per tech, includes TGLs created on earlier days) can run
+    // higher — livefeed.json only carries first-name ("first") per entry, not a
+    // full tech name, so it can't be safely re-split across roster rows that
+    // share a first name (e.g. two "Andrew"s); only the total is corrected here.
+    if (deptTgls != null) totals.tgls = deptTgls;
     const dim = "#445071";
     const pctOf = (n, d) => d > 0 ? n / d * 100 : null;
     const perRopp = (rev, calls) => calls > 0 ? "$" + Math.round(rev / calls).toLocaleString() : "—";

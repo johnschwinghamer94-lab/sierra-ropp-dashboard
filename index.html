@@ -11227,15 +11227,16 @@ function CoachingTab() {
 
   const dailyView = e(React.Fragment, null,
     e("div", { className: "co-sub" }, (data.date || "") + (data.generated ? " · generated " + data.generated : "")),
-    reps.length ? e("div", { className: "co-grid" }, reps.map(repCard))
-      : e("div", { style: { color: "#5d6fa8", fontSize: 12, padding: "30px 0" } }, "No rep plans published for this date."),
-    dates.length > 1 ? e("div", { className: "co-dates" },
+    // Prior-day folders live at the TOP of the daily view (John, 2026-07-27).
+    dates.length > 1 ? e("div", { className: "co-dates", style: { margin: "8px 0 14px" } },
       dates.slice(1).map((d, di) => e("a", {
         key: di,
         className: "co-datelink",
         href: "coaching/plans/" + d + "/_index.html",
         target: "_blank", rel: "noopener"
       }, d))) : null,
+    reps.length ? e("div", { className: "co-grid" }, reps.map(repCard))
+      : e("div", { style: { color: "#5d6fa8", fontSize: 12, padding: "30px 0" } }, "No rep plans published for this date."),
     Object.keys(history).length ? e("div", { className: "co-arch" },
       e("div", { className: "ah" }, "Plan archive — all reps (click a name)"),
       e("div", { className: "co-archgrid" },

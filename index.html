@@ -2176,7 +2176,7 @@ function PeriodTable({
 // ── Cancellation Rate ─────────────────────────────────────────────────────
 function CancellationTab() {
   const months = CANCEL_DATA.months || ["January", "February", "March", "April", "May", "June"];
-  const weeks = ["W1", "W2", "W3", "W4"];
+  const weeks = CANCEL_DATA.weeks || ["W1", "W2", "W3", "W4"];
   const wl = CANCEL_DATA.weekLabels;
   const ytdSched = DEPT_TECHS.reduce((a, t) => a + (CANCEL_DATA.ytd[t] || { scheduled: 0 }).scheduled, 0);
   const ytdCancelled = DEPT_TECHS.reduce((a, t) => a + (CANCEL_DATA.ytd[t] || { cancelled: 0 }).cancelled, 0);
@@ -3356,10 +3356,10 @@ function WeeklyReportPanel() {
 function WeeklyTrends() {
   const WC = WEEKLY_CONV_DATA;
   const weekLabels = WC.weeks; // e.g. ["Jun 29-Jul 5", "Jul 6-12", ...] variable length, true Mon-Sun weeks
-  // CANCEL_DATA/SAMEDAY_DATA are still bucketed on the old day-of-month W1-W4 scheme
-  // (out of scope to change here), so they can't be mapped 1:1 onto the new calendar
-  // weeks. Approximate by index position and pad/truncate to match weekLabels length.
-  const weekKeys = weekLabels.map((_, i) => "W" + Math.min(4, i + 1));
+  // CANCEL_DATA/SAMEDAY_DATA weekly buckets are now keyed by the same Mon-Sun calendar
+  // week labels as WEEKLY_CONV_DATA, so we can index them directly — no more W1-W4
+  // padding/truncation.
+  const weekKeys = weekLabels;
   const [metric, setMetric] = React.useState("rate");
   const [byTech, setByTech] = React.useState(false);
   const canvasRef = React.useRef(null);

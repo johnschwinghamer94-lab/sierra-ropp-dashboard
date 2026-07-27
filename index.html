@@ -11045,6 +11045,53 @@ const COACH_CSS = `
 .co-weekbtns{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .co-archrep-link{font-size:11px;font-weight:700;color:#9fb3cc;border:1px solid #2E78C744;border-radius:6px;padding:5px 10px;cursor:pointer;user-select:none;background:rgba(46,120,199,.06);text-decoration:none;display:inline-block}
 .co-archrep-link:hover{color:#f5c518;border-color:#f5c51866}
+.co-obj-wrap{width:100%}
+.co-obj-headline{font-size:12px;color:#8fa3d9;margin-bottom:12px}
+.co-obj-modes{display:flex;gap:8px;margin-bottom:16px}
+.co-obj-mode{font-size:11px;font-weight:700;letter-spacing:.03em;color:#9fb3cc;border:1px solid #2E78C744;border-radius:6px;padding:6px 12px;cursor:pointer;user-select:none;background:rgba(46,120,199,.06)}
+.co-obj-mode.on{color:#f5c518;border-color:#f5c51866;background:rgba(245,197,24,.08)}
+.co-obj-stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.co-obj-stat{background:linear-gradient(160deg,#111a35,#0d1428);border:1px solid #2E78C744;border-radius:10px;padding:12px 18px;min-width:150px}
+.co-obj-stat .n{font-size:26px;font-weight:800;font-family:'Chakra Petch',sans-serif;color:#e8edfb}
+.co-obj-stat .n.g{color:#4ade80}
+.co-obj-stat .l{font-size:10px;font-weight:700;letter-spacing:.06em;color:#8fa3d9;text-transform:uppercase;margin-top:2px}
+.co-obj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.co-obj-card{background:linear-gradient(160deg,#111a35,#0d1428);border:1px solid #2E78C744;border-radius:10px;padding:14px 16px;cursor:pointer}
+.co-obj-card:hover{border-color:#f5c51866}
+.co-obj-name{font-weight:800;color:#e8edfb;font-size:14px;margin-bottom:4px}
+.co-obj-count{font-size:22px;font-weight:800;font-family:'Chakra Petch',sans-serif;color:#e8edfb}
+.co-obj-count .u{font-size:11px;font-weight:600;color:#8fa3d9;margin-left:5px}
+.co-obj-bar{display:flex;height:7px;border-radius:4px;overflow:hidden;margin:8px 0 6px;background:#0a0e1a}
+.co-obj-bar span.g{background:#4ade80}
+.co-obj-bar span.o{background:#ffb35c}
+.co-obj-bar span.p{background:#ff7b86}
+.co-obj-breakdown{font-size:10.5px;color:#8fa3d9;margin-bottom:8px}
+.co-obj-dig{font-size:11px;font-weight:700;color:#f5c518}
+.co-obj-back{font-size:11px;font-weight:700;color:#7fb3e8;text-decoration:none;cursor:pointer;display:inline-block;margin-bottom:10px}
+.co-obj-back:hover{color:#f5c518}
+.co-obj-drilltop{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.co-obj-drilltop h3{margin:0;font-family:'Chakra Petch',sans-serif;font-size:16px;color:#e8edfb}
+.co-obj-shown{font-size:11px;color:#5d6fa8}
+.co-obj-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.co-obj-chip{font-size:10.5px;font-weight:700;letter-spacing:.03em;color:#9fb3cc;border:1px solid #2E78C744;border-radius:14px;padding:5px 11px;cursor:pointer;user-select:none;background:rgba(46,120,199,.06)}
+.co-obj-chip.on{color:#f5c518;border-color:#f5c51866;background:rgba(245,197,24,.08)}
+.co-obj-search{width:100%;max-width:360px;margin-bottom:14px;font-size:12px;color:#e8edfb;background:rgba(46,120,199,.08);border:1px solid #2E78C744;border-radius:6px;padding:7px 10px}
+.co-obj-search::placeholder{color:#5d6fa8}
+.co-obj-list{display:flex;flex-direction:column;gap:10px}
+.co-obj-item{background:linear-gradient(160deg,#111a35,#0d1428);border:1px solid #2E78C744;border-radius:10px;padding:14px 16px}
+.co-obj-badges{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.co-obj-badgegrp{display:flex;gap:6px;flex-wrap:wrap}
+.co-obj-badge{font-size:9.5px;font-weight:800;letter-spacing:.05em;border-radius:5px;padding:3px 7px;text-transform:uppercase}
+.co-obj-badge.closed{color:#4ade80;border:1px solid #4ade8066;background:rgba(74,222,128,.08)}
+.co-obj-badge.great{color:#4ade80;border:1px solid #4ade8066;background:rgba(74,222,128,.15)}
+.co-obj-badge.ok{color:#ffb35c;border:1px solid #ffb35c66;background:rgba(255,179,92,.15)}
+.co-obj-badge.poor{color:#ff7b86;border:1px solid #ff7b8666;background:rgba(255,123,134,.15)}
+.co-obj-who{font-size:10.5px;color:#5d6fa8;white-space:nowrap}
+.co-obj-label{font-size:9px;font-weight:800;letter-spacing:.06em;color:#8fa3d9;text-transform:uppercase;margin-bottom:3px}
+.co-obj-quote{font-size:12px;color:#cfd9f5;line-height:1.5;margin-bottom:10px}
+.co-obj-divider{border-top:1px solid #2E78C733;margin:0 0 10px}
+.co-obj-playbook-type{font-family:'Chakra Petch',sans-serif;font-size:15px;font-weight:800;color:#f5c518;margin:22px 0 10px}
+.co-obj-playbook-type:first-child{margin-top:0}
 `;
 function CoachingTab() {
   const e = React.createElement;
@@ -11055,6 +11102,44 @@ function CoachingTab() {
   const [err, setErr] = React.useState(false);
   const [openRep, setOpenRep] = React.useState(null);
   const [view, setView] = React.useState("daily");
+  // ── Objections sub-view (John, 2026-07-26): lazy summary + month shards ───
+  const [objSummary, setObjSummary] = React.useState(null); // null=not fetched, false=error/404
+  const [objSummaryTried, setObjSummaryTried] = React.useState(false);
+  const [objMonths, setObjMonths] = React.useState({}); // month -> items[]
+  const [objMonthsLoading, setObjMonthsLoading] = React.useState(false);
+  const [objMode, setObjMode] = React.useState("browse"); // browse | toptier
+  const [objType, setObjType] = React.useState(null);
+  const [objFilter, setObjFilter] = React.useState("great"); // great|ok|poor|all
+  const [objSearch, setObjSearch] = React.useState("");
+  React.useEffect(() => {
+    if (view !== "objections" || objSummaryTried) return;
+    setObjSummaryTried(true);
+    fetch("coaching/objections/summary.json?t=" + Date.now())
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(j => (j && typeof j === "object") ? setObjSummary(j) : setObjSummary(false))
+      .catch(() => setObjSummary(false));
+  }, [view]);
+  const ensureObjMonths = () => {
+    if (!objSummary || !objSummary.months || objMonthsLoading) return;
+    const missing = objSummary.months.filter(m => !(m in objMonths));
+    if (!missing.length) return;
+    setObjMonthsLoading(true);
+    Promise.all(missing.map(m => fetch("coaching/objections/" + m + ".json?t=" + Date.now())
+      .then(r => r.ok ? r.json() : null).catch(() => null).then(j => [m, j])))
+      .then(results => {
+        setObjMonths(prev => {
+          const next = Object.assign({}, prev);
+          results.forEach(([m, j]) => { next[m] = (j && j.items) || []; });
+          return next;
+        });
+        setObjMonthsLoading(false);
+      });
+  };
+  const objAllItems = React.useMemo(() => {
+    const out = [];
+    Object.keys(objMonths).forEach(m => (objMonths[m] || []).forEach(it => out.push(it)));
+    return out;
+  }, [objMonths]);
   React.useEffect(() => {
     let alive = true;
     const load = () => {
@@ -11129,11 +11214,11 @@ function CoachingTab() {
       r.plan ? e("a", { className: "co-plan", href: r.plan, target: "_blank", rel: "noopener" }, "\u{1F4CB} FULL PLAN") : null);
   };
 
-  // ── Sub-nav (John, 2026-07-26): DAILY / WEEKLY / MONTHLY pill row ────────
+  // ── Sub-nav (John, 2026-07-26): DAILY / WEEKLY / MONTHLY / OBJECTIONS pills ─
   const monthly = data.monthly || [];
   const weekly = data.weekly || [];
   const subNav = e("div", { className: "co-btns", style: { gap: 6 } },
-    ["daily", "weekly", "monthly"].map(v => e("div", {
+    ["daily", "weekly", "monthly", "objections"].map(v => e("div", {
       key: v,
       className: "co-archrep" + (view === v ? " open" : ""),
       style: { cursor: "pointer", textTransform: "uppercase" },
@@ -11198,6 +11283,144 @@ function CoachingTab() {
         }, n))))))
     : e("div", { style: { color: "#5d6fa8", fontSize: 12, padding: "30px 0" } }, "Monthly rollups build as the month progresses.");
 
+  // ── Objections view (John, 2026-07-26): browse-by-type + top-tier playbook ─
+  const objBar = t => {
+    const g = t.great || 0, o = t.ok || 0, p = t.poor || 0;
+    const tot = g + o + p || 1;
+    return e("div", { className: "co-obj-bar" },
+      g ? e("span", { className: "g", style: { width: (g / tot * 100) + "%" } }) : null,
+      o ? e("span", { className: "o", style: { width: (o / tot * 100) + "%" } }) : null,
+      p ? e("span", { className: "p", style: { width: (p / tot * 100) + "%" } }) : null);
+  };
+  const objItemCard = (it, i) => e("div", { key: (it && it.id) || i, className: "co-obj-item" },
+    e("div", { className: "co-obj-badges" },
+      e("div", { className: "co-obj-badgegrp" },
+        it && it.closed ? e("span", { className: "co-obj-badge closed" }, "\u{1F3C6} CLOSED THE CALL") : null,
+        e("span", { className: "co-obj-badge " + ((it && it.grade) || "") }, ((it && it.grade) || "").toUpperCase())),
+      e("div", { className: "co-obj-who" }, ((it && it.tech) || "Unknown") + (it && it.date ? " · " + it.date : ""))),
+    e("div", { className: "co-obj-label" }, "CUSTOMER SAID"),
+    e("div", { className: "co-obj-quote" }, "“" + ((it && it.cust) || "") + "”"),
+    e("div", { className: "co-obj-divider" }),
+    e("div", { className: "co-obj-label" }, "TECH ANSWERED"),
+    e("div", { className: "co-obj-quote", style: { marginBottom: 0 } }, "“" + ((it && it.answer) || "") + "”"));
+
+  const objTypesOrdered = (objSummary && objSummary.types)
+    ? Object.keys(objSummary.types).sort((a, b) => ((objSummary.types[b].total || 0) - (objSummary.types[a].total || 0)))
+    : [];
+
+  const objTypeCard = t => {
+    const s = (objSummary.types && objSummary.types[t]) || {};
+    return e("div", {
+      key: t, className: "co-obj-card",
+      onClick: () => { setObjType(t); setObjFilter("great"); setObjSearch(""); ensureObjMonths(); }
+    },
+      e("div", { className: "co-obj-name" }, t),
+      e("div", { className: "co-obj-count" }, (s.total || 0), e("span", { className: "u" }, "objections")),
+      objBar(s),
+      e("div", { className: "co-obj-breakdown" }, (s.great || 0) + " great  " + (s.ok || 0) + " ok  " + (s.poor || 0) + " poor"),
+      e("div", { className: "co-obj-dig" }, "Dig in →"));
+  };
+
+  const objBrowse = () => e(React.Fragment, null,
+    e("div", { className: "co-obj-stats" },
+      e("div", { className: "co-obj-stat" },
+        e("div", { className: "n" }, (objSummary.totals && objSummary.totals.total) || 0),
+        e("div", { className: "l" }, "TOTAL OBJECTIONS")),
+      e("div", { className: "co-obj-stat" },
+        e("div", { className: "n g" }, (objSummary.totals && objSummary.totals.great) || 0),
+        e("div", { className: "l" }, "GREAT ANSWERS \u{1F3C6}")),
+      e("div", { className: "co-obj-stat" },
+        e("div", { className: "n" }, objTypesOrdered.length),
+        e("div", { className: "l" }, "OBJECTION TYPES"))),
+    e("div", { className: "co-obj-grid" }, objTypesOrdered.map(objTypeCard)));
+
+  const objDrillIn = () => {
+    const t = objType;
+    const items = objAllItems.filter(it => it && it.type === t);
+    const counts = {
+      great: items.filter(it => it.grade === "great").length,
+      ok: items.filter(it => it.grade === "ok").length,
+      poor: items.filter(it => it.grade === "poor").length,
+      all: items.length
+    };
+    let filtered = objFilter === "all" ? items : items.filter(it => it.grade === objFilter);
+    if (objSearch.trim()) {
+      const q = objSearch.trim().toLowerCase();
+      filtered = filtered.filter(it => (((it.cust || "") + " " + (it.answer || "")).toLowerCase().indexOf(q) !== -1));
+    }
+    const capped = filtered.slice(0, 200);
+    const chips = [
+      ["great", "\u{1F3C6} Best ways (" + counts.great + ")"],
+      ["ok", "OK (" + counts.ok + ")"],
+      ["poor", "Worst (" + counts.poor + ")"],
+      ["all", "All (" + counts.all + ")"]
+    ];
+    return e("div", null,
+      e("div", { className: "co-obj-back", onClick: () => setObjType(null) }, "← All objections"),
+      e("div", { className: "co-obj-drilltop" },
+        e("h3", null, t),
+        e("div", { className: "co-obj-shown" }, filtered.length + " shown")),
+      e("div", { className: "co-obj-chips" },
+        chips.map(c => e("div", {
+          key: c[0], className: "co-obj-chip" + (objFilter === c[0] ? " on" : ""), onClick: () => setObjFilter(c[0])
+        }, c[1]))),
+      e("input", {
+        className: "co-obj-search", type: "text", placeholder: "Search customer or answer text…",
+        value: objSearch, onChange: ev => setObjSearch(ev.target.value)
+      }),
+      (objMonthsLoading && !items.length)
+        ? e("div", { style: { color: "#5d6fa8", fontSize: 12, padding: "20px 0" } }, "Loading objections…")
+        : e("div", { className: "co-obj-list" }, capped.map(objItemCard)),
+      filtered.length > 200 ? e("div", { className: "co-obj-shown", style: { marginTop: 8 } }, "showing first 200") : null);
+  };
+
+  const objPlaybook = () => {
+    if (objMonthsLoading && !objAllItems.length) {
+      return e("div", { style: { color: "#5d6fa8", fontSize: 12, padding: "30px 0" } }, "Loading playbook…");
+    }
+    const blocks = objTypesOrdered.map(t => {
+      const items = objAllItems.filter(it => it && it.type === t && it.grade === "great");
+      const top5 = items.slice().sort((a, b) => {
+        const ac = a.closed ? 1 : 0, bc = b.closed ? 1 : 0;
+        if (ac !== bc) return bc - ac;
+        return (b.date || "").localeCompare(a.date || "");
+      }).slice(0, 5);
+      if (!top5.length) return null;
+      return e("div", { key: t },
+        e("div", { className: "co-obj-playbook-type" }, t),
+        e("div", { className: "co-obj-list" }, top5.map(objItemCard)));
+    }).filter(Boolean);
+    return blocks.length ? e("div", null, blocks)
+      : e("div", { style: { color: "#5d6fa8", fontSize: 12, padding: "30px 0" } }, "No great, closed answers mined yet.");
+  };
+
+  const objectionsView = () => {
+    if (objSummary === false) {
+      return e("div", { className: "co-empty" },
+        e("div", { className: "ico" }, "\u{1F3AF}"),
+        e("div", null, "Objection coaching builds here as calls are mined."));
+    }
+    if (objSummary === null) {
+      return e("div", { style: { color: "#5d6fa8", fontSize: 12, padding: "30px 0" } }, "Loading…");
+    }
+    const w = objSummary.window || {};
+    const typeCount = objSummary.types ? Object.keys(objSummary.types).length : 0;
+    return e("div", { className: "co-obj-wrap" },
+      e("div", { className: "co-obj-headline" },
+        "Silo Objections — " + ((objSummary.totals && objSummary.totals.total) || 0) + " objections across " +
+          typeCount + " types · " + (w.start || "") + " → " + (w.end || "")),
+      e("div", { className: "co-obj-modes" },
+        e("div", {
+          className: "co-obj-mode" + (objMode === "browse" ? " on" : ""),
+          onClick: () => setObjMode("browse")
+        }, "Browse by type"),
+        e("div", {
+          className: "co-obj-mode" + (objMode === "toptier" ? " on" : ""),
+          onClick: () => { setObjMode("toptier"); setObjType(null); ensureObjMonths(); }
+        }, "⭐ Top Tier playbook")),
+      objMode === "toptier" ? objPlaybook() : (objType ? objDrillIn() : objBrowse()));
+  };
+
   return e("div", { className: "co-wrap riseIn" },
     e("style", null, COACH_CSS),
     e("div", { className: "co-head" },
@@ -11206,7 +11429,7 @@ function CoachingTab() {
         subNav),
       e("div", { className: "co-btns" },
         e("a", { className: "co-btn", href: "reports/weekly-latest.pdf", target: "_blank", rel: "noopener" }, "\u{1F4CA} WEEKLY STATS PDF"))),
-    view === "daily" ? dailyView : (view === "weekly" ? weeklyView : monthlyView));
+    view === "daily" ? dailyView : (view === "weekly" ? weeklyView : (view === "monthly" ? monthlyView : objectionsView())));
 }
 
 // ── Global feed-health banner (John, 2026-07-16): red alert on EVERY tab when a

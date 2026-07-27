@@ -11054,6 +11054,7 @@ function CoachingTab() {
   const [data, setData] = React.useState(null);
   const [err, setErr] = React.useState(false);
   const [openRep, setOpenRep] = React.useState(null);
+  const [view, setView] = React.useState("daily");
   React.useEffect(() => {
     let alive = true;
     const load = () => {
@@ -11128,23 +11129,28 @@ function CoachingTab() {
       r.plan ? e("a", { className: "co-plan", href: r.plan, target: "_blank", rel: "noopener" }, "\u{1F4CB} FULL PLAN") : null);
   };
 
-  return e("div", { className: "co-wrap riseIn" },
-    e("style", null, COACH_CSS),
-    e("div", { className: "co-head" },
-      e("div", null,
-        e("div", { className: "co-title" }, "\u{1F393} DAILY COACHING PLANS"),
-        e("div", { className: "co-sub" }, (data.date || "") + (data.generated ? " · generated " + data.generated : ""))),
-      e("div", { className: "co-btns" },
-        e("a", { className: "co-btn", href: "reports/weekly-latest.pdf", target: "_blank", rel: "noopener" }, "\u{1F4CA} WEEKLY STATS PDF"),
-        dates.length > 1 ? e("div", { className: "co-dates" },
-          dates.slice(1).map((d, di) => e("a", {
-            key: di,
-            className: "co-datelink",
-            href: "coaching/plans/" + d + "/_index.html",
-            target: "_blank", rel: "noopener"
-          }, d))) : null)),
+  // ── Sub-nav (John, 2026-07-26): DAILY / WEEKLY / MONTHLY pill row ────────
+  const monthly = data.monthly || [];
+  const weekly = data.weekly || [];
+  const subNav = e("div", { className: "co-btns", style: { gap: 6 } },
+    ["daily", "weekly", "monthly"].map(v => e("div", {
+      key: v,
+      className: "co-archrep" + (view === v ? " open" : ""),
+      style: { cursor: "pointer", textTransform: "uppercase" },
+      onClick: () => setView(v)
+    }, v)));
+
+  const dailyView = e(React.Fragment, null,
+    e("div", { className: "co-sub" }, (data.date || "") + (data.generated ? " · generated " + data.generated : "")),
     reps.length ? e("div", { className: "co-grid" }, reps.map(repCard))
       : e("div", { style: { color: "#5d6fa8", fontSize: 12, padding: "30px 0" } }, "No rep plans published for this date."),
+    dates.length > 1 ? e("div", { className: "co-dates" },
+      dates.slice(1).map((d, di) => e("a", {
+        key: di,
+        className: "co-datelink",
+        href: "coaching/plans/" + d + "/_index.html",
+        target: "_blank", rel: "noopener"
+      }, d))) : null,
     Object.keys(history).length ? e("div", { className: "co-arch" },
       e("div", { className: "ah" }, "Plan archive — all reps (click a name)"),
       e("div", { className: "co-archgrid" },
@@ -11155,23 +11161,52 @@ function CoachingTab() {
         }, n))),
       Object.keys(history).sort().filter(n => openRep === "arch:" + n).map(n =>
         e("div", { key: n, style: { marginTop: 10, maxWidth: 420 } }, histPanel(n)))) : null,
-    (data.weekly || []).length ? e("div", { className: "co-arch" },
-      e("div", { className: "ah" }, "\u{1F4C4} WEEKLY ROLLUPS"),
-      (data.weekly || []).slice(0, 8).map((w, wi) => e("div", { key: wi, className: "co-week" },
-        e("div", { className: "co-weeklabel" }, w.week || w.end || ""),
-        e("div", { className: "co-weekbtns" },
-          w.crossrep ? e("a", {
-            className: "co-btn", href: w.crossrep, target: "_blank", rel: "noopener"
-          }, "TEAM REPORT") : null,
-          Object.keys(w.reps || {}).sort().map(n => e("a", {
-            key: n,
-            className: "co-archrep-link",
-            href: w.reps[n],
-            target: "_blank", rel: "noopener"
-          }, n)))))) : null,
     skipped.length ? e("div", { className: "co-skipped" },
       e("div", { className: "h" }, "Skipped recordings"),
       skipped.map((s, si) => e("div", { key: si }, (s.rep || "Unknown") + " — " + (s.reason || "no reason given")))) : null);
+
+  const weeklyView = weekly.length ? e("div", { className: "co-arch", style: { width: "100%" } },
+    weekly.slice(0, 8).map((w, wi) => e("div", { key: wi, className: "co-week" },
+      e("div", { className: "co-weeklabel" }, w.week || w.end || ""),
+      e("div", { className: "co-weekbtns" },
+        w.crossrep ? e("a", {
+          className: "co-btn", href: w.crossrep, target: "_blank", rel: "noopener"
+        }, "TEAM REPORT") : null,
+        Object.keys(w.reps || {}).sort().map(n => e("a", {
+          key: n,
+          className: "co-archrep-link",
+          href: w.reps[n],
+          target: "_blank", rel: "noopener"
+        }, n))))))
+    : e("div", { style: { color: "#5d6fa8", fontSize: 12, padding: "30px 0" } }, "Weekly rollups publish here every Sunday night.");
+
+  const monthlyView = monthly.length ? e("div", { className: "co-arch", style: { width: "100%" } },
+    monthly.map((m, mi) => e("div", { key: mi, className: "co-week" },
+      e("div", { className: "co-weeklabel" }, m.label || m.month || ""),
+      e("div", { className: "co-weekbtns" },
+        m.index ? e("a", {
+          className: "co-btn", href: m.index, target: "_blank", rel: "noopener"
+        }, "INDEX") : null,
+        m.crossrep ? e("a", {
+          className: "co-btn", href: m.crossrep, target: "_blank", rel: "noopener"
+        }, "TEAM REPORT") : null,
+        Object.keys(m.reps || {}).sort().map(n => e("a", {
+          key: n,
+          className: "co-archrep-link",
+          href: m.reps[n],
+          target: "_blank", rel: "noopener"
+        }, n))))))
+    : e("div", { style: { color: "#5d6fa8", fontSize: 12, padding: "30px 0" } }, "Monthly rollups build as the month progresses.");
+
+  return e("div", { className: "co-wrap riseIn" },
+    e("style", null, COACH_CSS),
+    e("div", { className: "co-head" },
+      e("div", null,
+        e("div", { className: "co-title" }, "\u{1F393} COACHING"),
+        subNav),
+      e("div", { className: "co-btns" },
+        e("a", { className: "co-btn", href: "reports/weekly-latest.pdf", target: "_blank", rel: "noopener" }, "\u{1F4CA} WEEKLY STATS PDF"))),
+    view === "daily" ? dailyView : (view === "weekly" ? weeklyView : monthlyView));
 }
 
 // ── Global feed-health banner (John, 2026-07-16): red alert on EVERY tab when a

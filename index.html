@@ -4920,7 +4920,9 @@ function MonthlyBreakdown({
   const totals = rows.reduce((acc, r) => ({
     calls: acc.calls + r.calls,
     total_tgls: acc.total_tgls + r.total_tgls,
+    svc_calls: acc.svc_calls + (r.svc_calls || 0),
     svc_tgls: acc.svc_tgls + r.svc_tgls,
+    maint_calls: acc.maint_calls + (r.maint_calls || 0),
     maint_tgls: acc.maint_tgls + r.maint_tgls,
     total_rev: acc.total_rev + r.total_rev,
     svc_rev: acc.svc_rev + r.svc_rev,
@@ -4928,7 +4930,9 @@ function MonthlyBreakdown({
   }), {
     calls: 0,
     total_tgls: 0,
+    svc_calls: 0,
     svc_tgls: 0,
+    maint_calls: 0,
     maint_tgls: 0,
     total_rev: 0,
     svc_rev: 0,
@@ -5251,14 +5255,14 @@ function MonthlyBreakdown({
       borderLeft: "2px solid #F5B32433",
       color: "#F5B324"
     },
-    colSpan: 2
+    colSpan: 3
   }, "SERVICE"), /*#__PURE__*/React.createElement("th", {
     style: {
       ...thSt(),
       borderLeft: "2px solid #5BA4E633",
       color: "#5BA4E6"
     },
-    colSpan: 2
+    colSpan: 3
   }, "MAINTENANCE"), /*#__PURE__*/React.createElement("th", {
     style: {
       ...thSt(),
@@ -5283,6 +5287,8 @@ function MonthlyBreakdown({
       ...thSt(),
       borderLeft: "2px solid #F5B32422"
     }
+  }, "CALLS"), /*#__PURE__*/React.createElement("th", {
+    style: thSt()
   }, "TGLs"), /*#__PURE__*/React.createElement("th", {
     style: thSt()
   }, "REVENUE"), /*#__PURE__*/React.createElement("th", {
@@ -5290,6 +5296,8 @@ function MonthlyBreakdown({
       ...thSt(),
       borderLeft: "2px solid #5BA4E622"
     }
+  }, "CALLS"), /*#__PURE__*/React.createElement("th", {
+    style: thSt()
   }, "TGLs"), /*#__PURE__*/React.createElement("th", {
     style: thSt()
   }, "REVENUE"), /*#__PURE__*/React.createElement("th", {
@@ -5351,6 +5359,8 @@ function MonthlyBreakdown({
         ...tdSt(),
         borderLeft: "2px solid #F5B32422"
       }
+    }, s.svc_calls > 0 ? s.svc_calls : "—"), /*#__PURE__*/React.createElement("td", {
+      style: tdSt()
     }, /*#__PURE__*/React.createElement("span", {
       style: {
         color: "#F5B324"
@@ -5370,6 +5380,8 @@ function MonthlyBreakdown({
         ...tdSt(),
         borderLeft: "2px solid #5BA4E622"
       }
+    }, s.maint_calls > 0 ? s.maint_calls : "—"), /*#__PURE__*/React.createElement("td", {
+      style: tdSt()
     }, /*#__PURE__*/React.createElement("span", {
       style: {
         color: "#5BA4E6"
@@ -5436,6 +5448,11 @@ function MonthlyBreakdown({
       borderLeft: "2px solid #F5B32422",
       color: "#F5B324"
     }
+  }, totals.svc_calls), /*#__PURE__*/React.createElement("td", {
+    style: {
+      ...tdSt(true),
+      color: "#F5B324"
+    }
   }, totals.svc_tgls), /*#__PURE__*/React.createElement("td", {
     style: {
       ...tdSt(true),
@@ -5445,6 +5462,11 @@ function MonthlyBreakdown({
     style: {
       ...tdSt(true),
       borderLeft: "2px solid #5BA4E622",
+      color: "#5BA4E6"
+    }
+  }, totals.maint_calls), /*#__PURE__*/React.createElement("td", {
+    style: {
+      ...tdSt(true),
       color: "#5BA4E6"
     }
   }, totals.maint_tgls), /*#__PURE__*/React.createElement("td", {

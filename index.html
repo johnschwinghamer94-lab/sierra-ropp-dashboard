@@ -5119,6 +5119,10 @@ function MonthlyBreakdown({
     value: totals.svc_tgls,
     color: "#F5B324"
   }), /*#__PURE__*/React.createElement(KPICard, {
+    label: "SVC TGL %",
+    value: totals.svc_calls > 0 ? fmtPct(conv(totals.svc_calls, totals.svc_tgls)) : "—",
+    color: "#4ADE80"
+  }), /*#__PURE__*/React.createElement(KPICard, {
     label: "SVC REVENUE",
     value: "$" + Math.round(totals.svc_rev).toLocaleString(),
     color: "#F5B324"
@@ -5126,6 +5130,10 @@ function MonthlyBreakdown({
     label: "MAINT TGLs",
     value: totals.maint_tgls,
     color: "#5BA4E6"
+  }), /*#__PURE__*/React.createElement(KPICard, {
+    label: "MAINT TGL %",
+    value: totals.maint_calls > 0 ? fmtPct(conv(totals.maint_calls, totals.maint_tgls)) : "—",
+    color: "#4ADE80"
   }), /*#__PURE__*/React.createElement(KPICard, {
     label: "MAINT REVENUE",
     value: "$" + Math.round(totals.maint_rev).toLocaleString(),

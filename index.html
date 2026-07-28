@@ -11580,6 +11580,32 @@ function TglSplashOverlay({ name, hit }) {
         e("div", { className: "tgl-splash-sub" }, "\u26A1 TGL \u26A1")))), document.body);
 }
 
+// ── KPI cream bar: drips hang from the top edge of every tab while TODAY's
+//    TGL rate is at/above the KPI (John, 2026-07-28). Auto on/off as the live
+//    rate crosses the line. Demo/manual override: window.__kpiCream(true|false|null)
+function KpiCreamBar() {
+  const e = React.createElement;
+  const drips = [];
+  for (let i = 0; i < 30; i++) {
+    const left = 1 + (i * 3.35) + ((i * 53) % 17) / 10;
+    const len = 22 + ((i * 37) % 97) + (i % 5 === 0 ? 46 : 0);
+    const w = 5 + ((i * 29) % 13);
+    const dur = 7 + ((i * 41) % 50) / 10;
+    drips.push(e("div", { key: i, className: "kpi-drip",
+      style: { left: left + "%", "--len": len + "px", "--w": w + "px",
+               animationDuration: dur + "s", animationDelay: (-(i * 13) % 90) / 10 + "s" } }));
+  }
+  return ReactDOM.createPortal(e("div", { className: "kpi-cream" },
+    e("style", null, `
+.kpi-cream{position:fixed;top:0;left:0;right:0;height:0;z-index:9000;pointer-events:none;animation:kpi-cream-in .9s ease-out forwards}
+.kpi-cream::before{content:"";position:absolute;top:0;left:0;right:0;height:11px;background:#FFFDF5;box-shadow:0 3px 10px rgba(0,0,0,.35)}
+.kpi-drip{position:absolute;top:9px;width:var(--w);height:var(--len);background:#FFFDF5;border-radius:0 0 999px 999px;transform-origin:top;animation-name:kpi-drip-sway;animation-timing-function:ease-in-out;animation-iteration-count:infinite;filter:drop-shadow(0 3px 6px rgba(0,0,0,.3))}
+.kpi-drip::after{content:"";position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:calc(var(--w) + 5px);height:calc(var(--w) + 5px);background:#FFFDF5;border-radius:50%}
+@keyframes kpi-drip-sway{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.14)}}
+@keyframes kpi-cream-in{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+`), drips), document.body);
+}
+
 function Root() {
   // survive refreshes on the current tab: URL hash (#livefeed = pin a TV) wins,
   // then the last tab this browser was on, then overview
@@ -11721,6 +11747,12 @@ function Root() {
     if (!splashBusyRef.current) { splashBusyRef.current = true; pumpSplashRef.current(); }
   };
   useEffect(() => { window.__tglSplash = queueSplash; });
+  // KPI cream bar: on while today's live rate (board TGLs / calls) >= KPI
+  const [creamOverride, setCreamOverride] = useState(null);
+  useEffect(() => { window.__kpiCream = v => setCreamOverride(v); });
+  const _kcCalls = hourly && hourly.today ? hourly.today.calls || 0 : 0;
+  const _kcTgls = deptTgls != null ? deptTgls : hourly && hourly.today ? hourly.today.tgls || 0 : 0;
+  const overKpi = creamOverride != null ? creamOverride : (_kcCalls > 0 && (_kcTgls / _kcCalls) * 100 >= KPI);
   const seenTglRef = React.useRef(null);
 
   // ── TV takeover: full-screen splash when a new TGL lands (?tv=1 only) ────
@@ -12185,7 +12217,7 @@ function Root() {
     className: "tvt-txt"
   }, takeover.text), /*#__PURE__*/React.createElement("div", {
     className: "tvt-t"
-  }, takeover.t)), tglSplash ? /*#__PURE__*/React.createElement(TglSplashOverlay, { name: tglSplash.name, hit: tglSplash.hit, key: tglSplash.k }) : null);
+  }, takeover.t)), tglSplash ? /*#__PURE__*/React.createElement(TglSplashOverlay, { name: tglSplash.name, hit: tglSplash.hit, key: tglSplash.k }) : null, overKpi ? /*#__PURE__*/React.createElement(KpiCreamBar, null) : null);
 }
 ReactDOM.createRoot(document.getElementById("root")).render( /*#__PURE__*/React.createElement(Root, null));
 

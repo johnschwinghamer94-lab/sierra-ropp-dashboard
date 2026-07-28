@@ -11252,7 +11252,32 @@ function CoachingTab() {
         }, n))))))
     : e("div", { style: { color: "#5d6fa8", fontSize: 12, padding: "30px 0" } }, "Weekly rollups publish here every Sunday night.");
 
-  const monthlyView = monthly.length ? e("div", { className: "co-arch", style: { width: "100%" } },
+  // Month-to-date SVC / MAINT TGL rates across the top (John, 2026-07-28) —
+  // summed from INITIAL_DATA per-tech mtd splits, same source as the SILO ONLY tab.
+  const monthStats = (() => {
+    try {
+      const ts = Object.values(INITIAL_DATA).filter(v => v && v.mtd);
+      const s = ts.reduce((a, t) => {
+        a.c += t.mtd.calls || 0; a.g += t.mtd.tgls || 0;
+        a.sc += t.mtd.svc_calls || 0; a.sg += t.mtd.svc_tgls || 0;
+        a.mc += t.mtd.maint_calls || 0; a.mg += t.mtd.maint_tgls || 0;
+        return a;
+      }, { c: 0, g: 0, sc: 0, sg: 0, mc: 0, mg: 0 });
+      const pct = (t, c) => c > 0 ? (t / c * 100).toFixed(1) + "%" : "—";
+      return [
+        { l: "MTD TGL %", v: pct(s.g, s.c), sub: s.g + " / " + s.c + " calls" },
+        { l: "SVC TGL %", v: pct(s.sg, s.sc), sub: s.sg + " / " + s.sc + " svc" },
+        { l: "MAINT TGL %", v: pct(s.mg, s.mc), sub: s.mg + " / " + s.mc + " maint" }
+      ];
+    } catch (x) { return null; }
+  })();
+  const monthStatRow = monthStats ? e("div", { style: { display: "flex", gap: 12, flexWrap: "wrap", margin: "4px 0 16px" } },
+    monthStats.map((t, ti) => e("div", { key: ti, style: { background: "linear-gradient(160deg,#111a35,#0d1428)", border: "1px solid #2E78C744", borderRadius: 10, padding: "10px 18px", minWidth: 150 } },
+      e("div", { style: { fontSize: 9, fontWeight: 700, letterSpacing: ".08em", color: "#8fa3d9" } }, t.l),
+      e("div", { style: { fontSize: 22, fontWeight: 800, color: t.l.indexOf("SVC") === 0 ? "#4ade80" : t.l.indexOf("MAINT") === 0 ? "#7fb3e8" : "#f5c518" } }, t.v),
+      e("div", { style: { fontSize: 9, color: "#5d6fa8" } }, t.sub)))) : null;
+
+  const monthlyView = e(React.Fragment, null, monthStatRow, monthly.length ? e("div", { className: "co-arch", style: { width: "100%" } },
     monthly.map((m, mi) => e("div", { key: mi, className: "co-week" },
       e("div", { className: "co-weeklabel" }, m.label || m.month || ""),
       e("div", { className: "co-weekbtns" },
@@ -11268,7 +11293,7 @@ function CoachingTab() {
           href: m.reps[n],
           target: "_blank", rel: "noopener"
         }, n))))))
-    : e("div", { style: { color: "#5d6fa8", fontSize: 12, padding: "30px 0" } }, "Monthly rollups build as the month progresses.");
+    : e("div", { style: { color: "#5d6fa8", fontSize: 12, padding: "30px 0" } }, "Monthly rollups build as the month progresses."));
 
   // ── Objections view (John, 2026-07-26): browse-by-type + top-tier playbook ─
   const objBar = t => {

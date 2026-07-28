@@ -11419,6 +11419,26 @@ function CoachingTab() {
     view === "daily" ? dailyView : (view === "weekly" ? weeklyView : (view === "monthly" ? monthlyView : objectionsView())));
 }
 
+// ── Persistent KPI border (John, 2026-07-27): the page edge breathes green when
+//    today's live rate is at/above the 60% KPI and red when below — always on,
+//    not just on TGL events. Uses the same board-based rate as the TODAY gauge
+//    (deptTgls over hourly today calls). Hidden until there are calls to judge.
+function KpiPulseBorder({ hourly, deptTgls }) {
+  const e = React.createElement;
+  const calls = hourly && hourly.today ? hourly.today.calls || 0 : 0;
+  if (!calls) return null;
+  const t = deptTgls != null ? deptTgls : (hourly.today.tgls || 0);
+  const hit = (t / calls) * 100 >= 60;
+  const col = hit ? "#35D07F" : "#E63946";
+  return e("div", { className: "kpi-border", style: { "--kpic": col } },
+    e("style", null, `
+.kpi-border{position:fixed;inset:0;z-index:9990;pointer-events:none;border:4px solid var(--kpic);
+  animation:kpiBreathe 3.2s ease-in-out infinite}
+@keyframes kpiBreathe{0%,100%{box-shadow:inset 0 0 14px 0 var(--kpic);opacity:.55}
+  50%{box-shadow:inset 0 0 34px 4px var(--kpic);opacity:1}}
+`));
+}
+
 // ── Global feed-health banner (John, 2026-07-16): red alert on EVERY tab when a
 //    feed goes stale or unreachable. Self-contained 2-min poll of hourly.json
 //    (Today tab, 3-min cadence, alert >20m inside 6a–10p) and livefeed.json
@@ -11854,7 +11874,7 @@ function Root() {
       minHeight: "100vh",
       background: "#0a0e1a"
     }
-  }, /*#__PURE__*/React.createElement(HealthBanner, null), showManage && /*#__PURE__*/React.createElement(ManagePanel, {
+  }, /*#__PURE__*/React.createElement(KpiPulseBorder, { hourly: hourly, deptTgls: deptTgls }), /*#__PURE__*/React.createElement(HealthBanner, null), showManage && /*#__PURE__*/React.createElement(ManagePanel, {
     data: data,
     setData: setData,
     onClose: () => setShowManage(false)

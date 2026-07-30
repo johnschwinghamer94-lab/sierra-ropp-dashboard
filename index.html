@@ -10867,7 +10867,6 @@ function LiveFeedTab({
       }
     }
     if (!c) return null;
-    const oc = OUT_COL[c.outcome] || "#8fa3d9";
     const tip = c.tip || "";
     const isWin = /^WIN\b/i.test(tip);
     const isFix = /^FIX\b/i.test(tip);
@@ -10876,6 +10875,16 @@ function LiveFeedTab({
     const labCol = isWin ? "#4ade80" : "#ffb35c";
     // this call's TGL sold (install booked) — from the live feed's TGL board data
     const tglSold = (lf && lf.tgls || []).find(x => x.soldT && String(x.src) === String(j.jobId));
+    // ServiceTitan/board evidence outranks the AI call grade (John's rule): if the
+    // board shows a TGL for this job (tgls[] entry OR the TGL timeline stage is
+    // reached) but the scorecard still says no-close/unknown — the card was likely
+    // graded before the TGL ticket was typed. Override the displayed outcome.
+    const tglBoardEntry = (lf && lf.tgls || []).find(x => String(x.src) === String(j.jobId));
+    const tglEvidence = !!tglBoardEntry || !!(j.stages && j.stages.signed);
+    const outcomeOverridden = tglEvidence && (c.outcome === "no-close" || c.outcome === "unknown");
+    const displayOutcome = outcomeOverridden ? "flipped" : c.outcome;
+    const displayOutcomeLabel = outcomeOverridden ? "FLIPPED ✓" : (c.outcome || "?").toUpperCase();
+    const oc = OUT_COL[displayOutcome] || "#8fa3d9";
     return e("div", { className: "lf2-sc", title: c.recId ? "Open call recording in Siro" : null, style: c.recId ? { cursor: "pointer" } : null, onClick: ev => { ev.stopPropagation(); if (c.recId) window.open("https://salespro.siro.ai/#/recordings/explore/" + c.recId, "_blank", "noopener"); } },
       e("div", { className: "lf2-sc-h" },
         e("span", { className: "lf2-sc-t" }, "\u{1F4CB} CALL COACHING" + (isLastCall ? " · LAST CALL" : "") + (c.durationMin ? " · " + c.durationMin + "M" : "")),
@@ -10890,7 +10899,7 @@ function LiveFeedTab({
             onMouseLeave: ev => { ev.currentTarget.style.color = "#8fa3d9"; ev.currentTarget.style.borderColor = "#8fa3d955"; }
           }, "\u{1F3A7} HEAR CALL") : null,
           tglSold ? e("span", { className: "lf2-sc-out", style: { color: "#4ade80", borderColor: "#4ade80cc", background: "rgba(74,222,128,.16)", boxShadow: "0 0 8px #4ade8044" } }, "\u{1F4B0} TGL SOLD " + tglSold.soldT) : null,
-          e("span", { className: "lf2-sc-out", style: { color: oc, borderColor: oc + "88", background: oc + "14" } }, (c.outcome || "?").toUpperCase()))),
+          e("span", { className: "lf2-sc-out", style: { color: oc, borderColor: oc + "88", background: oc + "14" }, title: outcomeOverridden ? "verified from the TGL board — overrides the call grade" : null }, displayOutcomeLabel))),
       body ? e("div", { className: "lf2-sc-tip" },
         e("span", { style: { color: labCol, fontWeight: 800, letterSpacing: ".08em", marginRight: 6 } }, lab + " —"),
         body) : null);
@@ -10898,7 +10907,12 @@ function LiveFeedTab({
 
   const card = j => {
     const s = j.stages || {};
-    const opt = s.options, sig = s.signed;
+    const opt = s.options;
+    // Late-typed TGL tickets appear on the board (livefeed.json tgls[]) before the
+    // per-job stage state catches up — fall back to the board entry so the
+    // timeline node reflects ServiceTitan reality, not a stale per-job snapshot.
+    const boardTgl = !s.signed ? (lf && lf.tgls || []).find(x => String(x.src) === String(j.jobId)) : null;
+    const sig = s.signed || (boardTgl ? { t: boardTgl.t } : null);
     const notRecording = j.status === "Working" && j.rec === false;
     const isRecording = j.status === "Working" && j.rec === true;
     const kls = "lf2-card" + (j.warn ? " warncard" : j.status === "Working" ? " working" : j.status === "Done" ? " done" : "") + (notRecording ? " norec" : "");

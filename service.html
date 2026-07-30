@@ -799,8 +799,15 @@ function ServicePulseTab({onClassic}){
   const memPct = W.membershipConv!=null ? fmtPct(W.membershipConv) : "—";
   const memSub = (W.membershipsSold!=null && W.membershipOpps!=null) ? (numOr0(W.membershipsSold)+" / "+numOr0(W.membershipOpps)+" opps") : "";
 
+  // dept avg options built per opportunity (weighted by opps) — 4-6 is the standard
+  const oppN=techRows.reduce((a,r)=>a+((r.optionsPerOpp||0)*(r.opps||0)),0);
+  const oppD=techRows.reduce((a,r)=>a+(r.opps||0),0);
+  const avgOpo=oppD?oppN/oppD:null;
+  const opoColor=avgOpo==null?"#7a8fa0":(avgOpo>=4?"#4ADE80":(avgOpo>=3?GOLD:"#E63946"));
+
   const kpis=[
     ["CLOSE RATE",fmtPct(W.closeRate),GREEN,(W.converted!=null&&W.opps!=null)?(numOr0(W.converted)+"/"+numOr0(W.opps)+" opps"):""],
+    ["AVG OPTIONS / OPP",avgOpo!=null?avgOpo.toFixed(2):"—",opoColor,oppD?(oppD+" opps · target 4-6"):"target 4-6"],
     ["AVG SALE",fmtFull(W.avgSale),BLUE,""],
     ["AVG TICKET",fmtFull(W.avgTicket),BLUE,(W.jobs!=null?numOr0(W.jobs)+" jobs":"")],
     ["SALES",fmtFull(W.sales),GOLD,W.salesIsApprox?"approx (invoice lag)":"$ sold"],

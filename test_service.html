@@ -1513,13 +1513,21 @@ function ServiceDash(){
               </React.Fragment>);})()}
           </div>
           {card("Service Revenue — month over month",<span><span style={{color:"#5BA4E6"}}>▬</span> completed revenue&nbsp;<span style={{color:"#F5B324"}}>▬</span> opp conversion % · *Jul partial</span>,momChart())}
-          {card("Memberships & IAQ by Month","memberships sold + IAQ revenue per month",
+          {card("Memberships Sold by Month","SAM agreements closed per month · *current month partial",
             <div style={{display:"flex",alignItems:"flex-end",gap:12,height:170,marginTop:12}}>
               {(()=>{ const mx=Math.max(1,...monthly.map(m=>m.memb)); return monthly.map((m,i)=>{const last=i===monthly.length-1;
                 return (<div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-end",height:"100%"}}>
-                  <div style={{fontSize:9,fontWeight:800,color:"#22c55e",marginBottom:2}}>{m.memb}</div>
-                  <div style={{fontSize:8,color:"#4ADE80",marginBottom:3}}>{fmt(m.iaq)}</div>
-                  <div style={{width:"56%",height:Math.max(3,m.memb/mx*120)+"px",borderRadius:"5px 5px 0 0",background:last?"linear-gradient(180deg,#F5B324,#c98f14)":"linear-gradient(180deg,#22c55e,#12833f)"}}/>
+                  <div style={{fontSize:10,fontWeight:800,color:"#22c55e",marginBottom:3}}>{m.memb}</div>
+                  <div style={{width:"56%",height:Math.max(3,m.memb/mx*130)+"px",borderRadius:"5px 5px 0 0",background:last?"linear-gradient(180deg,#F5B324,#c98f14)":"linear-gradient(180deg,#22c55e,#12833f)"}}/>
+                  <div style={{fontSize:8.5,color:last?"#F5B324":"#7089ab",marginTop:6}}>{m.month.slice(0,3)}{last?"*":""}</div>
+                </div>);});})()}
+            </div>)}
+          {card("IAQ Revenue by Month","indoor air quality $ sold per month · *current month partial",
+            <div style={{display:"flex",alignItems:"flex-end",gap:12,height:170,marginTop:12}}>
+              {(()=>{ const mx=Math.max(1,...monthly.map(m=>m.iaq||0)); return monthly.map((m,i)=>{const last=i===monthly.length-1;
+                return (<div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-end",height:"100%"}}>
+                  <div style={{fontSize:9,fontWeight:800,color:"#5BA4E6",marginBottom:3}}>{fmt(m.iaq)}</div>
+                  <div style={{width:"56%",height:Math.max(3,(m.iaq||0)/mx*130)+"px",borderRadius:"5px 5px 0 0",background:last?"linear-gradient(180deg,#F5B324,#c98f14)":"linear-gradient(180deg,#5BA4E6,#2a5e94)"}}/>
                   <div style={{fontSize:8.5,color:last?"#F5B324":"#7089ab",marginTop:6}}>{m.month.slice(0,3)}{last?"*":""}</div>
                 </div>);});})()}
             </div>)}

@@ -204,7 +204,7 @@ tr.hov-row:hover td{background:#1a2540 !important;}
 .lf2-signedchip{font-size:8.5px;font-weight:800;letter-spacing:.06em;color:#3a2c05;background:linear-gradient(90deg,#F5B324,#ffe08a);border-radius:4px;padding:2px 7px;white-space:nowrap;margin-left:6px}
 .lf2-headalert{background:rgba(230,57,70,.14);border:1px solid #E6394677;color:#ff8c93;border-radius:6px;padding:5px 12px;font-weight:800;font-size:10px;letter-spacing:.08em;animation:lf2Blink 1.2s infinite}
 @keyframes lf2AlarmFlash{0%,100%{background:rgba(230,57,70,0)}25%,75%{background:rgba(230,57,70,.38)}50%{background:rgba(230,57,70,.12)}}
-.lf2-alarm-overlay{position:fixed;inset:0;z-index:9999;pointer-events:none;animation:lf2AlarmFlash .85s ease-in-out 3}
+.lf2-alarm-overlay{position:fixed;inset:0;z-index:9999;pointer-events:none;animation:lf2AlarmFlash .85s ease-in-out 5}
 .lf2-soundtoggle{background:rgba(91,164,230,.08);border:1px solid #5BA4E633;border-radius:6px;color:#9fb9d8;padding:4px 9px;font-size:12px;cursor:pointer;line-height:1}
 .lf2-cardtop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .lf2-tech{font-size:11.5px;font-weight:700;letter-spacing:.08em;color:#f5c518;text-transform:uppercase;line-height:1.25}
@@ -322,16 +322,21 @@ function ServiceLiveTab(){
       if(!audioCtxRef.current) audioCtxRef.current=new AC();
       const ctx=audioCtxRef.current;
       if(ctx.state==="suspended"){ ctx.resume().catch(()=>{}); }
-      const t0=ctx.currentTime;
-      for(let i=0;i<3;i++){
-        const o=ctx.createOscillator(), g=ctx.createGain();
-        o.type="square";
-        o.frequency.setValueAtTime(880,t0+i*0.5); o.frequency.setValueAtTime(660,t0+i*0.5+0.25);
-        g.gain.setValueAtTime(0.0001,t0+i*0.5);
-        g.gain.exponentialRampToValueAtTime(0.28,t0+i*0.5+0.03);
-        g.gain.exponentialRampToValueAtTime(0.0001,t0+i*0.5+0.45);
-        o.connect(g); g.connect(ctx.destination); o.start(t0+i*0.5); o.stop(t0+i*0.5+0.5);
+      // tornado-siren wail: slow rise/fall sweep, loud, 3 cycles (~4s)
+      const t0=ctx.currentTime, dur=1.3, cycles=3;
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type="sawtooth";
+      for(let i=0;i<cycles;i++){
+        const s=t0+i*dur;
+        o.frequency.setValueAtTime(400,s);
+        o.frequency.linearRampToValueAtTime(820,s+dur*0.55);
+        o.frequency.linearRampToValueAtTime(400,s+dur);
       }
+      g.gain.setValueAtTime(0.0001,t0);
+      g.gain.exponentialRampToValueAtTime(0.6,t0+0.08);
+      g.gain.setValueAtTime(0.6,t0+cycles*dur-0.15);
+      g.gain.exponentialRampToValueAtTime(0.0001,t0+cycles*dur);
+      o.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0+cycles*dur+0.05);
     }catch(e){}
   };
 
@@ -349,7 +354,7 @@ function ServiceLiveTab(){
         seenAlertKeysRef.current=nowAlertKeys;
         if(newKeys.length){
           setAlarmFlash(true);
-          setTimeout(()=>setAlarmFlash(false),2700);
+          setTimeout(()=>setAlarmFlash(false),4400);
           playAlarm();
         }
         const nowSignedIds=new Set(jobsArr.filter(j=>{

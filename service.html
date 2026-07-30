@@ -555,7 +555,7 @@ function ServiceLiveTab(){
           </div>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-          {alarmItems.length>0 && <div className="lf2-alarm-takeover">
+          {alarmItems.length>0 && ReactDOM.createPortal(<div className="lf2-alarm-takeover">
             <div className="lf2-alarm-title">🚨 JOB STANDARDS VIOLATION 🚨</div>
             <div className="lf2-alarm-list">
               {alarmItems.map(it=>(<div className="lf2-alarm-item" key={it.key}>
@@ -565,7 +565,7 @@ function ServiceLiveTab(){
               </div>))}
             </div>
             <button className="lf2-alarm-exit" onClick={()=>{ setAlarmItems([]); stopAlarmLoop(); }}>✕ ACKNOWLEDGE — STOP ALARM</button>
-          </div>}
+          </div>,document.body)}
           <button className="lf2-soundtoggle" title="alert sound on/off" onClick={()=>{const v=!soundOn; setSoundOn(v); soundOnRef.current=v; if(v){ playAlarm(); }}}>{soundOn?"🔔":"🔕"}</button>
           {lf && lf.siroToday && <div className="lf2-recchip" style={{padding:"5px 12px"}}>🎙 {lf.siroToday.recorded}/{lf.siroToday.of} RECORDING TODAY</div>}
           {redAlertCount>0 && <div className="lf2-headalert">🔴 {redAlertCount} ALERT{redAlertCount===1?"":"S"}</div>}

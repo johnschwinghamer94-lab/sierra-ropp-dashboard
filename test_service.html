@@ -205,6 +205,7 @@ tr.hov-row:hover td{background:#1a2540 !important;}
 .lf2-headalert{background:rgba(230,57,70,.14);border:1px solid #E6394677;color:#ff8c93;border-radius:6px;padding:5px 12px;font-weight:800;font-size:10px;letter-spacing:.08em;animation:lf2Blink 1.2s infinite}
 @keyframes lf2AlarmFlash{0%,100%{background:rgba(230,57,70,0)}25%,75%{background:rgba(230,57,70,.38)}50%{background:rgba(230,57,70,.12)}}
 .lf2-alarm-overlay{position:fixed;inset:0;z-index:9999;pointer-events:none;animation:lf2AlarmFlash .85s ease-in-out 5}
+.lf2-recchip{background:rgba(74,222,128,.1);border:1px solid #4ADE8055;color:#4ADE80;border-radius:6px;padding:2px 8px;font-weight:700;font-size:10px;letter-spacing:.06em}
 .lf2-soundtoggle{background:rgba(91,164,230,.08);border:1px solid #5BA4E633;border-radius:6px;color:#9fb9d8;padding:4px 9px;font-size:12px;cursor:pointer;line-height:1}
 .lf2-cardtop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .lf2-tech{font-size:11.5px;font-weight:700;letter-spacing:.08em;color:#f5c518;text-transform:uppercase;line-height:1.25}
@@ -299,6 +300,10 @@ const evalJobAlerts=(j,nowMin)=>{
     if(!signedTotal){
       alerts.push({code:"zero",label:"$0 TICKET"});
     }
+  }
+  // 5. NOT RECORDING — Siro data available, no recording for this visit, job well underway
+  if(j.siro && !j.siro.rec && (isDone || (elapsedMin!=null && elapsedMin>=45))){
+    alerts.push({code:"norec",label:"🎙 NOT RECORDING"});
   }
   return {alerts,isAlert:alerts.length>0,isSigned};
 };
@@ -495,6 +500,7 @@ function ServiceLiveTab(){
             {optsCount>0 && <span style={{color:"#f5c518",fontWeight:700}}>{optsCount} opt · {fmt$(optsTotal)}</span>}
             {sold && <span style={{color:"#4ade80",fontWeight:800,border:"1px solid #4ade8088",background:"rgba(74,222,128,.12)",borderRadius:4,padding:"2px 7px"}}>{fmt$(soldTotal)}</span>}
             {sold && <span className="lf2-signedchip">✦ SIGNED</span>}
+            {j.siro && j.siro.rec && <span className="lf2-recchip">🎙 REC</span>}
             {j.membershipSold && <span title="Membership sold">🎟</span>}
           </span>
         </div>
@@ -518,6 +524,7 @@ function ServiceLiveTab(){
         <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
           {alarmFlash && <div className="lf2-alarm-overlay"/>}
           <button className="lf2-soundtoggle" title="alert sound on/off" onClick={()=>{const v=!soundOn; setSoundOn(v); soundOnRef.current=v; if(v){ playAlarm(); }}}>{soundOn?"🔔":"🔕"}</button>
+          {lf && lf.siroToday && <div className="lf2-recchip" style={{padding:"5px 12px"}}>🎙 {lf.siroToday.recorded}/{lf.siroToday.of} RECORDING TODAY</div>}
           {redAlertCount>0 && <div className="lf2-headalert">🔴 {redAlertCount} ALERT{redAlertCount===1?"":"S"}</div>}
           {stale
             ? <div className="lf2-chip-stale">⚠ UPDATED {ageMin}M AGO · STAGING SNAPSHOT</div>

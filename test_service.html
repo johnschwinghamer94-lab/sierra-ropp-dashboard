@@ -271,6 +271,12 @@ const parseStageTimeMinutes=str=>{
   if(ap==="a" && h===12) h=0;
   return h*60+mins;
 };
+// acknowledged-violation store: once ACKNOWLEDGE is pressed, those violations
+// never alarm again today (survives kiosk reloads via localStorage)
+const LF2_ACK_KEY="lf2AckKeys";
+const lf2TodayStr=()=>new Date().toLocaleDateString("en-US",{timeZone:"America/Los_Angeles"});
+const lf2LoadAck=()=>{ try{ const o=JSON.parse(localStorage.getItem(LF2_ACK_KEY)||"null"); if(o&&o.d===lf2TodayStr()) return new Set(o.k); }catch(e){} return new Set(); };
+const lf2SaveAck=(set)=>{ try{ localStorage.setItem(LF2_ACK_KEY,JSON.stringify({d:lf2TodayStr(),k:[...set]})); }catch(e){} };
 // evaluate John's red-alert rules for one job card; returns {alerts:[{code,label}], isAlert}
 const evalJobAlerts=(j,nowMin)=>{
   const st=j.stages||{};
@@ -330,6 +336,8 @@ function ServiceLiveTab(){
   const seenSignedRef=React.useRef(null); // null until first data arrival (seed, no flash)
   const [flashIds,setFlashIds]=React.useState({}); // jobId -> true while gold flash animation plays
   const seenAlertKeysRef=React.useRef(null); // null until first data; first load alarms on existing violations
+  const ackRef=React.useRef(null);
+  if(ackRef.current==null) ackRef.current=lf2LoadAck();
   const [alarmItems,setAlarmItems]=React.useState([]); // active takeover violations; only EXIT clears
   const sirenTimerRef=React.useRef(null);
   const sirenNodesRef=React.useRef([]);
@@ -383,7 +391,8 @@ function ServiceLiveTab(){
         const nowAlertKeys=new Set();
         jobsArr.forEach(j=>{ evalJobAlerts(j,nmA).alerts.forEach(a=>nowAlertKeys.add(j.jobId+":"+a.code)); });
         const prevKeys=seenAlertKeysRef.current;
-        const newKeys=prevKeys==null?[...nowAlertKeys]:[...nowAlertKeys].filter(k=>!prevKeys.has(k));
+        const ack=ackRef.current;
+        const newKeys=[...nowAlertKeys].filter(k=>!(prevKeys&&prevKeys.has(k)) && !ack.has(k));
         seenAlertKeysRef.current=nowAlertKeys;
         if(newKeys.length){
           const byJob={};
@@ -569,7 +578,7 @@ function ServiceLiveTab(){
                 <div className="lf2-alarm-labels">{it.labels.map((l,i)=>(<span key={i} className="lf2-alarm-label">{l}</span>))}</div>
               </div>))}
             </div>
-            <button className="lf2-alarm-exit" onClick={()=>{ setAlarmItems([]); stopAlarmLoop(); }}>✕ ACKNOWLEDGE — STOP ALARM</button>
+            <button className="lf2-alarm-exit" onClick={()=>{ const ack=ackRef.current; if(seenAlertKeysRef.current){ seenAlertKeysRef.current.forEach(k=>ack.add(k)); } lf2SaveAck(ack); setAlarmItems([]); stopAlarmLoop(); }}>✕ ACKNOWLEDGE — STOP ALARM</button>
           </div>,document.body)}
           {lf && lf.siroToday && <div className="lf2-recchip" style={{padding:"5px 12px"}}>🎙 {lf.siroToday.recorded}/{lf.siroToday.of} RECORDING TODAY</div>}
           {redAlertCount>0 && <div className="lf2-headalert">🔴 {redAlertCount} ALERT{redAlertCount===1?"":"S"}</div>}

@@ -579,7 +579,7 @@ function ServiceLiveTab(){
               </div>))}
             </div>
             <button className="lf2-alarm-exit" onClick={()=>{ const ack=ackRef.current; if(seenAlertKeysRef.current){ seenAlertKeysRef.current.forEach(k=>ack.add(k)); } lf2SaveAck(ack); setAlarmItems([]); stopAlarmLoop(); }}>✕ ACKNOWLEDGE — STOP ALARM</button>
-          </div>,document.body)}
+          </div>,document.getElementById("root"))}
           {lf && lf.siroToday && <div className="lf2-recchip" style={{padding:"5px 12px"}}>🎙 {lf.siroToday.recorded}/{lf.siroToday.of} RECORDING TODAY</div>}
           {redAlertCount>0 && <div className="lf2-headalert">🔴 {redAlertCount} ALERT{redAlertCount===1?"":"S"}</div>}
           {stale

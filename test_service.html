@@ -166,6 +166,59 @@ tr.hov-row:hover td{background:#1a2540 !important;}
 .liftCard{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;}
 .liftCard:hover{transform:translateY(-3px);box-shadow:0 10px 34px rgba(0,0,0,.45);border-color:#2E78C7 !important;}
 .gridbg{background-image:linear-gradient(rgba(46,120,199,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(46,120,199,.05) 1px,transparent 1px);background-size:34px 34px;}
+/* ═══ LIVE FEED TAB (borrowed lf2- visual language from index.html) ══════ */
+.lf2-wrap{font-family:'Chakra Petch','Inter',sans-serif;min-height:70vh;background:radial-gradient(ellipse 80% 50% at 50% -10%,#122052 0%,#0a1024 55%,#070b1a 100%);padding:0 0 44px}
+.lf2-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 22px;background:linear-gradient(90deg,#0b1230ee,#101b45ee);border-bottom:1px solid #22307a}
+.lf2-logo{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#f5c518,#c79a0a);display:flex;align-items:center;justify-content:center;font-weight:900;color:#081020;font-size:20px;box-shadow:0 0 14px #f5c51833}
+.lf2-title{font-size:15px;font-weight:700;letter-spacing:.14em;color:#fff;text-transform:uppercase}
+.lf2-subtl{font-size:9px;letter-spacing:.3em;color:#f5c518;margin-top:2px;font-weight:600;text-transform:uppercase}
+.lf2-chip-live{display:flex;align-items:center;gap:7px;background:#0d2b18;border:1px solid #35d07f66;border-radius:6px;padding:5px 13px;color:#4ade80;font-weight:700;font-size:10px;letter-spacing:.2em}
+.lf2-chip-night{background:#101b30;border:1px solid #2E78C755;border-radius:6px;padding:5px 13px;color:#7fb3e8;font-weight:700;font-size:10px;letter-spacing:.14em}
+.lf2-chip-stale{background:#2a0d12;border:1px solid #e63946;border-radius:6px;padding:5px 13px;color:#ff7b86;font-weight:700;font-size:10px;letter-spacing:.14em;animation:lf2Blink 1.2s infinite}
+.lf2-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:lf2Pulse 1.6s infinite}
+@keyframes lf2Pulse{0%{box-shadow:0 0 0 0 rgba(74,222,128,.6)}70%{box-shadow:0 0 0 8px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+@keyframes lf2Blink{50%{opacity:.45}}
+.lf2-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;padding:16px 22px 4px}
+.lf2-kpi{background:linear-gradient(180deg,#0d1638,#0a1130);border:1px solid #22307a;border-radius:10px;padding:12px 18px;box-shadow:inset 0 0 26px #101d5240}
+.lf2-kpi .l{font-size:9px;letter-spacing:.24em;color:#8fa3d9;font-weight:600;text-transform:uppercase}
+.lf2-kpi .v{font-size:27px;font-weight:700;color:#fff;margin-top:3px}
+.lf2-kpi .s{font-size:9.5px;color:#5d6fa8;margin-top:2px;letter-spacing:.08em}
+.lf2-bus{display:flex;gap:8px;padding:12px 22px 0;flex-wrap:wrap}
+.lf2-bu{font-size:9.5px;font-weight:700;letter-spacing:.16em;padding:4px 14px;border-radius:5px;border:1px solid #22307a;color:#8fa3d9;cursor:pointer;background:#0a1130;text-transform:uppercase}
+.lf2-bu.on{border-color:#f5c518;color:#f5c518;background:#f5c51811;box-shadow:0 0 10px #f5c51822}
+.lf2-main{display:flex;gap:14px;padding:14px 22px;align-items:flex-start;flex-wrap:wrap}
+.lf2-grid{flex:2.6 1 560px;min-width:300px;display:grid;grid-template-columns:repeat(auto-fill,minmax(295px,1fr));gap:12px}
+.lf2-card{background:linear-gradient(180deg,#0e1a45,#0a1233);border:1px solid #243380;border-radius:10px;padding:11px 13px 10px;box-shadow:0 0 16px #060b2088;cursor:pointer;transition:transform .12s,border-color .12s;position:relative;overflow:hidden}
+.lf2-card::after{content:"";position:absolute;top:0;left:-85%;width:60%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.07),transparent);transform:skewX(-18deg);transition:left .55s ease;pointer-events:none;}
+.lf2-card:hover::after{left:125%;}
+.lf2-card:hover{transform:translateY(-2px);border-color:#f5c518aa}
+.lf2-card.working{border-color:#f5c51866;box-shadow:0 0 18px #f5c51815}
+.lf2-card.done{opacity:.78}
+.lf2-cardtop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.lf2-tech{font-size:11.5px;font-weight:700;letter-spacing:.08em;color:#f5c518;text-transform:uppercase;line-height:1.25}
+.lf2-cust{font-size:10px;font-weight:600;color:#e7ecfa;text-transform:uppercase;margin-top:2px;letter-spacing:.04em}
+.lf2-stat{font-size:9px;color:#8fa3d9;margin-top:3px;letter-spacing:.06em}
+.lf2-buchip{font-size:8px;font-weight:700;letter-spacing:.14em;border-radius:4px;padding:2px 8px;border:1px solid;white-space:nowrap;text-transform:uppercase}
+.lf2-tl{display:flex;align-items:flex-start;margin:12px 0 2px}
+.lf2-node{display:flex;flex-direction:column;align-items:center;flex:0 0 auto;width:50px}
+.lf2-ring{width:21px;height:21px;border-radius:50%;border:2px solid #2a3a85;display:flex;align-items:center;justify-content:center;font-size:9px;background:#0a1233;color:#42549c}
+.lf2-ring.lit{border-color:#f5c518;color:#f5c518;box-shadow:0 0 9px #f5c51866}
+.lf2-ring.green{border-color:#4ade80;color:#4ade80;box-shadow:0 0 9px #4ade8066}
+.lf2-seg{flex:1 1 6px;height:2px;background:#22307a;margin-top:10px}
+.lf2-seg.lit{background:linear-gradient(90deg,#f5c518cc,#f5c51866);box-shadow:0 0 6px #f5c51844}
+.lf2-nlab{font-size:6.8px;letter-spacing:.08em;color:#5d6fa8;margin-top:4px;font-weight:700;text-transform:uppercase;text-align:center}
+.lf2-nsub{font-size:8px;color:#9fb3d9;margin-top:1px;font-weight:600}
+.lf2-cardbot{display:flex;justify-content:space-between;align-items:center;margin-top:9px;font-size:9.5px;letter-spacing:.04em;min-height:14px}
+.lf2-warnbadge{color:#ff7b86;font-weight:700;font-size:9px;letter-spacing:.06em}
+.lf2-feed{flex:1 1 285px;min-width:275px;background:linear-gradient(180deg,#0d1638,#0a1130);border:1px solid #22307a;border-radius:10px;padding:13px 14px;max-height:680px;display:flex;flex-direction:column}
+.lf2-fh{font-size:10px;font-weight:700;letter-spacing:.24em;color:#f5c518;margin-bottom:10px;text-transform:uppercase}
+.lf2-evs{overflow-y:auto;display:flex;flex-direction:column;gap:7px}
+.lf2-ev{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-radius:7px;border:1px solid transparent}
+.lf2-ev.first{background:#13214f;border-color:#2a3a85}
+.lf2-ev .ico{font-size:12px;line-height:15px}
+.lf2-ev .x{font-size:10.5px;font-weight:600;line-height:1.35}
+.lf2-ev .t{font-size:8.5px;color:#5d6fa8;margin-top:1px}
+.lf2-empty{background:#0d1638;border:1px dashed #22307a;border-radius:10px;padding:34px 20px;text-align:center;color:#5d6fa8;font-size:12px;letter-spacing:.06em;grid-column:1/-1}
 </style>
 </head>
 <body>
@@ -4428,6 +4481,188 @@ function CASalesDash(){
 
 
 
+// ═══ ⚡ LIVE FEED · Service dept real-time job board (borrows lf2- visual language from index.html) ══════
+function ServiceLiveTab(){
+  const [lf,setLf]=React.useState(null);
+  const [err,setErr]=React.useState(false);
+  const [teamFilter,setTeamFilter]=React.useState("ALL");
+  const [now,setNow]=React.useState(Date.now());
+
+  const load=()=>{
+    fetch("servicefeed.json?_="+Date.now())
+      .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
+      .then(d=>{ setLf(d); setErr(false); })
+      .catch(()=>setErr(true));
+  };
+  React.useEffect(()=>{ load(); const id=setInterval(load,45000); const t=setInterval(()=>setNow(Date.now()),30000); return ()=>{clearInterval(id);clearInterval(t);}; },[]);
+
+  if(!lf){
+    return (<div className="lf2-wrap riseIn" style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"50vh"}}>
+      <div style={{color:"#8fa3d9",fontSize:12,letterSpacing:"0.1em"}}>{err?"⚠ COULD NOT LOAD servicefeed.json":"◆ LOADING LIVE FEED…"}</div>
+    </div>);
+  }
+
+  const K=lf.kpis||{};
+  const jobs=lf.jobs||[];
+  const activity=lf.activity||[];
+  const teamsList=["ALL","2A","2B"];
+  const fmt$=v=>"$"+Math.round(v||0).toLocaleString();
+
+  // staleness check
+  const updatedMs = lf.generatedMs || (lf.updated?Date.parse(lf.updated):null) || (lf.generated?Date.parse(lf.generated):null);
+  const ageMin = updatedMs ? Math.round((now-updatedMs)/60000) : null;
+  const stale = ageMin!=null && ageMin>10;
+
+  // stage node values come in 3 shapes: null (not reached), "✓" (reached, no time), a
+  // plain time string ("9:59a", e.g. "done"), or an object ({t, n?, total?} for
+  // options/signed/leadSet). txt() safely reduces any of these to a renderable string.
+  const txt=v=>{
+    if(v==null) return null;
+    if(typeof v==="object") return v.t!=null?v.t:null;
+    return v;
+  };
+  const STAGE_DEFS=[
+    ["dispatched","DISP","🚚"],
+    ["onsite","SITE","📍"],
+    ["options","OPT","📋"],
+    ["signed","SIGN","✍️"],
+    ["done","DONE","✅"],
+  ];
+  const isActive=j=>j.status!=="Done";
+  const latestStageMs=j=>{
+    const st=j.stages||{}; let best=0;
+    STAGE_DEFS.forEach(([k])=>{ const tv=txt(st[k]); if(tv && tv!=="✓"){ const p=Date.parse((lf.date||"")+" "+tv); if(!isNaN(p) && p>best) best=p; } });
+    return best;
+  };
+  const filtered=jobs.filter(j=>teamFilter==="ALL"||j.team===teamFilter);
+  const sorted=[...filtered].sort((a,b)=>{
+    const aA=isActive(a)?1:0, bA=isActive(b)?1:0;
+    if(aA!==bA) return bA-aA;
+    return latestStageMs(b)-latestStageMs(a);
+  });
+
+  const buCol=bu=>{
+    if(!bu) return "#8fa3d9";
+    const s=bu.toLowerCase();
+    if(s.includes("maint")) return "#4ade80";
+    if(s.includes("repair")) return "#f5c518";
+    if(s.includes("install")) return "#5BA4E6";
+    return "#8fa3d9";
+  };
+  const buShort=bu=>{
+    if(!bu) return "SVC";
+    const parts=bu.split(" - ");
+    return (parts[1]||parts[0]||bu).slice(0,14);
+  };
+
+  const timeline=j=>{
+    const st=j.stages||{};
+    return (<div className="lf2-tl">
+      {STAGE_DEFS.map(([k,lab,icon],i)=>{
+        const v=st[k];
+        const lit=v!=null;
+        const sub=txt(v);
+        return (<React.Fragment key={k}>
+          <div className="lf2-node">
+            <div className={"lf2-ring"+(lit?(k==="done"?" green":" lit"):"")}>{icon}</div>
+            <div className="lf2-nlab">{lab}</div>
+            <div className="lf2-nsub" style={k==="done"&&lit?{color:"#4ade80"}:null}>{lit?(sub||"✓"):"–"}</div>
+          </div>
+          {i<STAGE_DEFS.length-1 && <div className={"lf2-seg"+(lit?" lit":"")}/>}
+        </React.Fragment>);
+      })}
+    </div>);
+  };
+
+  const jobCard=j=>{
+    const st=j.stages||{};
+    const optsNode=st.options; // {t,n,total} once options have been left
+    const signedNode=st.signed; // {t,total} once the job is signed/sold
+    const optsCount=(optsNode&&typeof optsNode==="object")?(optsNode.n||0):0;
+    const optsTotal=(optsNode&&typeof optsNode==="object")?(optsNode.total||0):0;
+    const sold=!!(signedNode&&typeof signedNode==="object");
+    const soldTotal=sold?(signedNode.total||0):0;
+    const kls="lf2-card"+(j.status==="Working"||isActive(j)?" working":"")+(j.status==="Done"?" done":"");
+    return (
+      <div key={j.jobId} className={kls} onClick={()=>window.open("https://go.servicetitan.com/#/Job/Index/"+j.jobId,"_blank","noopener")}>
+        <div className="lf2-cardtop">
+          <div>
+            <div className="lf2-tech">{j.tech||"Unassigned"}{j.team?<span style={{color:"#8fa3d9",fontWeight:700,fontSize:9}}> · {j.team}</span>:null}</div>
+            <div className="lf2-cust">{j.customer}</div>
+            <div className="lf2-stat">{j.status||""}{j.jobType?" · "+j.jobType:""}</div>
+          </div>
+          <span className="lf2-buchip" style={{color:buCol(j.bu),borderColor:buCol(j.bu)+"77"}}>{buShort(j.bu)}</span>
+        </div>
+        {timeline(j)}
+        <div className="lf2-cardbot">
+          <span style={{color:"#8fa3d9"}}>{j.photos!=null?("📷 "+j.photos+"/30"+((j.status==="Done"&&j.photos<30)?" ⚠":"")):""}</span>
+          <span style={{display:"flex",gap:6,alignItems:"center"}}>
+            {optsCount>0 && <span style={{color:"#f5c518",fontWeight:700}}>{optsCount} opt · {fmt$(optsTotal)}</span>}
+            {sold && <span style={{color:"#4ade80",fontWeight:800,border:"1px solid #4ade8088",background:"rgba(74,222,128,.12)",borderRadius:4,padding:"2px 7px"}}>{fmt$(soldTotal)}</span>}
+            {j.membershipSold && <span title="Membership sold">🎟</span>}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="lf2-wrap riseIn">
+      <div className="lf2-head">
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <div className="lf2-logo">S</div>
+          <div>
+            <div className="lf2-title">Sierra Air — Service Live Feed</div>
+            <div className="lf2-subtl">{lf.day||""} {lf.date?"· "+lf.date:""}</div>
+          </div>
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+          {stale
+            ? <div className="lf2-chip-stale">⚠ UPDATED {ageMin}M AGO · STAGING SNAPSHOT</div>
+            : <div className="lf2-chip-live"><span className="lf2-dot"/>LIVE · updated {ageMin!=null?ageMin+"m ago":"—"}</div>}
+        </div>
+      </div>
+
+      <div className="lf2-kpis">
+        <div className="lf2-kpi"><div className="l">JOBS TODAY</div><div className="v">{K.jobsToday||0}</div><div className="s">{jobs.filter(j=>j.status==="Done").length} completed</div></div>
+        <div className="lf2-kpi"><div className="l">ON SITE NOW</div><div className="v" style={{color:"#4ade80"}}>{K.onSiteNow||0}</div><div className="s">crews active</div></div>
+        <div className="lf2-kpi"><div className="l">OPTIONS IN PLAY</div><div className="v" style={{color:"#f5c518"}}>{fmt$(K.optionsInPlayTotal)}</div><div className="s">{K.optionsInPlayCount||0} options</div></div>
+        <div className="lf2-kpi"><div className="l">SIGNED TODAY</div><div className="v" style={{color:"#4ade80"}}>{fmt$(K.signedTotal)}</div><div className="s">{K.signedJobs||0} jobs signed</div></div>
+        <div className="lf2-kpi"><div className="l">LEADS SET</div><div className="v" style={{color:"#a78bfa"}}>{K.leadsSet||0}</div><div className="s">turnovers</div></div>
+        <div className="lf2-kpi"><div className="l">MEMBERSHIPS SOLD</div><div className="v" style={{color:"#5BA4E6"}}>{K.membershipsSold||0}</div><div className="s">today</div></div>
+      </div>
+
+      <div className="lf2-bus">
+        {teamsList.map(t=>(
+          <button key={t} className={"lf2-bu"+(teamFilter===t?" on":"")} onClick={()=>setTeamFilter(t)}>{t}</button>
+        ))}
+      </div>
+
+      <div className="lf2-main">
+        <div className="lf2-grid">
+          {sorted.length ? sorted.map(jobCard) : <div className="lf2-empty">No jobs match this filter.</div>}
+        </div>
+        <div className="lf2-feed">
+          <div className="lf2-fh">◆ Live Activity</div>
+          {activity.length ? (
+            <div className="lf2-evs">
+              {activity.map((ev,i)=>(
+                <div key={i} className={"lf2-ev"+(i===0?" first":"")}>
+                  <span className="ico">{ev.i}</span>
+                  <div>
+                    <div className="x" style={ev.c?{color:ev.c}:null}>{ev.x}</div>
+                    <div className="t">{ev.t}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : <div style={{color:"#5d6fa8",fontSize:11,padding:"10px 4px"}}>No activity yet.</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ═══ HVAC SERVICE · standalone command deck (Field Conversion + IAQ reports) ══════
 const SVC=(typeof SERVICE_DATA!=="undefined")?SERVICE_DATA:{techs:[],dept:{},teams:[],iaqMonthly:[],months:[],dateRange:"",source:"",iaqTotal:0,elapsedFrac:0.5};
 function ServiceDash(){
@@ -4483,6 +4718,7 @@ function ServiceDash(){
       </div>))}
     </div>);};
   const TABS=[
+    {id:"live",icon:"⚡",label:"LIVE",sub:"Real-time jobs"},
     {id:"overview",icon:"🛠",label:"OVERVIEW",sub:"Dept KPIs"},
     {id:"trend",icon:"📈",label:"TREND",sub:"Month over month"},
     {id:"board",icon:"🏆",label:"LEADERBOARD",sub:"All "+techs.length},
@@ -4555,6 +4791,7 @@ function ServiceDash(){
       </div>
 
       <div className="tab-fade" key={tab}>
+        {tab==="live" && <ServiceLiveTab/>}
         {tab==="overview" && (<React.Fragment>
           <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",rowGap:6,padding:"9px 24px",background:"linear-gradient(90deg,#0a1524,#0e2033)",borderBottom:"1px solid #1e3050"}}>
             {[{l:"SERVICE REV",v:fmt(dept.rev),c:BLUE},{l:"OPP CONV",v:dept.conv+"%",c:GOLD},{l:"MEMBERSHIPS",v:dept.memb,c:GREEN},{l:"IAQ SOLD",v:fmt(iaqTot),c:"#4ADE80"},{l:"LEADS SET",v:dept.leads,c:"#a78bfa"},{l:"TOP TECH",v:top.name.split(" ")[0]+" "+fmt(top.rev),c:BLUE}].map((t,i)=>(<React.Fragment key={i}>

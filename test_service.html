@@ -382,7 +382,7 @@ function ServiceLiveTab(){
   };
 
   const load=()=>{
-    fetch("servicefeed.json?_="+Date.now())
+    fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/servicefeed.json?_="+Date.now())
       .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
       .then(d=>{
         const jobsArr=d.jobs||[];
@@ -432,7 +432,7 @@ function ServiceLiveTab(){
       })
       .catch(()=>setErr(true));
   };
-  React.useEffect(()=>{ load(); const id=setInterval(load,45000); const t=setInterval(()=>setNow(Date.now()),30000); return ()=>{clearInterval(id);clearInterval(t);}; },[]);
+  React.useEffect(()=>{ load(); const id=setInterval(load,20000); const t=setInterval(()=>setNow(Date.now()),15000); return ()=>{clearInterval(id);clearInterval(t);}; },[]);
 
   if(!lf){
     return (<div className="lf2-wrap riseIn" style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"50vh"}}>
@@ -636,12 +636,12 @@ function ServicePulseTab({onClassic}){
   const [now,setNow]=React.useState(Date.now());
 
   const load=()=>{
-    fetch("servicedata.json?_="+Date.now())
+    fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/servicedata.json?_="+Date.now())
       .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
       .then(j=>{ setD(j); setErr(false); })
       .catch(()=>setErr(true));
   };
-  React.useEffect(()=>{ load(); const id=setInterval(load,300000); const t=setInterval(()=>setNow(Date.now()),60000); return ()=>{clearInterval(id);clearInterval(t);}; },[]);
+  React.useEffect(()=>{ load(); const id=setInterval(load,120000); const t=setInterval(()=>setNow(Date.now()),60000); return ()=>{clearInterval(id);clearInterval(t);}; },[]);
 
   if(!d){
     return (<div className="lf2-wrap riseIn" style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"50vh"}}>
@@ -833,12 +833,12 @@ function ServiceWeeklyTab(){
   const [selDay,setSelDay]=React.useState("total");
 
   const load=()=>{
-    fetch("servicedata.json?_="+Date.now())
+    fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/servicedata.json?_="+Date.now())
       .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
       .then(j=>{ setD(j); setErr(false); })
       .catch(()=>setErr(true));
   };
-  React.useEffect(()=>{ load(); const id=setInterval(load,300000); return ()=>clearInterval(id); },[]);
+  React.useEffect(()=>{ load(); const id=setInterval(load,120000); return ()=>clearInterval(id); },[]);
 
   if(!d){
     return (<div className="lf2-wrap riseIn" style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"50vh"}}>
@@ -1053,11 +1053,11 @@ function ServiceHxhTab(){
 
   const load=()=>{
     Promise.all([
-      fetch("servicefeed.json?_="+Date.now()).then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); }),
-      fetch("servicedata.json?_="+Date.now()).then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); }),
+      fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/servicefeed.json?_="+Date.now()).then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); }),
+      fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/servicedata.json?_="+Date.now()).then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); }),
     ]).then(([f,d])=>{ setFeed(f); setData(d); setErr(false); }).catch(()=>setErr(true));
   };
-  React.useEffect(()=>{ load(); const id=setInterval(load,60000); const t=setInterval(()=>setNow(Date.now()),30000); return ()=>{clearInterval(id);clearInterval(t);}; },[]);
+  React.useEffect(()=>{ load(); const id=setInterval(load,30000); const t=setInterval(()=>setNow(Date.now()),30000); return ()=>{clearInterval(id);clearInterval(t);}; },[]);
 
   if(!feed || !data){
     return (<div className="lf2-wrap riseIn" style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"50vh"}}>

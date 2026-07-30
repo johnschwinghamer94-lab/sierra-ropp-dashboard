@@ -1492,7 +1492,7 @@ function ServiceDash(){
             {tile("OPTIONS / OPP",optAll,"#a78bfa","presented per opportunity")}
             {tile("TOTAL CONVERSION",totConvAll+"%",GOLD,"incl. non-opportunity jobs")}
           </div>
-          {card("Top Service Techs · Completed Revenue","top 12 by revenue",rankBar(techs.slice(0,12),"rev",BLUE,fmt,c=>c.conv+"% conv"))}
+          {card("Top Service Techs · Completed Revenue","all "+techs.length+" · sorted by revenue",<div style={{maxHeight:560,overflowY:"auto"}}>{rankBar([...techs].sort((a,b)=>b.rev-a.rev),"rev",BLUE,fmt,c=>c.conv+"% conv")}</div>)}
           {iaqMo.length>1 && card("IAQ Sold by Month","indoor-air-quality revenue trend · *Jul partial",iaqChart())}
         </React.Fragment>)}
 
@@ -1562,7 +1562,7 @@ function ServiceDash(){
             </div>
             {gauge("OPP CONVERSION",dept.conv,45,col(dept.conv))}
           </div>
-          {card("Opportunity Conversion by Tech","% of opportunity jobs converted · min 50 jobs",rankBar([...techs].filter(c=>c.jobs>=50).sort((a,b)=>b.conv-a.conv).slice(0,15),"conv",GOLD,v=>v+"%",c=>fmt(c.rev)))}
+          {card("Opportunity Conversion by Tech","% of opportunity jobs converted · all "+techs.length+" techs",<div style={{maxHeight:560,overflowY:"auto"}}>{rankBar([...techs].sort((a,b)=>b.conv-a.conv),"conv",GOLD,v=>v+"%",c=>fmt(c.rev))}</div>)}
         </React.Fragment>)}
 
         {tab==="memb" && (<React.Fragment>
@@ -1574,7 +1574,7 @@ function ServiceDash(){
             </div>
             {gauge("MEMBERSHIP CONV",dept.membConv,30,col((dept.membConv||0)+15))}
           </div>
-          {card("Memberships Sold by Tech","top 15 · membership conversion %",rankBar([...techs].sort((a,b)=>b.mSold-a.mSold).slice(0,15),"mSold",GREEN,v=>v,c=>c.mConv+"% conv"))}
+          {card("Memberships Sold by Tech","all "+techs.length+" techs · sorted by memberships sold · % = membership conversion",<div style={{maxHeight:560,overflowY:"auto"}}>{rankBar([...techs].sort((a,b)=>b.mSold-a.mSold),"mSold",GREEN,v=>v,c=>c.mConv+"% conv")}</div>)}
         </React.Fragment>)}
 
         {tab==="iaq" && (<React.Fragment>
@@ -1584,22 +1584,27 @@ function ServiceDash(){
             {tile("TOP IAQ TECH",(()=>{const t=[...techs].sort((a,b)=>b.iaq-a.iaq)[0];return t?t.name.split(" ")[0]:"—";})(),BLUE,(()=>{const t=[...techs].sort((a,b)=>b.iaq-a.iaq)[0];return t?fmt(t.iaq):"";})())}
           </div>
           {iaqMo.length>1 && card("IAQ Sold by Month","air-quality revenue trend · *Jul partial",iaqChart())}
-          {card("IAQ Revenue by Tech","top 15 service techs by IAQ sold",rankBar([...techs].filter(c=>c.iaq>0).sort((a,b)=>b.iaq-a.iaq).slice(0,15),"iaq","#4ADE80",fmt,c=>c.iaqN+" inv"))}
+          {card("IAQ Revenue by Tech","all "+techs.length+" service techs · sorted by IAQ sold",<div style={{maxHeight:560,overflowY:"auto"}}>{rankBar([...techs].sort((a,b)=>b.iaq-a.iaq),"iaq","#4ADE80",fmt,c=>c.iaqN+" inv")}</div>)}
         </React.Fragment>)}
 
-        {tab==="teams" && (
-          <div style={{padding:"16px 24px 0",display:"flex",gap:14,flexWrap:"wrap"}}>
-            {teams.map((t,i)=>(
+        {tab==="teams" && (<React.Fragment>
+          <div style={{padding:"14px 24px 0",fontSize:10.5,color:"#7089ab"}}>{techs.length} techs across {teams.length} teams · SILO installers appear because their parts + IAQ revenue lands in the Service BUs</div>
+          <div style={{padding:"10px 24px 0",display:"flex",gap:14,flexWrap:"wrap"}}>
+            {teams.map((t,i)=>{
+              const headerMap={"2a Service NO Sam Maintenance":"TEAM 2A — Core Service (No-SAM)","2b Service with SAM Maintenance":"TEAM 2B — Service + SAM Maintenance","1Silo":"SILO — Install Techs (service revenue)"};
+              const header=headerMap[t.team]||(t.label||t.team);
+              return (
               <div key={t.team} className="liftCard" style={{flex:"1 1 280px",background:"#131c30",border:"1px solid #1e2d47",borderTop:"3px solid "+["#5BA4E6","#F5B324","#22c55e"][i%3],borderRadius:16,padding:"16px 20px"}}>
-                <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>{t.label}</div>
+                <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>{header}</div>
                 <div style={{fontSize:9,color:"#6b7a99",marginBottom:10}}>{t.techs} techs · {(t.jobs||0).toLocaleString()} jobs</div>
                 <div style={{fontSize:34,fontWeight:900,color:["#5BA4E6","#F5B324","#22c55e"][i%3]}}>{fmt(t.rev)}</div>
                 <div style={{display:"flex",gap:16,marginTop:10,flexWrap:"wrap"}}>
                   {[["OPP CONV",t.conv+"%"],["MEMBERSHIPS",t.memb],["MEMB %",t.membConv+"%"],["LEADS SET",t.leads],["IAQ",fmt(t.iaq)]].map((s,j)=>(
                     <div key={j}><div style={{fontSize:8,color:"#6b7a99",fontWeight:700,letterSpacing:"0.08em"}}>{s[0]}</div><div style={{fontSize:15,fontWeight:800,color:"#e6eefb"}}>{s[1]}</div></div>))}
                 </div>
-              </div>))}
-          </div>)}
+              </div>);})}
+          </div>
+        </React.Fragment>)}
       </div>
 
       <div style={{fontSize:9,color:"#4a5a70",padding:"16px 24px 0",lineHeight:1.5}}>Source: {D.source} · Opp conversion = converted ÷ opportunity jobs · memberships = service agreements sold · leads set = service turnovers to ROPP · IAQ excludes ROPP &amp; parts. *current period partial.</div>

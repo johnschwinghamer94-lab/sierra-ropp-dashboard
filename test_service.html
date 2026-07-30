@@ -641,7 +641,7 @@ function ServiceLiveTab(){
             {optsCount>0 && <span style={{color:"#f5c518",fontWeight:700}}>{optsCount} opt · {fmt$(optsTotal)}</span>}
             {sold && <span style={{color:"#4ade80",fontWeight:800,border:"1px solid #4ade8088",background:"rgba(74,222,128,.12)",borderRadius:4,padding:"2px 7px"}}>{fmt$(soldTotal)}</span>}
             {sold && <span className="lf2-signedchip">✦ SIGNED</span>}
-            {j.siro && j.siro.recNow && <span className="lf2-recnow">REC ●</span>}
+            {j.siro && j.siro.recNow && j.stages && j.stages.onsite && !j.stages.done && <span className="lf2-recnow">REC ●</span>}
             {j.siro && j.siro.rec && !j.siro.recNow && <span className="lf2-recchip">🎙 REC</span>}
             {j.membershipSold && <span title="Membership sold">🎟</span>}
           </span>

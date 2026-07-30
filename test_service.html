@@ -216,7 +216,6 @@ tr.hov-row:hover td{background:#1a2540 !important;}
 .lf2-alarm-label{background:#fff;color:#C61824;border-radius:7px;padding:4px 10px;font-weight:900;font-size:13px;letter-spacing:.05em}
 .lf2-alarm-exit{background:#fff;color:#C61824;border:none;border-radius:12px;padding:14px 40px;font-size:18px;flex-shrink:0;font-weight:900;letter-spacing:.08em;cursor:pointer;box-shadow:0 6px 30px rgba(0,0,0,.45)}
 .lf2-recchip{background:rgba(74,222,128,.1);border:1px solid #4ADE8055;color:#4ADE80;border-radius:6px;padding:2px 8px;font-weight:700;font-size:10px;letter-spacing:.06em}
-.lf2-soundtoggle{background:rgba(91,164,230,.08);border:1px solid #5BA4E633;border-radius:6px;color:#9fb9d8;padding:4px 9px;font-size:12px;cursor:pointer;line-height:1}
 .lf2-cardtop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .lf2-tech{font-size:11.5px;font-weight:700;letter-spacing:.08em;color:#f5c518;text-transform:uppercase;line-height:1.25}
 .lf2-cust{font-size:10px;font-weight:600;color:#e7ecfa;text-transform:uppercase;margin-top:2px;letter-spacing:.04em}
@@ -570,7 +569,6 @@ function ServiceLiveTab(){
             </div>
             <button className="lf2-alarm-exit" onClick={()=>{ setAlarmItems([]); stopAlarmLoop(); }}>✕ ACKNOWLEDGE — STOP ALARM</button>
           </div>,document.body)}
-          <button className="lf2-soundtoggle" title="alert sound on/off" onClick={()=>{const v=!soundOn; setSoundOn(v); soundOnRef.current=v; if(v){ playAlarm(); }}}>{soundOn?"🔔":"🔕"}</button>
           {lf && lf.siroToday && <div className="lf2-recchip" style={{padding:"5px 12px"}}>🎙 {lf.siroToday.recorded}/{lf.siroToday.of} RECORDING TODAY</div>}
           {redAlertCount>0 && <div className="lf2-headalert">🔴 {redAlertCount} ALERT{redAlertCount===1?"":"S"}</div>}
           {stale

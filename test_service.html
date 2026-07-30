@@ -935,6 +935,154 @@ function ServiceWeeklyTab(){
   );
 }
 
+// ═══ HXH — HOUR BY HOUR, PACE TO WIN — servicefeed.json `hours` + servicedata.json `budget` ══════
+function ServiceHxhTab(){
+  const [feed,setFeed]=React.useState(null);
+  const [data,setData]=React.useState(null);
+  const [err,setErr]=React.useState(false);
+  const [now,setNow]=React.useState(Date.now());
+
+  const load=()=>{
+    Promise.all([
+      fetch("servicefeed.json?_="+Date.now()).then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); }),
+      fetch("servicedata.json?_="+Date.now()).then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); }),
+    ]).then(([f,d])=>{ setFeed(f); setData(d); setErr(false); }).catch(()=>setErr(true));
+  };
+  React.useEffect(()=>{ load(); const id=setInterval(load,60000); const t=setInterval(()=>setNow(Date.now()),30000); return ()=>{clearInterval(id);clearInterval(t);}; },[]);
+
+  if(!feed || !data){
+    return (<div className="lf2-wrap riseIn" style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"50vh"}}>
+      <div style={{color:"#8fa3d9",fontSize:12,letterSpacing:"0.1em"}}>{err?"⚠ COULD NOT LOAD servicefeed.json / servicedata.json":"◆ LOADING HOUR BY HOUR…"}</div>
+    </div>);
+  }
+
+  const BLUE="#5BA4E6",GREEN="#22c55e",GOLD="#F5B324",PURP="#a78bfa",RED="#E63946";
+  const numOr0=v=>(typeof v==="number"&&isFinite(v))?v:0;
+  const str=v=>(v==null?"":String(v));
+  const fmt=v=>{ v=numOr0(v); const av=Math.abs(v); return av>=1000000?"$"+(v/1000000).toFixed(2)+"M":av>=1000?"$"+Math.round(v/1000).toLocaleString()+"k":"$"+Math.round(v); };
+  const fmtFull=v=>"$"+Math.round(numOr0(v)).toLocaleString();
+
+  const K = feed.kpis || {};
+  const budget = (data.budget && typeof data.budget==="object") ? data.budget : {};
+  const preMonth = !!budget.preMonth;
+  const todayCommit = numOr0(budget.dailyRevTarget);
+  const signedTotal = numOr0(K.signedTotal);
+  const signedJobs = numOr0(K.signedJobs);
+
+  // ── PT wall-clock hour (fractional), used for pace math ──
+  let nowPT = 12;
+  try{
+    const parts = new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date(now));
+    const hh = Number((parts.find(p=>p.type==="hour")||{}).value);
+    const mm = Number((parts.find(p=>p.type==="minute")||{}).value);
+    if(!isNaN(hh)) nowPT = hh + (isNaN(mm)?0:mm/60);
+  }catch(e){}
+
+  const DAY_START=8, DAY_END=20; // 8a–8p working day
+  const elapsedFrac = Math.max(0, Math.min(1, (nowPT-DAY_START)/(DAY_END-DAY_START)));
+  const expectedByNow = todayCommit * elapsedFrac;
+  const paceDelta = signedTotal - expectedByNow;
+  const remainingHours = nowPT<DAY_START ? (DAY_END-DAY_START) : Math.max(0, DAY_END-nowPT);
+  const wonAlready = signedTotal >= todayCommit && todayCommit>0;
+  const neededPerHr = wonAlready ? 0 : (remainingHours>0 ? Math.max(0,(todayCommit-signedTotal))/remainingHours : Math.max(0,todayCommit-signedTotal));
+
+  // ── hours array: cumulative-by-end-of-hour snapshots ──
+  const hoursRaw = Array.isArray(feed.hours) ? feed.hours.slice().sort((a,b)=>numOr0(a.h)-numOr0(b.h)) : [];
+  const hasHours = hoursRaw.length>0;
+  const CHART_START=7, CHART_END=21; // 7a–9p display window
+
+  // build delta rows against the previous *present* snapshot (chart gaps allowed)
+  const deltaRows = hoursRaw.map((row,i)=>{
+    const prev = i>0 ? hoursRaw[i-1] : null;
+    return {
+      h: numOr0(row.h),
+      signedTotal: numOr0(row.signedTotal),
+      signedDelta: numOr0(row.signedTotal) - (prev?numOr0(prev.signedTotal):0),
+      doneDelta: numOr0(row.done) - (prev?numOr0(prev.done):0),
+      optsTotalDelta: numOr0(row.optsTotal) - (prev?numOr0(prev.optsTotal):0),
+    };
+  }).filter(r=>r.h>=CHART_START && r.h<=CHART_END);
+
+  const hourLabel=h=>{ const hh=((h%12)||12); return hh+(h<12?"a":"p"); };
+
+  const burnChart=()=>{
+    if(!deltaRows.length) return null;
+    const W_=780,H_=220,pL=48,pB=26,pT=18,pR=16;
+    const n=(CHART_END-CHART_START)+1;
+    const X=h=>pL+(h-CHART_START)*(W_-pL-pR)/Math.max(1,n-1);
+    const mxBar=Math.max(1,...deltaRows.map(r=>r.signedDelta));
+    const mxLine=Math.max(1,todayCommit,...deltaRows.map(r=>r.signedTotal));
+    const mx=Math.max(mxBar,mxLine);
+    const Y=v=>pT+(1-Math.min(1,Math.max(0,v)/mx))*(H_-pT-pB);
+    const bw=(W_-pL-pR)/Math.max(1,n)*0.5;
+    const linePath = deltaRows.map((r,i)=>(i?"L":"M")+X(r.h).toFixed(1)+" "+Y(r.signedTotal).toFixed(1)).join(" ");
+    return (<svg viewBox={"0 0 "+W_+" "+H_} style={{width:"100%",height:"auto",overflow:"visible",marginTop:10}}>
+      {[0,0.5,1].map((f,i)=>(<g key={i}><line x1={pL} y1={Y(mx*f)} x2={W_-pR} y2={Y(mx*f)} stroke="#1e2d47"/><text x={pL-5} y={Y(mx*f)+3} fontSize="8" fill="#4a5a70" textAnchor="end">{fmt(mx*f)}</text></g>))}
+      {todayCommit>0 && <line x1={pL} y1={Y(todayCommit)} x2={W_-pR} y2={Y(todayCommit)} stroke={GOLD} strokeWidth="1.6" strokeDasharray="5 4"/>}
+      {todayCommit>0 && <text x={W_-pR} y={Y(todayCommit)-5} fontSize="8" fill={GOLD} textAnchor="end">daily commit {fmt(todayCommit)}</text>}
+      {deltaRows.map((r,i)=>(<g key={i}>
+        <rect x={X(r.h)-bw/2} y={Y(r.signedDelta)} width={bw} height={(H_-pB)-Y(r.signedDelta)} rx="3" fill="#2E78C7" opacity={0.85}/>
+        {r.signedDelta>0 && <text x={X(r.h)} y={Y(r.signedDelta)-5} fontSize="7.5" fontWeight="700" fill={BLUE} textAnchor="middle">{fmt(r.signedDelta)}</text>}
+      </g>))}
+      <path d={linePath} fill="none" stroke={"#4ADE80"} strokeWidth="2.4"/>
+      {deltaRows.map((r,i)=>(<circle key={"c"+i} cx={X(r.h)} cy={Y(r.signedTotal)} r="3" fill="#4ADE80"/>))}
+      {Array.from({length:n},(_,i)=>CHART_START+i).map((h,i)=>(<text key={i} x={X(h)} y={H_-6} fontSize="8.5" fill="#7089ab" textAnchor="middle">{hourLabel(h)}</text>))}
+      <text x={pL} y={pT-6} fontSize="8" fill="#4ADE80">cumulative signed $</text>
+      <text x={pL+130} y={pT-6} fontSize="8" fill={BLUE}>signed $ / hour</text>
+    </svg>);
+  };
+
+  const kpis=[
+    ["SIGNED TODAY", fmtFull(signedTotal), GOLD, signedJobs+" job"+(signedJobs===1?"":"s")+" signed"],
+    ["DAILY COMMIT", todayCommit?fmtFull(todayCommit):"—", preMonth?"#6b7a99":BLUE, preMonth?"starts Aug 1 · "+fmtFull(todayCommit)+"/working day":"August budget"],
+    ["PACE", (paceDelta>=0?"▲ AHEAD ":"▼ BEHIND ")+fmtFull(Math.abs(paceDelta)), paceDelta>=0?GREEN:RED, preMonth?"(vs Aug pace — preview)":""],
+    ["NEEDED / HR", wonAlready?"WON ✓":fmtFull(neededPerHr), wonAlready?GREEN:PURP, wonAlready?"commit already met":remainingHours>0?"to hit commit by 8p":""],
+  ];
+
+  return (
+    <div className="lf2-wrap riseIn">
+      <div className="lf2-head">
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <div className="lf2-logo">S</div>
+          <div>
+            <div className="lf2-title">Hour By Hour — Pace To Win</div>
+            <div className="lf2-subtl">{str(feed.date)||new Date(now).toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"})}</div>
+          </div>
+        </div>
+        <div style={{background:"rgba(91,164,230,.1)",border:"1px solid #5BA4E655",color:"#5BA4E6",borderRadius:6,padding:"5px 12px",fontWeight:700,fontSize:10,letterSpacing:".14em"}}>STAGING SNAPSHOT</div>
+      </div>
+
+      <div className="lf2-kpis">
+        {kpis.map(([l,v,c,s])=>(<div className="lf2-kpi" key={l}><div className="l">{l}</div><div className="v" style={{color:c}}>{v}</div>{s?<div className="s">{s}</div>:null}</div>))}
+      </div>
+
+      <div style={{padding:"14px 24px 0"}}><div className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+        <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>Burn-Up — Signed $ vs Daily Commit</div>
+        <div style={{fontSize:9.5,color:"#6b7a99"}}>bars = signed $ closed each hour · line = cumulative signed $ · dashed = daily commit target</div>
+        {hasHours ? burnChart() : (
+          <div style={{marginTop:10,background:"#0e1626",border:"1px dashed #22307a",borderRadius:12,padding:"28px 18px",textAlign:"center",color:"#5d6fa8",fontSize:12,letterSpacing:"0.04em"}}>
+            Hourly capture begins with the next relay session — bars fill in as the day runs.
+          </div>
+        )}
+      </div></div>
+
+      {hasHours && (
+        <div style={{padding:"14px 24px 0"}}><div className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+          <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>Hourly Detail</div>
+          <div style={{fontSize:9.5,color:"#6b7a99"}}>jobs done + options$ presented, per hour</div>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:10}}>
+            {deltaRows.map((r,i)=>(
+              <div key={i} className="lf2-bu" style={{cursor:"default",display:"flex",flexDirection:"column",alignItems:"flex-start",gap:2,padding:"6px 12px"}}>
+                <span style={{fontWeight:800}}>{hourLabel(r.h)}</span>
+                <span style={{fontSize:8.5,color:"#9fb3cc",fontWeight:600}}>{r.doneDelta} done · {fmt(r.optsTotalDelta)} opts</span>
+              </div>))}
+          </div>
+        </div></div>
+      )}
+    </div>
+  );
+}
+
 // ═══ HVAC SERVICE · standalone command deck (Field Conversion + IAQ reports) ══════
 const SVC=(typeof SERVICE_DATA!=="undefined")?SERVICE_DATA:{techs:[],dept:{},teams:[],iaqMonthly:[],months:[],dateRange:"",source:"",iaqTotal:0,elapsedFrac:0.5};
 function ServiceDash(){
@@ -994,6 +1142,7 @@ function ServiceDash(){
     {id:"live",icon:"⚡",label:"LIVE",sub:"Real-time jobs"},
     {id:"overview",icon:"🛠",label:"OVERVIEW",sub:"Dept KPIs"},
     {id:"weekly",icon:"📅",label:"WEEKLY",sub:"WTD + trends"},
+    {id:"hxh",icon:"⏱",label:"HXH",sub:"pace to win"},
     {id:"trend",icon:"📈",label:"TREND",sub:"Month over month"},
     {id:"board",icon:"🏆",label:"LEADERBOARD",sub:"All "+techs.length},
     {id:"conv",icon:"🎯",label:"CONVERSION",sub:"Opportunity %"},
@@ -1067,6 +1216,7 @@ function ServiceDash(){
       <div className="tab-fade" key={tab}>
         {tab==="live" && <ServiceLiveTab/>}
         {tab==="weekly" && <ServiceWeeklyTab/>}
+        {tab==="hxh" && <ServiceHxhTab/>}
         {tab==="overview" && !showClassic && <ServicePulseTab onClassic={()=>setShowClassic(true)}/>}
         {tab==="overview" && showClassic && (<React.Fragment>
           <div style={{padding:"9px 24px 0",display:"flex",justifyContent:"flex-end"}}>

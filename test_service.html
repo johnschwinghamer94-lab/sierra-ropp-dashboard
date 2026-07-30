@@ -4663,11 +4663,211 @@ function ServiceLiveTab(){
   );
 }
 
+// ═══ DEPARTMENT PULSE (new "overview" tab) — servicedata.json ══════
+function ServicePulseTab({onClassic}){
+  const [d,setD]=React.useState(null);
+  const [err,setErr]=React.useState(false);
+  const [win,setWin]=React.useState("today");
+  const [now,setNow]=React.useState(Date.now());
+
+  const load=()=>{
+    fetch("servicedata.json?_="+Date.now())
+      .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
+      .then(j=>{ setD(j); setErr(false); })
+      .catch(()=>setErr(true));
+  };
+  React.useEffect(()=>{ load(); const id=setInterval(load,300000); const t=setInterval(()=>setNow(Date.now()),60000); return ()=>{clearInterval(id);clearInterval(t);}; },[]);
+
+  if(!d){
+    return (<div className="lf2-wrap riseIn" style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"50vh"}}>
+      <div style={{color:"#8fa3d9",fontSize:12,letterSpacing:"0.1em"}}>{err?"⚠ COULD NOT LOAD servicedata.json":"◆ LOADING DEPARTMENT PULSE…"}</div>
+    </div>);
+  }
+
+  const BLUE="#5BA4E6",GREEN="#22c55e",GOLD="#F5B324",PURP="#a78bfa",RED="#E63946";
+  // ── render-safety: coerce every value to a primitive before it ever hits JSX ──
+  const numOr0=v=>(typeof v==="number"&&isFinite(v))?v:0;
+  const str=v=>(v==null?"":String(v));
+  const fmt=v=>{ v=numOr0(v); const av=Math.abs(v); return av>=1000000?"$"+(v/1000000).toFixed(2)+"M":av>=1000?"$"+Math.round(v/1000).toLocaleString()+"k":"$"+Math.round(v); };
+  const fmtFull=v=>"$"+Math.round(numOr0(v)).toLocaleString();
+  const fmtPct=v=>numOr0(v).toFixed(1)+"%";
+
+  const WINS=[["today","TODAY"],["wtd","WTD"],["mtd","MTD"],["ytd","YTD"]];
+  const W = (d[win] && typeof d[win]==="object" && !Array.isArray(d[win])) ? d[win] : {};
+  const techRows = Array.isArray(d.techs && d.techs[win]) ? d.techs[win] : [];
+  const board = (d.board && typeof d.board==="object") ? d.board : {};
+  const monthly = Array.isArray(d.monthly) ? d.monthly : [];
+  const revBU = (W.revenueBU && typeof W.revenueBU==="object" && !Array.isArray(W.revenueBU)) ? W.revenueBU : {};
+
+  const updatedMs = d.updated ? Date.parse(d.updated) : null;
+  const ageMin = (updatedMs && !isNaN(updatedMs)) ? Math.round((now-updatedMs)/60000) : null;
+  const stale = ageMin!=null && ageMin>120;
+  let dateStr="";
+  try{ dateStr = updatedMs?new Date(updatedMs).toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"}):""; }catch(e){ dateStr=""; }
+
+  const memPct = W.membershipConv!=null ? fmtPct(W.membershipConv) : "—";
+  const memSub = (W.membershipsSold!=null && W.membershipOpps!=null) ? (numOr0(W.membershipsSold)+" / "+numOr0(W.membershipOpps)+" opps") : "";
+
+  const kpis=[
+    ["CLOSE RATE",fmtPct(W.closeRate),GREEN,(W.converted!=null&&W.opps!=null)?(numOr0(W.converted)+"/"+numOr0(W.opps)+" opps"):""],
+    ["AVG SALE",fmtFull(W.avgSale),BLUE,""],
+    ["AVG TICKET",fmtFull(W.avgTicket),BLUE,(W.jobs!=null?numOr0(W.jobs)+" jobs":"")],
+    ["SALES",fmtFull(W.sales),GOLD,W.salesIsApprox?"approx (invoice lag)":"$ sold"],
+    ["REVENUE",fmtFull(W.revenue),"#4ADE80","$ invoiced"],
+    ["MEMBERSHIP %",memPct,PURP,memSub],
+    ["LEADS SET",str(numOr0(W.leadsSet)),"#f5c518","turnovers"],
+  ];
+
+  // BY TECH — sort by sales desc
+  const techSorted = techRows.slice().sort((a,b)=>numOr0(b.sales)-numOr0(a.sales));
+  const memCell=t=>{
+    const sold=numOr0(t.membershipsSold), opps=numOr0(t.membershipOpps);
+    const pct = opps ? Math.round((sold/opps)*1000)/10 : 0;
+    return sold+"/"+opps+" ("+pct.toFixed(1)+"%)";
+  };
+
+  // BU cards from window.revenueBU — only revenue is genuinely split by BU in this feed;
+  // sales/close-rate/avg-sale/opps below the header line are department totals (not BU-split),
+  // labeled as such rather than fabricated.
+  const buEntries = Object.entries(revBU);
+  const buTotal = buEntries.reduce((a,[,v])=>a+numOr0(v),0);
+  const buLabel=k=>{ const s=str(k); const p=s.split(" - "); return (p[1]||s).toUpperCase(); };
+  const buColor=k=>str(k).toLowerCase().includes("maint")?GREEN:BLUE;
+
+  const sectionCard=(title,sub,body)=>(
+    <div style={{padding:"14px 24px 0"}}><div className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",flexWrap:"wrap",gap:6}}>
+        <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>{title}</div>
+        {sub&&<div style={{fontSize:9.5,color:"#6b7a99"}}>{sub}</div>}
+      </div>{body}
+    </div></div>);
+
+  const chart1=()=>{
+    if(!monthly.length) return <div style={{color:"#5d6fa8",fontSize:11,padding:"10px 4px"}}>No monthly data yet.</div>;
+    const W_=760,H_=190,pL=46,pB=26,pT=18,pR=44,n=monthly.length;
+    const mxRev=Math.max(1,...monthly.map(x=>numOr0(x.revenue)),...monthly.map(x=>numOr0(x.salesApprox)));
+    const X=i=>pL+i*(W_-pL-pR)/Math.max(1,n-1);
+    const Y=v=>pT+(1-Math.min(1,numOr0(v)/mxRev))*(H_-pT-pB);
+    return (<svg viewBox={"0 0 "+W_+" "+H_} style={{width:"100%",height:"auto",overflow:"visible",marginTop:10}}>
+      {[0,0.5,1].map((f,i)=>(<g key={i}><line x1={pL} y1={Y(mxRev*f)} x2={W_-pR} y2={Y(mxRev*f)} stroke="#1e2d47"/><text x={pL-5} y={Y(mxRev*f)+3} fontSize="8" fill="#4a5a70" textAnchor="end">{fmt(mxRev*f)}</text></g>))}
+      {monthly.map((x,i)=>{ const bw=(W_-pL-pR)/n*0.5; const last=i===n-1; return (<g key={i}>
+        <rect x={X(i)-bw/2} y={Y(x.revenue)} width={bw} height={(H_-pB)-Y(x.revenue)} rx="3" fill={last?"url(#pulsegrad)":"#2E78C7"} opacity={last?0.85:1}/>
+        <text x={X(i)} y={H_-6} fontSize="8.5" fill={last?GOLD:"#7089ab"} textAnchor="middle">{str(x.month).slice(0,3)}{last?"*":""}</text>
+      </g>);})}
+      <defs><linearGradient id="pulsegrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={BLUE}/><stop offset="100%" stopColor="#2E78C7"/></linearGradient></defs>
+      <path d={monthly.map((x,i)=>(i?"L":"M")+X(i).toFixed(1)+" "+Y(x.salesApprox).toFixed(1)).join(" ")} fill="none" stroke={GOLD} strokeWidth="2.2"/>
+      {monthly.map((x,i)=>(<circle key={"s"+i} cx={X(i)} cy={Y(x.salesApprox)} r="2.6" fill={GOLD}/>))}
+      <text x={W_-pR+6} y={pT+4} fontSize="8" fill={GOLD}>sales (approx)</text><text x={pL} y={pT-6} fontSize="8" fill={BLUE}>revenue</text>
+    </svg>);
+  };
+
+  const chart2=()=>{
+    if(!monthly.length) return <div style={{color:"#5d6fa8",fontSize:11,padding:"10px 4px"}}>No monthly data yet.</div>;
+    const W_=760,H_=170,pL=40,pB=24,pT=16,pR=12,n=monthly.length;
+    const X=i=>pL+i*(W_-pL-pR)/Math.max(1,n-1);
+    const Y=v=>pT+(1-Math.max(0,Math.min(100,numOr0(v)))/100)*(H_-pT-pB);
+    const line=key=>monthly.map((x,i)=>(i?"L":"M")+X(i).toFixed(1)+" "+Y(x[key]).toFixed(1)).join(" ");
+    return (<svg viewBox={"0 0 "+W_+" "+H_} style={{width:"100%",height:"auto",overflow:"visible",marginTop:10}}>
+      {[0,50,100].map((f,i)=>(<g key={i}><line x1={pL} y1={Y(f)} x2={W_-pR} y2={Y(f)} stroke="#1e2d47"/><text x={pL-5} y={Y(f)+3} fontSize="8" fill="#4a5a70" textAnchor="end">{f}%</text></g>))}
+      <path d={line("closeRate")} fill="none" stroke={GREEN} strokeWidth="2.2"/>
+      <path d={line("membershipConv")} fill="none" stroke={PURP} strokeWidth="2.2"/>
+      {monthly.map((x,i)=>(<g key={i}>
+        <circle cx={X(i)} cy={Y(x.closeRate)} r="2.6" fill={GREEN}/>
+        <circle cx={X(i)} cy={Y(x.membershipConv)} r="2.6" fill={PURP}/>
+        <text x={X(i)} y={H_-6} fontSize="8.5" fill="#7089ab" textAnchor="middle">{str(x.month).slice(0,3)}</text>
+      </g>))}
+      <text x={W_-pR+6} y={pT+4} fontSize="8" fill={GREEN}>close %</text><text x={pL} y={pT-6} fontSize="8" fill={PURP}>memb conv %</text>
+    </svg>);
+  };
+
+  return (
+    <div className="lf2-wrap riseIn">
+      <div className="lf2-head">
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <div className="lf2-logo">S</div>
+          <div>
+            <div className="lf2-title">Department Pulse — {dateStr||"—"} · live</div>
+            <div className="lf2-subtl">HVAC SERVICE · {WINS.find(w=>w[0]===win)[1]} window</div>
+          </div>
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+          <div className="lf2-bus" style={{padding:0}}>
+            {WINS.map(([k,l])=>(<button key={k} className={"lf2-bu"+(win===k?" on":"")} onClick={()=>setWin(k)}>{l}</button>))}
+          </div>
+          <div style={{background:"rgba(91,164,230,.1)",border:"1px solid #5BA4E655",color:"#5BA4E6",borderRadius:6,padding:"5px 12px",fontWeight:700,fontSize:10,letterSpacing:".14em"}}>STAGING SNAPSHOT</div>
+          {stale
+            ? <div className="lf2-chip-stale">⚠ UPDATED {ageMin}M AGO</div>
+            : <div className="lf2-chip-live"><span className="lf2-dot"/>updated {ageMin!=null?ageMin+"m ago":"—"}</div>}
+          {onClassic && <button onClick={onClassic} style={{background:"transparent",border:"1px solid #1e2d47",color:"#6b7a99",borderRadius:6,padding:"5px 12px",fontFamily:"inherit",fontSize:9.5,fontWeight:700,letterSpacing:".1em",cursor:"pointer"}}>CLASSIC VIEW →</button>}
+        </div>
+      </div>
+
+      <div className="lf2-kpis">
+        {kpis.map(([l,v,c,s])=>(<div className="lf2-kpi" key={l}><div className="l">{l}</div><div className="v" style={{color:c}}>{v}</div>{s?<div className="s">{s}</div>:null}</div>))}
+      </div>
+
+      <div style={{padding:"14px 24px 0",display:"flex",gap:12,flexWrap:"wrap"}}>
+        {[["MAINTENANCE ON BOARD",numOr0(board.maintenanceOnBoard),BLUE],["MAINTENANCE RAN",numOr0(board.maintenanceRan),GREEN],["DEMAND ON BOARD",numOr0(board.demandOnBoard),GOLD],["DEMAND RAN",numOr0(board.demandRan),GREEN]].map(([l,v,c])=>(
+          <div key={l} className="liftCard" style={{flex:"1 1 150px",background:"#131c30",border:"1px solid #1e2d47",borderLeft:"3px solid "+c,borderRadius:13,padding:"10px 16px"}}>
+            <div style={{fontSize:9,color:"#7089ab",letterSpacing:"0.1em",fontWeight:700}}>{l}</div>
+            <div style={{fontSize:20,fontWeight:900,color:c,marginTop:3}}>{v}</div>
+          </div>))}
+      </div>
+
+      {sectionCard("Business Units","revenue split · other metrics are department totals, not yet BU-split in the feed",
+        <div style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:10}}>
+          {buEntries.length ? buEntries.map(([k,v])=>{
+            const pct = buTotal ? Math.round((numOr0(v)/buTotal)*1000)/10 : 0;
+            const c=buColor(k);
+            return (<div key={k} className="liftCard" style={{flex:"1 1 220px",background:"linear-gradient(160deg,#131c30,#0e1626)",border:"1px solid #1e2d47",borderRadius:14,padding:"14px 18px"}}>
+              <div style={{fontSize:10,letterSpacing:"0.14em",color:c,fontWeight:800}}>{buLabel(k)}</div>
+              <div style={{fontSize:26,fontWeight:900,color:"#fff",marginTop:4}}>{fmtFull(v)}</div>
+              <div style={{fontSize:9.5,color:"#6b7a99",marginTop:3}}>{pct}% of revenue · {WINS.find(w=>w[0]===win)[1]}</div>
+              <div style={{fontSize:9,color:"#6b7a99",marginTop:8,paddingTop:8,borderTop:"1px solid #1e2d47"}}>Dept sales {fmtFull(W.sales)} · close {fmtPct(W.closeRate)} · opps {numOr0(W.opps)}</div>
+            </div>);
+          }) : <div style={{color:"#5d6fa8",fontSize:11}}>No BU revenue split in this window.</div>}
+        </div>)}
+
+      {sectionCard("By Tech · "+WINS.find(w=>w[0]===win)[1],techSorted.length+" reps · sorted by sales",
+        techSorted.length ? (
+          <div style={{overflowX:"auto",marginTop:10}}>
+            <table style={{width:"100%",borderCollapse:"collapse",minWidth:820}}>
+              <thead><tr>
+                {["TECH","TEAM","OPPS","CLOSE RATE","AVG SALE","SALES","MEM","LEADS SET","REVENUE","JOBS","AVG TICKET"].map((h,i)=>(
+                  <th key={h} style={{padding:"8px",fontSize:9,color:"#9fb3cc",fontWeight:700,textAlign:i<2?"left":"right",borderBottom:"2px solid #1e2d47",whiteSpace:"nowrap"}}>{h}</th>))}
+              </tr></thead>
+              <tbody>
+                {techSorted.map((t,i)=>(
+                  <tr key={str(t.name)+i} style={i<3?{background:"rgba(245,195,24,.06)"}:null}>
+                    <td style={{padding:"6px 8px",fontSize:11,color:"#e6eefb",fontWeight:i<3?800:500,whiteSpace:"nowrap"}}>{i<3?["🥇 ","🥈 ","🥉 "][i]:""}{str(t.name)||"—"}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,color:"#9fb3cc"}}>{str(t.team)||"—"}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:"#e6eefb"}}>{numOr0(t.opps)}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:GREEN,fontWeight:700}}>{fmtPct(t.closeRate)}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:"#e6eefb"}}>{fmtFull(t.avgSale)}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:GOLD,fontWeight:800}}>{fmtFull(t.sales)}</td>
+                    <td style={{padding:"6px 8px",fontSize:10.5,textAlign:"right",color:PURP}}>{memCell(t)}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:"#e6eefb"}}>{numOr0(t.leadsSet)}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:"#4ADE80"}}>{fmtFull(t.revenue)}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:"#e6eefb"}}>{numOr0(t.jobs)}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:"#e6eefb"}}>{fmtFull(t.avgTicket)}</td>
+                  </tr>))}
+              </tbody>
+            </table>
+          </div>
+        ) : <div style={{color:"#5d6fa8",fontSize:11,padding:"10px 4px"}}>No tech activity in this window yet.</div>)}
+
+      {sectionCard("Sales vs Revenue by Month","bars = completed revenue · line = approx sales · *current month partial",chart1())}
+      {sectionCard("Close Rate & Membership Conversion by Month","opportunity close % vs membership conversion %",chart2())}
+    </div>
+  );
+}
+
 // ═══ HVAC SERVICE · standalone command deck (Field Conversion + IAQ reports) ══════
 const SVC=(typeof SERVICE_DATA!=="undefined")?SERVICE_DATA:{techs:[],dept:{},teams:[],iaqMonthly:[],months:[],dateRange:"",source:"",iaqTotal:0,elapsedFrac:0.5};
 function ServiceDash(){
   const D=SVC; const teams=D.teams||[]; const iaqMo=D.iaqMonthly||[]; const monthly=D.monthly||[];
   const [tab,setTab]=React.useState("overview");
+  const [showClassic,setShowClassic]=React.useState(false);
   const [period,setPeriod]=React.useState("ytd");
   const [sortCol,setSortCol]=React.useState("rev");
   const [search,setSearch]=React.useState("");
@@ -4792,7 +4992,11 @@ function ServiceDash(){
 
       <div className="tab-fade" key={tab}>
         {tab==="live" && <ServiceLiveTab/>}
-        {tab==="overview" && (<React.Fragment>
+        {tab==="overview" && !showClassic && <ServicePulseTab onClassic={()=>setShowClassic(true)}/>}
+        {tab==="overview" && showClassic && (<React.Fragment>
+          <div style={{padding:"9px 24px 0",display:"flex",justifyContent:"flex-end"}}>
+            <button onClick={()=>setShowClassic(false)} style={{background:"transparent",border:"1px solid #1e2d47",color:"#6b7a99",borderRadius:6,padding:"5px 12px",fontFamily:"inherit",fontSize:9.5,fontWeight:700,letterSpacing:".1em",cursor:"pointer"}}>← PULSE VIEW</button>
+          </div>
           <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",rowGap:6,padding:"9px 24px",background:"linear-gradient(90deg,#0a1524,#0e2033)",borderBottom:"1px solid #1e3050"}}>
             {[{l:"SERVICE REV",v:fmt(dept.rev),c:BLUE},{l:"OPP CONV",v:dept.conv+"%",c:GOLD},{l:"MEMBERSHIPS",v:dept.memb,c:GREEN},{l:"IAQ SOLD",v:fmt(iaqTot),c:"#4ADE80"},{l:"LEADS SET",v:dept.leads,c:"#a78bfa"},{l:"TOP TECH",v:top.name.split(" ")[0]+" "+fmt(top.rev),c:BLUE}].map((t,i)=>(<React.Fragment key={i}>
               {i>0&&<span style={{color:"#2a3f5a",margin:"0 12px"}}>◆</span>}

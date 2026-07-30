@@ -203,6 +203,9 @@ tr.hov-row:hover td{background:#1a2540 !important;}
 .lf2-card.goldSettled{border-color:#F5B32499!important;box-shadow:0 0 10px #F5B32444}
 .lf2-signedchip{font-size:8.5px;font-weight:800;letter-spacing:.06em;color:#3a2c05;background:linear-gradient(90deg,#F5B324,#ffe08a);border-radius:4px;padding:2px 7px;white-space:nowrap;margin-left:6px}
 .lf2-headalert{background:rgba(230,57,70,.14);border:1px solid #E6394677;color:#ff8c93;border-radius:6px;padding:5px 12px;font-weight:800;font-size:10px;letter-spacing:.08em;animation:lf2Blink 1.2s infinite}
+@keyframes lf2AlarmFlash{0%,100%{background:rgba(230,57,70,0)}25%,75%{background:rgba(230,57,70,.38)}50%{background:rgba(230,57,70,.12)}}
+.lf2-alarm-overlay{position:fixed;inset:0;z-index:9999;pointer-events:none;animation:lf2AlarmFlash .85s ease-in-out 3}
+.lf2-soundtoggle{background:rgba(91,164,230,.08);border:1px solid #5BA4E633;border-radius:6px;color:#9fb9d8;padding:4px 9px;font-size:12px;cursor:pointer;line-height:1}
 .lf2-cardtop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .lf2-tech{font-size:11.5px;font-weight:700;letter-spacing:.08em;color:#f5c518;text-transform:uppercase;line-height:1.25}
 .lf2-cust{font-size:10px;font-weight:600;color:#e7ecfa;text-transform:uppercase;margin-top:2px;letter-spacing:.04em}
@@ -307,12 +310,48 @@ function ServiceLiveTab(){
   const [now,setNow]=React.useState(Date.now());
   const seenSignedRef=React.useRef(null); // null until first data arrival (seed, no flash)
   const [flashIds,setFlashIds]=React.useState({}); // jobId -> true while gold flash animation plays
+  const seenAlertKeysRef=React.useRef(null); // null until first data; first load alarms on existing violations
+  const [alarmFlash,setAlarmFlash]=React.useState(false); // full-screen red flash
+  const [soundOn,setSoundOn]=React.useState(true);
+  const soundOnRef=React.useRef(true);
+  const audioCtxRef=React.useRef(null);
+  const playAlarm=()=>{
+    if(!soundOnRef.current) return;
+    try{
+      const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
+      if(!audioCtxRef.current) audioCtxRef.current=new AC();
+      const ctx=audioCtxRef.current;
+      if(ctx.state==="suspended"){ ctx.resume().catch(()=>{}); }
+      const t0=ctx.currentTime;
+      for(let i=0;i<3;i++){
+        const o=ctx.createOscillator(), g=ctx.createGain();
+        o.type="square";
+        o.frequency.setValueAtTime(880,t0+i*0.5); o.frequency.setValueAtTime(660,t0+i*0.5+0.25);
+        g.gain.setValueAtTime(0.0001,t0+i*0.5);
+        g.gain.exponentialRampToValueAtTime(0.28,t0+i*0.5+0.03);
+        g.gain.exponentialRampToValueAtTime(0.0001,t0+i*0.5+0.45);
+        o.connect(g); g.connect(ctx.destination); o.start(t0+i*0.5); o.stop(t0+i*0.5+0.5);
+      }
+    }catch(e){}
+  };
 
   const load=()=>{
     fetch("servicefeed.json?_="+Date.now())
       .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
       .then(d=>{
         const jobsArr=d.jobs||[];
+        // alarm + full-screen flash on every new violation (John: make it known)
+        const nmA=ptNowMinutes();
+        const nowAlertKeys=new Set();
+        jobsArr.forEach(j=>{ evalJobAlerts(j,nmA).alerts.forEach(a=>nowAlertKeys.add(j.jobId+":"+a.code)); });
+        const prevKeys=seenAlertKeysRef.current;
+        const newKeys=prevKeys==null?[...nowAlertKeys]:[...nowAlertKeys].filter(k=>!prevKeys.has(k));
+        seenAlertKeysRef.current=nowAlertKeys;
+        if(newKeys.length){
+          setAlarmFlash(true);
+          setTimeout(()=>setAlarmFlash(false),2700);
+          playAlarm();
+        }
         const nowSignedIds=new Set(jobsArr.filter(j=>{
           const sn=(j.stages||{}).signed;
           return !!(sn&&typeof sn==="object");
@@ -472,6 +511,8 @@ function ServiceLiveTab(){
           </div>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+          {alarmFlash && <div className="lf2-alarm-overlay"/>}
+          <button className="lf2-soundtoggle" title="alert sound on/off" onClick={()=>{const v=!soundOn; setSoundOn(v); soundOnRef.current=v; if(v){ playAlarm(); }}}>{soundOn?"🔔":"🔕"}</button>
           {redAlertCount>0 && <div className="lf2-headalert">🔴 {redAlertCount} ALERT{redAlertCount===1?"":"S"}</div>}
           {stale
             ? <div className="lf2-chip-stale">⚠ UPDATED {ageMin}M AGO · STAGING SNAPSHOT</div>

@@ -215,6 +215,17 @@ tr.hov-row:hover td{background:#1a2540 !important;}
 .lf2-alarm-labels{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
 .lf2-alarm-label{background:#fff;color:#C61824;border-radius:7px;padding:4px 10px;font-weight:900;font-size:13px;letter-spacing:.05em}
 .lf2-alarm-exit{background:#fff;color:#C61824;border:none;border-radius:12px;padding:14px 40px;font-size:18px;flex-shrink:0;font-weight:900;letter-spacing:.08em;cursor:pointer;box-shadow:0 6px 30px rgba(0,0,0,.45)}
+.lf2-coach-card{background:rgba(91,164,230,.05);border:1px solid #2b3c66;border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.lf2-coach-head{font-weight:800;font-size:12px;color:#dfe9ff}
+.lf2-coach-when{font-weight:600;color:#5d6fa8;font-size:10px}
+.lf2-coach-bands{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.lf2-band{border-radius:5px;padding:2px 7px;font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.lf2-band.b-strong{background:rgba(74,222,128,.12);border:1px solid #4ADE8055;color:#4ADE80}
+.lf2-band.b-strongonwins{background:rgba(45,212,191,.12);border:1px solid #2DD4BF55;color:#2DD4BF}
+.lf2-band.b-solid{background:rgba(91,164,230,.12);border:1px solid #5BA4E655;color:#5BA4E6}
+.lf2-band.b-moderate{background:rgba(245,179,36,.12);border:1px solid #F5B32455;color:#F5B324}
+.lf2-band.b-weak{background:rgba(230,57,70,.12);border:1px solid #E6394655;color:#ff8c93}
+.lf2-coach-tip{margin-top:6px;font-size:11px;line-height:1.45;color:#9fb9d8}
 .lf2-recnow{background:rgba(230,57,70,.12);border:1px solid #E63946;color:#ff6b74;border-radius:6px;padding:2px 8px;font-weight:800;font-size:10px;letter-spacing:.08em;animation:lf2Blink 1.2s infinite}
 .lf2-recchip{background:rgba(74,222,128,.1);border:1px solid #4ADE8055;color:#4ADE80;border-radius:6px;padding:2px 8px;font-weight:700;font-size:10px;letter-spacing:.06em}
 .lf2-cardtop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
@@ -433,6 +444,16 @@ function ServiceLiveTab(){
       .catch(()=>setErr(true));
   };
   React.useEffect(()=>{ load(); const id=setInterval(load,20000); const t=setInterval(()=>setNow(Date.now()),15000); return ()=>{clearInterval(id);clearInterval(t);}; },[]);
+  const [coach,setCoach]=React.useState(null);
+  React.useEffect(()=>{
+    const loadCoach=()=>{
+      fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/servicecards.json?_="+Date.now())
+        .then(r=>r.ok?r.json():null)
+        .then(d=>{ if(d&&d.cards) setCoach(d.cards.slice(0,6)); })
+        .catch(()=>{});
+    };
+    loadCoach(); const cid=setInterval(loadCoach,60000); return ()=>clearInterval(cid);
+  },[]);
 
   if(!lf){
     return (<div className="lf2-wrap riseIn" style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"50vh"}}>
@@ -608,6 +629,22 @@ function ServiceLiveTab(){
           {sorted.length ? sorted.map(jobCard) : <div className="lf2-empty">No jobs match this filter.</div>}
         </div>
         <div className="lf2-feed">
+          {coach && coach.length>0 && <React.Fragment>
+            <div className="lf2-fh">◆ Live Coaching</div>
+            <div className="lf2-coach-list">
+              {coach.map((c,i)=>(
+                <div key={c.recId||i} className="lf2-coach-card">
+                  <div className="lf2-coach-head">{c.tech}<span className="lf2-coach-when"> · {c.durationMin}m call · {c.dateCreated}</span></div>
+                  <div className="lf2-coach-bands">
+                    {Object.entries(c.bands||{}).map(([k,v])=>(
+                      <span key={k} className={"lf2-band b-"+String(v).toLowerCase().replace(/[^a-z]/g,"")}>{k}: {v}</span>
+                    ))}
+                  </div>
+                  {c.tip?<div className="lf2-coach-tip">{c.tip}</div>:null}
+                </div>
+              ))}
+            </div>
+          </React.Fragment>}
           <div className="lf2-fh">◆ Live Activity</div>
           {activity.length ? (
             <div className="lf2-evs">

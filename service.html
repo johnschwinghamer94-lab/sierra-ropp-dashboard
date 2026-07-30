@@ -286,8 +286,8 @@ const evalJobAlerts=(j,nowMin)=>{
     let e=nowMin-onsiteMin;
     if(e>=0) elapsedMin=e; // negative => unparseable/skew guard: no elapsed-based alerts
   }
-  // 1. LONG RUN — on site, not done/signed, elapsed > 90m
-  if(elapsedMin!=null && !isDone && !isSigned && elapsedMin>90){
+  // 1. LONG RUN — on site, not done/signed, elapsed > 2h (John 7/30)
+  if(elapsedMin!=null && !isDone && !isSigned && elapsedMin>120){
     const hrs=(elapsedMin/60).toFixed(1);
     alerts.push({code:"long",label:"⏱ "+hrs+"H ON SITE"});
   }

@@ -315,6 +315,10 @@ const evalJobAlerts=(j,nowMin)=>{
   if(j.siro && !j.siro.rec && (isDone || (elapsedMin!=null && elapsedMin>=45))){
     alerts.push({code:"norec",label:"🎙 NOT RECORDING"});
   }
+  // 6. MEMBER NOT CONVERTED — membership opportunity surfaced but job closed without the sale
+  if(isDone && j.membershipOffered && !j.membershipSold){
+    alerts.push({code:"member",label:"🪪 MEMBER NOT CONVERTED"});
+  }
   return {alerts,isAlert:alerts.length>0,isSigned};
 };
 

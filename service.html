@@ -1182,7 +1182,7 @@ function ServiceHxhTab(){
 const SVC=(typeof SERVICE_DATA!=="undefined")?SERVICE_DATA:{techs:[],dept:{},teams:[],iaqMonthly:[],months:[],dateRange:"",source:"",iaqTotal:0,elapsedFrac:0.5};
 function ServiceDash(){
   const D=SVC; const teams=D.teams||[]; const iaqMo=D.iaqMonthly||[]; const monthly=D.monthly||[];
-  const [tab,setTab]=React.useState("overview");
+  const [tab,setTab]=React.useState("live"); // boot into ⚡ LIVE (John 7/30)
   const [showClassic,setShowClassic]=React.useState(false);
   const [period,setPeriod]=React.useState("ytd");
   const [sortCol,setSortCol]=React.useState("rev");

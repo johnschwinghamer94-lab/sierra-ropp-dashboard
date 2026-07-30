@@ -608,6 +608,223 @@ function ServicePulseTab({onClassic}){
   );
 }
 
+function ServiceWeeklyTab(){
+  const [d,setD]=React.useState(null);
+  const [err,setErr]=React.useState(false);
+  const [selDay,setSelDay]=React.useState("total");
+
+  const load=()=>{
+    fetch("servicedata.json?_="+Date.now())
+      .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
+      .then(j=>{ setD(j); setErr(false); })
+      .catch(()=>setErr(true));
+  };
+  React.useEffect(()=>{ load(); const id=setInterval(load,300000); return ()=>clearInterval(id); },[]);
+
+  if(!d){
+    return (<div className="lf2-wrap riseIn" style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"50vh"}}>
+      <div style={{color:"#8fa3d9",fontSize:12,letterSpacing:"0.1em"}}>{err?"⚠ COULD NOT LOAD servicedata.json":"◆ LOADING WEEKLY VIEW…"}</div>
+    </div>);
+  }
+
+  const BLUE="#5BA4E6",GREEN="#22c55e",GOLD="#F5B324",PURP="#a78bfa",RED="#E63946";
+  const numOr0=v=>(typeof v==="number"&&isFinite(v))?v:0;
+  const str=v=>(v==null?"":String(v));
+  const fmt=v=>{ v=numOr0(v); const av=Math.abs(v); return av>=1000000?"$"+(v/1000000).toFixed(2)+"M":av>=1000?"$"+Math.round(v/1000).toLocaleString()+"k":"$"+Math.round(v); };
+  const fmtFull=v=>"$"+Math.round(numOr0(v)).toLocaleString();
+  const fmtPct=v=>numOr0(v).toFixed(1)+"%";
+  const firstName=n=>{ const s=str(n).trim(); return s?s.split(" ")[0]:"—"; };
+
+  const wtd = (d.wtd && typeof d.wtd==="object" && !Array.isArray(d.wtd)) ? d.wtd : {};
+  const weekly = Array.isArray(d.weekly) ? d.weekly : [];
+  const curWeek = weekly.length ? weekly[weekly.length-1] : null;
+  const weekLabel = curWeek ? str(curWeek.label) : "This Week";
+
+  const tdRaw = (d.techDaily && typeof d.techDaily==="object" && !Array.isArray(d.techDaily)) ? d.techDaily : {};
+  const days = Array.isArray(tdRaw._days) ? tdRaw._days : [];
+  const techEntries = Object.keys(tdRaw).filter(k=>k!=="_days").map(name=>({name, rows:(tdRaw[name] && typeof tdRaw[name]==="object")?tdRaw[name]:{}}));
+  const elapsedDays = Math.max(1, days.length);
+
+  const dayLabel=iso=>{ try{ const dt=new Date(iso+"T00:00:00"); return dt.toLocaleDateString("en-US",{weekday:"short"}); }catch(e){ return str(iso); } };
+
+  const runRate = numOr0(wtd.sales) / elapsedDays * 7;
+
+  const kpis=[
+    ["WTD SALES", fmtFull(wtd.sales), GOLD, "N of 7 days reported: "+days.length+"/7"],
+    ["CLOSE RATE", fmtPct(wtd.closeRate), GREEN, (wtd.converted!=null&&wtd.opps!=null)?(numOr0(wtd.converted)+"/"+numOr0(wtd.opps)+" opps"):""],
+    ["AVG SALE", fmtFull(wtd.avgSale), BLUE, ""],
+    ["SALES OPP", str(numOr0(wtd.opps)), BLUE, "opportunities WTD"],
+    ["MEM SOLD", str(numOr0(wtd.membershipsSold)), PURP, wtd.membershipConv!=null?fmtPct(wtd.membershipConv)+" conv":""],
+    ["RUN-RATE PROJECTION", fmtFull(runRate), "#4ADE80", "If Pace Holds All Week"],
+  ];
+
+  // ── daily sales progression: sum sales across techs per day ──
+  const dailyTotals = days.map(day=>({
+    day,
+    sales: techEntries.reduce((a,t)=>a+numOr0(t.rows[day] && t.rows[day].sales),0),
+  }));
+
+  const dailyChart=()=>{
+    if(!dailyTotals.length) return <div style={{color:"#5d6fa8",fontSize:11,padding:"10px 4px"}}>No days reported yet this week.</div>;
+    const W_=760,H_=190,pL=46,pB=26,pT=18,pR=16,n=dailyTotals.length;
+    const mx=Math.max(1,...dailyTotals.map(x=>x.sales));
+    const X=i=>pL+i*(W_-pL-pR)/Math.max(1,n);
+    const bw=(W_-pL-pR)/n*0.55;
+    const Y=v=>pT+(1-Math.min(1,v/mx))*(H_-pT-pB);
+    return (<svg viewBox={"0 0 "+W_+" "+H_} style={{width:"100%",height:"auto",overflow:"visible",marginTop:10}}>
+      {[0,0.5,1].map((f,i)=>(<g key={i}><line x1={pL} y1={Y(mx*f)} x2={W_-pR} y2={Y(mx*f)} stroke="#1e2d47"/><text x={pL-5} y={Y(mx*f)+3} fontSize="8" fill="#4a5a70" textAnchor="end">{fmt(mx*f)}</text></g>))}
+      {dailyTotals.map((x,i)=>{ const last=i===n-1; const cx=X(i)+bw/2+((W_-pL-pR)/n-bw)/2; return (<g key={i}>
+        <rect x={cx-bw/2} y={Y(x.sales)} width={bw} height={(H_-pB)-Y(x.sales)} rx="3" fill={last?"url(#wkgrad)":"#2E78C7"} opacity={last?0.9:1}/>
+        <text x={cx} y={Y(x.sales)-6} fontSize="8.5" fontWeight="700" fill={BLUE} textAnchor="middle">{fmt(x.sales)}</text>
+        <text x={cx} y={H_-6} fontSize="8.5" fill={last?GOLD:"#7089ab"} textAnchor="middle">{dayLabel(x.day)}{last?"*":""}</text>
+      </g>);})}
+      <defs><linearGradient id="wkgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#5BA4E6"/><stop offset="100%" stopColor="#2E78C7"/></linearGradient></defs>
+    </svg>);
+  };
+
+  // ── leaders ──
+  const salesLeaders = techEntries.map(t=>({name:t.name, sales:numOr0(t.rows.weekTotal && t.rows.weekTotal.sales)}))
+    .sort((a,b)=>b.sales-a.sales).slice(0,10);
+  const closeLeaders = techEntries.map(t=>{
+      const wt = t.rows.weekTotal || {};
+      return {name:t.name, opps:numOr0(wt.opps), closeRate:numOr0(wt.closeRate)};
+    }).filter(t=>t.opps>0).sort((a,b)=>b.closeRate-a.closeRate).slice(0,10);
+
+  const rankBar=(list,valKey,color,fmtVal,subFn)=>{
+    const mx=Math.max(1,...list.map(c=>c[valKey]||0));
+    return (<div style={{display:"flex",flexDirection:"column",gap:8,marginTop:10}}>
+      {list.length ? list.map((c,i)=>(<div key={c.name+i} style={{display:"flex",alignItems:"center",gap:10}}>
+        <div style={{width:20,fontSize:11,fontWeight:800,color:i<3?GOLD:"#6b7a99",textAlign:"right"}}>{i+1}</div>
+        <div style={{width:120,fontSize:11,color:"#cfeede",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{i===0?"🥇 ":i===1?"🥈 ":i===2?"🥉 ":""}{firstName(c.name)}</div>
+        <div style={{flex:1,background:"#0a1220",borderRadius:5,height:16,overflow:"hidden"}}><div style={{width:Math.max(2,(c[valKey]||0)/mx*100)+"%",height:"100%",borderRadius:5,background:"linear-gradient(90deg,"+color+","+color+"aa)",animation:"growW 1s ease both"}}/></div>
+        <div style={{width:76,fontSize:11,fontWeight:800,color:color,textAlign:"right"}}>{fmtVal(c[valKey])}</div>
+        {subFn&&<div style={{width:60,fontSize:9.5,color:"#9fb3cc",textAlign:"right"}}>{subFn(c)}</div>}
+      </div>)) : <div style={{color:"#5d6fa8",fontSize:11}}>No data yet.</div>}
+    </div>);
+  };
+
+  // ── day-by-day detail table ──
+  const dayChips = [...days.map(day=>({key:day,label:dayLabel(day)})), {key:"total",label:"WEEK TOTAL"}];
+  const detailRows = techEntries.map(t=>{
+    const wt = t.rows.weekTotal || {};
+    const sortVal = selDay==="total" ? numOr0(wt.sales) : numOr0(t.rows[selDay] && t.rows[selDay].sales);
+    return { name:t.name, rows:t.rows, weekTotal:wt, sortVal };
+  }).sort((a,b)=>b.sortVal-a.sortVal);
+
+  const closeColor=r=>r>=40?GREEN:RED;
+
+  return (
+    <div className="lf2-wrap riseIn">
+      <div className="lf2-head">
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <div className="lf2-logo">S</div>
+          <div>
+            <div className="lf2-title">Week To Date — {weekLabel}</div>
+            <div className="lf2-subtl">HVAC SERVICE · {days.length} of 7 days reported</div>
+          </div>
+        </div>
+        <div style={{background:"rgba(91,164,230,.1)",border:"1px solid #5BA4E655",color:"#5BA4E6",borderRadius:6,padding:"5px 12px",fontWeight:700,fontSize:10,letterSpacing:".14em"}}>STAGING SNAPSHOT</div>
+      </div>
+
+      <div className="lf2-kpis">
+        {kpis.map(([l,v,c,s])=>(<div className="lf2-kpi" key={l}><div className="l">{l}</div><div className="v" style={{color:c}}>{v}</div>{s?<div className="s">{s}</div>:null}</div>))}
+      </div>
+
+      <div style={{padding:"14px 24px 0"}}><div className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+        <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>Daily Sales Progression</div>
+        <div style={{fontSize:9.5,color:"#6b7a99"}}>department sales sold, summed across techs per elapsed day</div>
+        {dailyChart()}
+      </div></div>
+
+      <div style={{padding:"14px 24px 0",display:"flex",gap:12,flexWrap:"wrap"}}>
+        <div className="liftCard" style={{flex:"1 1 340px",background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+          <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>Sales Leaders</div>
+          <div style={{fontSize:9.5,color:"#6b7a99"}}>WTD sales sold, top 10</div>
+          {rankBar(salesLeaders,"sales",GOLD,v=>fmtFull(v))}
+        </div>
+        <div className="liftCard" style={{flex:"1 1 340px",background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+          <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>Close Rate Leaders</div>
+          <div style={{fontSize:9.5,color:"#6b7a99"}}>WTD opp close %, top 10 (opps &gt; 0)</div>
+          {rankBar(closeLeaders,"closeRate",GREEN,v=>fmtPct(v),c=>numOr0(c.opps)+" opps")}
+        </div>
+      </div>
+
+      <div style={{padding:"14px 24px 0"}}><div className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",flexWrap:"wrap",gap:6}}>
+          <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>Tech Day-By-Day Detail</div>
+          <div style={{fontSize:9.5,color:"#6b7a99"}}>{techEntries.length} techs · sorted by selected column</div>
+        </div>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:10}}>
+          {dayChips.map(c=>(<button key={c.key} onClick={()=>setSelDay(c.key)} className={"lf2-bu"+(selDay===c.key?" on":"")}>{c.label}</button>))}
+        </div>
+        {detailRows.length ? (
+          <div style={{overflowX:"auto",marginTop:12}}>
+            <table style={{width:"100%",borderCollapse:"collapse",minWidth:820}}>
+              <thead><tr>
+                <th style={{padding:"8px",fontSize:9,color:"#9fb3cc",fontWeight:700,textAlign:"right",borderBottom:"2px solid #1e2d47"}}>#</th>
+                <th style={{padding:"8px",fontSize:9,color:"#9fb3cc",fontWeight:700,textAlign:"left",borderBottom:"2px solid #1e2d47"}}>TECH</th>
+                {days.map(day=>(<th key={day} style={{padding:"8px",fontSize:9,color:"#9fb3cc",fontWeight:700,textAlign:"right",borderBottom:"2px solid #1e2d47",whiteSpace:"nowrap"}}>{dayLabel(day)}</th>))}
+                <th style={{padding:"8px",fontSize:9,color:"#9fb3cc",fontWeight:700,textAlign:"right",borderBottom:"2px solid #1e2d47",whiteSpace:"nowrap"}}>WTD TOTAL</th>
+                <th style={{padding:"8px",fontSize:9,color:"#9fb3cc",fontWeight:700,textAlign:"right",borderBottom:"2px solid #1e2d47",whiteSpace:"nowrap"}}>WTD CLOSE</th>
+                <th style={{padding:"8px",fontSize:9,color:"#9fb3cc",fontWeight:700,textAlign:"right",borderBottom:"2px solid #1e2d47",whiteSpace:"nowrap"}}>MEM SOLD</th>
+              </tr></thead>
+              <tbody>
+                {detailRows.map((t,i)=>{
+                  const cr = numOr0(t.weekTotal.closeRate);
+                  return (<tr key={t.name+i} style={i<3?{background:"rgba(245,195,24,.06)"}:null}>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:i<3?GOLD:"#6b7a99",fontWeight:800}}>{i+1}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,color:"#e6eefb",fontWeight:i<3?800:500,whiteSpace:"nowrap"}}>{i<3?["🥇 ","🥈 ","🥉 "][i]:""}{str(t.name)||"—"}</td>
+                    {days.map(day=>{
+                      const rec = t.rows[day];
+                      const s = rec && rec.sales!=null ? numOr0(rec.sales) : null;
+                      return (<td key={day} style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:"#e6eefb"}}>{rec ? fmtFull(s) : "–"}</td>);
+                    })}
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:GOLD,fontWeight:800}}>{fmtFull(t.weekTotal.sales)}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right"}}>
+                      <span style={{padding:"2px 8px",borderRadius:5,fontWeight:800,fontSize:10.5,color:closeColor(cr),background:closeColor(cr)+"1a",border:"1px solid "+closeColor(cr)+"55"}}>{fmtPct(cr)}</span>
+                    </td>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:PURP}}>{numOr0(t.weekTotal.membershipsSold)}</td>
+                  </tr>);
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : <div style={{color:"#5d6fa8",fontSize:11,padding:"10px 4px"}}>No tech activity reported yet this week.</div>}
+      </div></div>
+
+      <div style={{padding:"14px 24px 0"}}><div className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+        <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>Week Over Week</div>
+        <div style={{fontSize:9.5,color:"#6b7a99"}}>sales sold vs revenue invoiced · last 9 weeks</div>
+        {weekly.length>=2 ? (()=>{
+          const W_=760,H_=210,pL=48,pB=30,pT=18,pR=16,n=weekly.length;
+          const mx=Math.max(1,...weekly.map(x=>numOr0(x.sales)),...weekly.map(x=>numOr0(x.revenue)));
+          const X=i=>pL+i*(W_-pL-pR)/Math.max(1,n-1);
+          const Y=v=>pT+(1-Math.min(1,numOr0(v)/mx))*(H_-pT-pB);
+          const lineSales = weekly.map((x,i)=>(i?"L":"M")+X(i).toFixed(1)+" "+Y(x.sales).toFixed(1)).join(" ");
+          const lineRev = weekly.map((x,i)=>(i?"L":"M")+X(i).toFixed(1)+" "+Y(x.revenue).toFixed(1)).join(" ");
+          const areaSales = lineSales+" L "+X(n-1).toFixed(1)+" "+(H_-pB)+" L "+pL+" "+(H_-pB)+" Z";
+          return (<svg viewBox={"0 0 "+W_+" "+H_} style={{width:"100%",height:"auto",overflow:"visible",marginTop:10}}>
+            <defs><linearGradient id="wowgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={GOLD} stopOpacity="0.28"/><stop offset="100%" stopColor={GOLD} stopOpacity="0"/></linearGradient></defs>
+            {[0,0.5,1].map((f,i)=>(<g key={i}><line x1={pL} y1={Y(mx*f)} x2={W_-pR} y2={Y(mx*f)} stroke="#1e2d47"/><text x={pL-5} y={Y(mx*f)+3} fontSize="8" fill="#4a5a70" textAnchor="end">{fmt(mx*f)}</text></g>))}
+            <path d={areaSales} fill="url(#wowgrad)"/>
+            <path d={lineRev} fill="none" stroke={BLUE} strokeWidth="2.2"/>
+            <path d={lineSales} fill="none" stroke={GOLD} strokeWidth="2.4"/>
+            {weekly.map((x,i)=>{ const isCur=i===n-1; return (<g key={i}>
+              <circle cx={X(i)} cy={Y(x.revenue)} r="2.6" fill={BLUE}/>
+              <circle cx={X(i)} cy={Y(x.sales)} r={isCur?4:2.8} fill={isCur?"#4ADE80":GOLD}/>
+              <text x={X(i)} y={Y(x.sales)-8} fontSize="8" fontWeight="700" fill={isCur?"#4ADE80":GOLD} textAnchor="middle">{fmt(x.sales)}{x.salesIsApprox?"*":""}</text>
+              <text x={X(i)} y={H_-14} fontSize="8" fill={isCur?"#4ADE80":"#7089ab"} textAnchor="middle" transform={"rotate(0 "+X(i)+" "+(H_-14)+")"}>{str(x.label)}</text>
+            </g>);})}
+            <text x={W_-pR+6} y={pT+4} fontSize="8" fill={GOLD}>sales</text>
+            <text x={pL} y={pT-6} fontSize="8" fill={BLUE}>revenue</text>
+          </svg>);
+        })() : <div style={{color:"#5d6fa8",fontSize:11,padding:"10px 4px"}}>Not enough weekly history yet.</div>}
+        <div style={{fontSize:8.5,color:"#5d6fa8",marginTop:6}}>* past-week sales figures are report-approximated (invoice lag); the current week is exact.</div>
+      </div></div>
+    </div>
+  );
+}
+
 // ═══ HVAC SERVICE · standalone command deck (Field Conversion + IAQ reports) ══════
 const SVC=(typeof SERVICE_DATA!=="undefined")?SERVICE_DATA:{techs:[],dept:{},teams:[],iaqMonthly:[],months:[],dateRange:"",source:"",iaqTotal:0,elapsedFrac:0.5};
 function ServiceDash(){
@@ -666,6 +883,7 @@ function ServiceDash(){
   const TABS=[
     {id:"live",icon:"⚡",label:"LIVE",sub:"Real-time jobs"},
     {id:"overview",icon:"🛠",label:"OVERVIEW",sub:"Dept KPIs"},
+    {id:"weekly",icon:"📅",label:"WEEKLY",sub:"WTD + trends"},
     {id:"trend",icon:"📈",label:"TREND",sub:"Month over month"},
     {id:"board",icon:"🏆",label:"LEADERBOARD",sub:"All "+techs.length},
     {id:"conv",icon:"🎯",label:"CONVERSION",sub:"Opportunity %"},
@@ -738,6 +956,7 @@ function ServiceDash(){
 
       <div className="tab-fade" key={tab}>
         {tab==="live" && <ServiceLiveTab/>}
+        {tab==="weekly" && <ServiceWeeklyTab/>}
         {tab==="overview" && !showClassic && <ServicePulseTab onClassic={()=>setShowClassic(true)}/>}
         {tab==="overview" && showClassic && (<React.Fragment>
           <div style={{padding:"9px 24px 0",display:"flex",justifyContent:"flex-end"}}>

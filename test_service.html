@@ -215,17 +215,27 @@ tr.hov-row:hover td{background:#1a2540 !important;}
 .lf2-alarm-labels{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
 .lf2-alarm-label{background:#fff;color:#C61824;border-radius:7px;padding:4px 10px;font-weight:900;font-size:13px;letter-spacing:.05em}
 .lf2-alarm-exit{background:#fff;color:#C61824;border:none;border-radius:12px;padding:14px 40px;font-size:18px;flex-shrink:0;font-weight:900;letter-spacing:.08em;cursor:pointer;box-shadow:0 6px 30px rgba(0,0,0,.45)}
-.lf2-coach-card{background:rgba(91,164,230,.05);border:1px solid #2b3c66;border-radius:10px;padding:10px 12px;margin-bottom:8px}
-.lf2-coach-head{font-weight:800;font-size:12px;color:#dfe9ff}
-.lf2-coach-when{font-weight:600;color:#5d6fa8;font-size:10px}
-.lf2-coach-bands{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
 .lf2-band{border-radius:5px;padding:2px 7px;font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
 .lf2-band.b-strong{background:rgba(74,222,128,.12);border:1px solid #4ADE8055;color:#4ADE80}
 .lf2-band.b-strongonwins{background:rgba(45,212,191,.12);border:1px solid #2DD4BF55;color:#2DD4BF}
 .lf2-band.b-solid{background:rgba(91,164,230,.12);border:1px solid #5BA4E655;color:#5BA4E6}
 .lf2-band.b-moderate{background:rgba(245,179,36,.12);border:1px solid #F5B32455;color:#F5B324}
 .lf2-band.b-weak{background:rgba(230,57,70,.12);border:1px solid #E6394655;color:#ff8c93}
-.lf2-coach-tip{margin-top:6px;font-size:11px;line-height:1.45;color:#9fb9d8}
+.lf2-sc{margin-top:10px;border:1px solid #2a3a7a;border-radius:8px;background:#0c1640;padding:8px 10px 9px}
+.lf2-sc-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:4px 6px;flex-wrap:wrap}
+.lf2-sc-t{font-size:8.5px;font-weight:700;letter-spacing:.2em;color:#8fa3d9;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
+.lf2-sc-hear{font-size:10px;font-weight:700;letter-spacing:.04em;color:#38bdf8;text-decoration:none;border:1px solid #38bdf866;border-radius:4px;padding:1px 5px}
+.lf2-sc-out{font-size:8px;font-weight:800;letter-spacing:.12em;padding:2px 8px;border-radius:4px;border:1px solid;white-space:nowrap}
+.lf2-sc-bands{display:flex;gap:4px;flex-wrap:wrap}
+.lf2-sc-tip{margin-top:7px;font-size:9.5px;line-height:1.45;color:#cfd9f5;background:#0a1233;border:1px solid #22307a;border-left:3px solid #f5c518;border-radius:6px;padding:6px 9px}
+.lf2-ticker{display:flex;gap:8px;overflow-x:auto;padding:6px 2px;margin:2px 0 6px;-ms-overflow-style:none;scrollbar-width:none}
+.lf2-ticker::-webkit-scrollbar{display:none}
+.lf2-tick-chip{display:flex;align-items:center;gap:6px;background:#0f1738;border:1px solid #2b3c66;border-radius:20px;padding:5px 12px;white-space:nowrap;flex-shrink:0;font-size:10px}
+.lf2-tick-time{color:#8fa3d9;font-weight:700}
+.lf2-tick-tech{color:#f5c518;font-weight:800}
+.lf2-tick-cust{color:#c7d4f0}
+.lf2-tick-signed{background:linear-gradient(90deg,#F5B324,#ffe08a);color:#3a2c05;border-radius:4px;padding:1px 6px;font-weight:800;font-size:8.5px}
+.lf2-stjob{font-size:8px;font-weight:700;letter-spacing:.05em;color:#5BA4E6;border:1px solid #5BA4E666;border-radius:4px;padding:1px 6px;text-decoration:none;white-space:nowrap}
 .lf2-recnow{background:rgba(74,222,128,.14);border:1px solid #4ADE80;color:#4ADE80;border-radius:6px;padding:2px 8px;font-weight:800;font-size:10px;letter-spacing:.08em;animation:lf2Blink 1.2s infinite}
 .lf2-recchip{background:rgba(74,222,128,.1);border:1px solid #4ADE8055;color:#4ADE80;border-radius:6px;padding:2px 8px;font-weight:700;font-size:10px;letter-spacing:.06em}
 .lf2-cardtop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
@@ -449,8 +459,8 @@ function ServiceLiveTab(){
     const loadCoach=()=>{
       fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/servicecards.json?_="+Date.now())
         .then(r=>r.ok?r.json():null)
-        .then(d=>{ if(d&&d.cards) setCoach(d.cards.slice(0,6)); })
-        .catch(()=>{});
+        .then(d=>{ setCoach((d&&d.cards)?d.cards:[]); })
+        .catch(()=>setCoach([]));
     };
     loadCoach(); const cid=setInterval(loadCoach,60000); return ()=>clearInterval(cid);
   },[]);
@@ -535,6 +545,67 @@ function ServiceLiveTab(){
 
   const nowMin=ptNowMinutes();
   const redAlertCount=jobs.filter(j=>evalJobAlerts(j,nowMin).isAlert).length;
+
+  // ── per-card call coaching (Siro servicecards.json — word bands only) ──────
+  const nrmTech=t=>(t||"").toLowerCase().replace(/\s+/g," ").trim();
+  const findCoach=j=>{
+    if(!coach||!coach.length) return null;
+    const jn=String(j.jobNumber||"");
+    let c=jn?coach.find(x=>x.jobNumber&&String(x.jobNumber)===jn):null;
+    let isLastCall=false;
+    if(!c){
+      const jt=nrmTech(j.tech);
+      if(jt){
+        const matches=coach.filter(x=>nrmTech(x.tech)===jt);
+        if(matches.length){
+          c=matches.reduce((a,b)=>(new Date(b.dateCreated||0)>new Date(a.dateCreated||0)?b:a));
+          isLastCall=true;
+        }
+      }
+    }
+    return c?{c,isLastCall}:null;
+  };
+  const minutesAgo=c=>{
+    const ts=c.dateCreated||c.available;
+    if(!ts) return null;
+    const p=Date.parse(ts);
+    if(isNaN(p)) return null;
+    return Math.max(0,Math.round((now-p)/60000));
+  };
+  const coachSection=j=>{
+    const found=findCoach(j);
+    if(!found) return null;
+    const {c,isLastCall}=found;
+    const tip=c.tip||"";
+    const isWin=/^WIN\b/i.test(tip);
+    const isFix=/^FIX\b/i.test(tip);
+    const body=tip.replace(/^(WIN|FIX)\s*[—:\-]\s*/i,"");
+    const lab=isWin?"✋ WHAT WORKED":isFix?"🎯 NEXT TIME":null;
+    const labCol=isWin?"#4ade80":"#F5B324";
+    const mins=minutesAgo(c);
+    const oc=c.outcome==="closed"?"#4ade80":c.outcome==="no-close"?"#ff7b86":null;
+    return (
+      <div className="lf2-sc" onClick={ev=>ev.stopPropagation()}>
+        <div className="lf2-sc-h">
+          <span className="lf2-sc-t">📋 CALL COACHING{isLastCall?" · LAST CALL":""}{mins!=null?" · "+mins+"M":""}</span>
+          <span style={{display:"flex",gap:5,alignItems:"center",flexShrink:0}}>
+            {c.recId && <a href={"https://salespro.siro.ai/#/recordings/explore/"+c.recId} target="_blank" rel="noopener" className="lf2-sc-hear">🎧 HEAR CALL</a>}
+            {oc && <span className="lf2-sc-out" style={{color:oc,borderColor:oc+"88",background:oc+"14"}}>{c.outcome==="closed"?"CLOSED ✓":"NO-CLOSE"}</span>}
+          </span>
+        </div>
+        {c.bands && <div className="lf2-sc-bands">
+          {["welcome","diagnosis","options","close"].map(k=>c.bands[k]?(
+            <span key={k} className={"lf2-band b-"+String(c.bands[k]).toLowerCase().replace(/[^a-z]/g,"")}>{k}: {c.bands[k]}</span>
+          ):null)}
+        </div>}
+        {body && <div className="lf2-sc-tip">
+          {lab && <span style={{color:labCol,fontWeight:800,letterSpacing:".08em",marginRight:6}}>{lab} —</span>}
+          {body}
+        </div>}
+      </div>
+    );
+  };
+
   const jobCard=j=>{
     const st=j.stages||{};
     const optsNode=st.options; // {t,n,total} once options have been left
@@ -558,7 +629,10 @@ function ServiceLiveTab(){
             <div className="lf2-cust">{j.customer}</div>
             <div className="lf2-stat">{j.status||""}{j.jobType?" · "+j.jobType:""}</div>
           </div>
-          <span className="lf2-buchip" style={{color:buCol(j.bu),borderColor:buCol(j.bu)+"77"}}>{buShort(j.bu)}</span>
+          <span style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
+            <span className="lf2-buchip" style={{color:buCol(j.bu),borderColor:buCol(j.bu)+"77"}}>{buShort(j.bu)}</span>
+            <a href={"https://go.servicetitan.com/#/Job/Index/"+j.jobId} target="_blank" rel="noopener" onClick={ev=>ev.stopPropagation()} className="lf2-stjob">ST JOB ↗</a>
+          </span>
         </div>
         {timeline(j)}
         <div className="lf2-cardbot">
@@ -575,9 +649,21 @@ function ServiceLiveTab(){
         {isAlert && <div className="lf2-alertrow">
           {alerts.map(a=><span key={a.code} className="lf2-alertchip">{a.label}</span>)}
         </div>}
+        {coachSection(j)}
       </div>
     );
   };
+
+  // last 6 completed jobs, newest first — for the completions ticker
+  const doneTimeMs=j=>{
+    const dv=txt((j.stages||{}).done);
+    if(!dv||dv==="✓") return 0;
+    const p=Date.parse((lf.date||"")+" "+dv);
+    return isNaN(p)?0:p;
+  };
+  const completed=jobs.filter(j=>!!(j.stages&&j.stages.done))
+    .sort((a,b)=>doneTimeMs(b)-doneTimeMs(a))
+    .slice(0,6);
 
   return (
     <div className="lf2-wrap riseIn">
@@ -618,6 +704,25 @@ function ServiceLiveTab(){
         <div className="lf2-kpi"><div className="l">MEMBERSHIPS SOLD</div><div className="v" style={{color:"#5BA4E6"}}>{K.membershipsSold||0}</div><div className="s">today</div></div>
       </div>
 
+      {completed.length>0 && <div className="lf2-ticker">
+        {completed.map(j=>{
+          const dt=txt((j.stages||{}).done)||"✓";
+          const techFirst=(j.tech||"?").split(" ")[0];
+          const custRaw=j.customer||"";
+          const cust=custRaw.length>28?(custRaw.slice(0,28)+"…"):custRaw;
+          const sn=(j.stages||{}).signed;
+          const signed=!!(sn&&typeof sn==="object");
+          return (
+            <div key={j.jobId} className="lf2-tick-chip">
+              <span className="lf2-tick-time">{dt}</span>
+              <span className="lf2-tick-tech">{techFirst}</span>
+              <span className="lf2-tick-cust">{cust}</span>
+              {signed && <span className="lf2-tick-signed">✦ SIGNED</span>}
+            </div>
+          );
+        })}
+      </div>}
+
       <div className="lf2-bus">
         {teamsList.map(t=>(
           <button key={t} className={"lf2-bu"+(teamFilter===t?" on":"")} onClick={()=>setTeamFilter(t)}>{t}</button>
@@ -629,22 +734,6 @@ function ServiceLiveTab(){
           {sorted.length ? sorted.map(jobCard) : <div className="lf2-empty">No jobs match this filter.</div>}
         </div>
         <div className="lf2-feed">
-          {coach && coach.length>0 && <React.Fragment>
-            <div className="lf2-fh">◆ Live Coaching</div>
-            <div className="lf2-coach-list">
-              {coach.map((c,i)=>(
-                <div key={c.recId||i} className="lf2-coach-card">
-                  <div className="lf2-coach-head">{c.tech}<span className="lf2-coach-when"> · {c.durationMin}m call · {c.dateCreated}</span></div>
-                  <div className="lf2-coach-bands">
-                    {Object.entries(c.bands||{}).map(([k,v])=>(
-                      <span key={k} className={"lf2-band b-"+String(v).toLowerCase().replace(/[^a-z]/g,"")}>{k}: {v}</span>
-                    ))}
-                  </div>
-                  {c.tip?<div className="lf2-coach-tip">{c.tip}</div>:null}
-                </div>
-              ))}
-            </div>
-          </React.Fragment>}
           <div className="lf2-fh">◆ Live Activity</div>
           {activity.length ? (
             <div className="lf2-evs">

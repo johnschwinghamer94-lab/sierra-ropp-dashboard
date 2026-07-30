@@ -5138,27 +5138,14 @@ function ServiceDash(){
 }
 
 function Site(){
-  const [entered, setEntered] = React.useState("service");   // forced into HVAC Service dashboard for test_service.html
-  if (!entered) return <GateLanding onEnter={setEntered}/>;
-  const sw = (id, emoji, label, color) => (
-    <button onClick={()=>setEntered(id)} style={{display:"flex",alignItems:"center",gap:7,padding:"6px 14px",border:"none",cursor:"pointer",
-      fontFamily:"inherit",fontSize:12,fontWeight:800,letterSpacing:"0.04em",borderRadius:9,
-      background: entered===id ? color : "#0e1626", color: entered===id ? "#070b16" : "#9fb3cc", transition:"all .15s"}}>
-      <span style={{fontSize:14}}>{emoji}</span>{label}</button>
-  );
+  // SERVICE-ONLY page — gate landing and the ROPP / CA Sales / Plumbing dashboards are not reachable from here (John, 2026-07-30)
   return (
     <div style={{minHeight:"100vh",background:"#0a0e1a"}}>
       <div style={{display:"flex",gap:9,alignItems:"center",padding:"8px 18px",background:"linear-gradient(90deg,#0c1424,#111d33)",borderBottom:"1px solid #1e2d47",position:"sticky",top:0,zIndex:1000}}>
-        <button onClick={()=>setEntered(null)} style={{background:"none",border:"1px solid #1e2d47",color:"#9fb3cc",cursor:"pointer",fontFamily:"inherit",
-          fontSize:11,fontWeight:800,letterSpacing:"0.08em",borderRadius:9,padding:"6px 12px"}}>◀ SIERRA COMMAND</button>
-        <div style={{width:1,height:20,background:"#1e2d47",margin:"0 3px"}}/>
-        {sw("hvac","🔥","HVAC · ROPP","#F5B324")}
-        {sw("casales","💰","CA SALES","#22c55e")}
-        {sw("service","🛠","SERVICE","#5BA4E6")}
-        {sw("plumbing","🔧","PLUMBING","#2E78C7")}
+        <span style={{display:"flex",alignItems:"center",gap:7,fontSize:12,fontWeight:800,letterSpacing:"0.06em",color:"#5BA4E6"}}><span style={{fontSize:14}}>🛠</span>SIERRA SERVICE</span>
         <span style={{marginLeft:"auto",fontSize:9,color:"#4a5a70",fontWeight:700,letterSpacing:"0.08em"}}>SERVICE COMMAND · LIVE</span>
       </div>
-      {entered==="hvac" ? <Root/> : entered==="casales" ? <CASalesDash/> : entered==="service" ? <ServiceDash/> : <PlumbingDash/>}
+      <ServiceDash/>
     </div>
   );
 }

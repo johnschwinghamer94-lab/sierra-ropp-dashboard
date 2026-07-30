@@ -649,7 +649,7 @@ function ServiceLiveTab(){
         {isAlert && <div className="lf2-alertrow">
           {alerts.map(a=><span key={a.code} className="lf2-alertchip">{a.label}</span>)}
         </div>}
-        {coachSection(j)}
+        {j.stages && j.stages.done ? coachSection(j) : null}
       </div>
     );
   };

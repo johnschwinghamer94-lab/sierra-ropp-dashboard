@@ -1256,15 +1256,18 @@ function ServiceDash(){
 
         {tab==="trend" && (<React.Fragment>
           <div style={{padding:"16px 24px 0",display:"flex",gap:12,flexWrap:"wrap"}}>
-            {(()=>{ const full=monthly.filter(m=>m.month!=="July"); const best=full.length?full.reduce((a,b)=>b.rev>a.rev?b:a):{month:"—",rev:0};
+            {(()=>{ const full=monthly.slice(0,-1); const best=full.length?full.reduce((a,b)=>b.rev>a.rev?b:a):{month:"—",rev:0};
               const avg=full.length?Math.round(full.reduce((a,b)=>a+b.rev,0)/full.length):0;
-              const jun=monthly.find(m=>m.month==="June")||{rev:0}, may=monthly.find(m=>m.month==="May")||{rev:0};
-              const mom=may.rev?Math.round((jun.rev-may.rev)/may.rev*100):0;
+              const last2=full.slice(-2); const prevMo=last2[0]||{rev:0,month:""}, curMo=last2[1]||{rev:0,month:""};
+              const mom=prevMo.rev?Math.round((curMo.rev-prevMo.rev)/prevMo.rev*100):0;
+              const momLabel=(curMo.month?curMo.month.slice(0,3):"")+" vs "+(prevMo.month?prevMo.month.slice(0,3):"");
+              const mtdMonth=monthly[monthly.length-1]||{rev:0};
+              const mtdLabel=D.mtdRange||"month to date · partial";
               return (<React.Fragment>
                 {tile("BEST MONTH",best.month.slice(0,3),GOLD,fmt(best.rev))}
                 {tile("AVG / MONTH",fmt(avg),"#4ADE80","full months")}
-                {tile("LAST MoM",(mom>=0?"▲ ":"▼ ")+Math.abs(mom)+"%",mom>=0?"#4ADE80":"#E63946","Jun vs May")}
-                {tile("JULY MTD",fmt((monthly.find(m=>m.month==="July")||{}).rev||0),BLUE,"1–9, partial")}
+                {tile("LAST MoM",(mom>=0?"▲ ":"▼ ")+Math.abs(mom)+"%",mom>=0?"#4ADE80":"#E63946",momLabel)}
+                {tile(((mtdMonth.month||"").slice(0,3).toUpperCase()||"MTD")+" MTD",fmt(mtdMonth.rev||0),BLUE,mtdLabel)}
               </React.Fragment>);})()}
           </div>
           {card("Service Revenue — month over month",<span><span style={{color:"#5BA4E6"}}>▬</span> completed revenue&nbsp;<span style={{color:"#F5B324"}}>▬</span> opp conversion % · *Jul partial</span>,momChart())}

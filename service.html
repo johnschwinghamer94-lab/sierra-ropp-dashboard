@@ -1266,7 +1266,7 @@ function ServiceDash(){
                 {tile("BEST MONTH",best.month.slice(0,3),GOLD,fmt(best.rev))}
                 {tile("AVG / MONTH",fmt(avg),"#4ADE80","full months")}
                 {tile("LAST MoM",(mom>=0?"▲ ":"▼ ")+Math.abs(mom)+"%",mom>=0?"#4ADE80":"#E63946",momLabel)}
-                {tile("JULY MTD",fmt(mtdMonth.rev||0),BLUE,mtdLabel)}
+                {tile(((mtdMonth.month||"").slice(0,3).toUpperCase()||"MTD")+" MTD",fmt(mtdMonth.rev||0),BLUE,mtdLabel)}
               </React.Fragment>);})()}
           </div>
           {card("Service Revenue — month over month",<span><span style={{color:"#5BA4E6"}}>▬</span> completed revenue&nbsp;<span style={{color:"#F5B324"}}>▬</span> opp conversion % · *Jul partial</span>,momChart())}

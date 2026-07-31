@@ -236,6 +236,7 @@ tr.hov-row:hover td{background:#1a2540 !important;}
 .lf2-tick-cust{color:#c7d4f0}
 .lf2-tick-signed{background:linear-gradient(90deg,#F5B324,#ffe08a);color:#3a2c05;border-radius:4px;padding:1px 6px;font-weight:800;font-size:8.5px}
 .lf2-stjob{font-size:8px;font-weight:700;letter-spacing:.05em;color:#5BA4E6;border:1px solid #5BA4E666;border-radius:4px;padding:1px 6px;text-decoration:none;white-space:nowrap}
+.lf2-reccarry{background:rgba(245,179,36,.12);border:1px solid #F5B32488;color:#F5B324;border-radius:6px;padding:2px 8px;font-weight:800;font-size:10px;letter-spacing:.06em}
 .lf2-recnow{background:rgba(74,222,128,.14);border:1px solid #4ADE80;color:#4ADE80;border-radius:6px;padding:2px 8px;font-weight:800;font-size:10px;letter-spacing:.08em;animation:lf2Blink 1.2s infinite}
 .lf2-recchip{background:rgba(74,222,128,.1);border:1px solid #4ADE8055;color:#4ADE80;border-radius:6px;padding:2px 8px;font-weight:700;font-size:10px;letter-spacing:.06em}
 .lf2-cardtop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
@@ -340,7 +341,7 @@ const evalJobAlerts=(j,nowMin)=>{
   }
   // 5. NOT RECORDING — Siro data available, no recording for this visit, job well underway
   // (never fires on a tech who is actively recording right now)
-  if(j.siro && !j.siro.rec && !j.siro.recNow && (isDone || (elapsedMin!=null && elapsedMin>=45))){
+  if(j.siro && !j.siro.rec && !j.siro.recNow && !j.siro.liveTech && (isDone || (elapsedMin!=null && elapsedMin>=45))){
     alerts.push({code:"norec",label:"🎙 NOT RECORDING"});
   }
   // 6. MEMBER NOT CONVERTED — membership opportunity surfaced but job closed without the sale
@@ -643,6 +644,7 @@ function ServiceLiveTab(){
             {sold && <span style={{color:"#4ade80",fontWeight:800,border:"1px solid #4ade8088",background:"rgba(74,222,128,.12)",borderRadius:4,padding:"2px 7px"}}>{fmt$(soldTotal)}</span>}
             {sold && <span className="lf2-signedchip">✦ SIGNED</span>}
             {j.siro && j.siro.recNow && j.stages && j.stages.onsite && !j.stages.done && <span className="lf2-recnow">REC ●</span>}
+            {j.siro && !j.siro.recNow && j.siro.liveTech && j.stages && j.stages.onsite && !j.stages.done && <span className="lf2-reccarry">🎙 REC · RUNNING</span>}
             {j.siro && j.siro.rec && !j.siro.recNow && <span className="lf2-recchip">🎙 REC</span>}
             {j.membershipSold && <span title="Membership sold">🎟</span>}
           </span>

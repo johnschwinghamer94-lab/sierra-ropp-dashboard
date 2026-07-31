@@ -318,10 +318,10 @@ const evalJobAlerts=(j,nowMin)=>{
     const hrs=(elapsedMin/60).toFixed(1);
     alerts.push({code:"long",label:"⏱ "+hrs+"H ON SITE"});
   }
-  // 2. LOW OPTIONS — <4 options AND (onsite>=45m OR signed/done)
+  // 2. LOW OPTIONS — <4 options AND (onsite>=60m OR signed/done) — 1h grace (John 7/31)
   const optsNode=st.options;
   const optsCount=(optsNode&&typeof optsNode==="object")?(optsNode.n||0):0;
-  const eligibleForOpts = (elapsedMin!=null && elapsedMin>=45) || isSigned || isDone;
+  const eligibleForOpts = (elapsedMin!=null && elapsedMin>=60) || isSigned || isDone;
   if(eligibleForOpts && optsCount<4){
     alerts.push({code:"opts",label:"OPTS "+optsCount+"/4"});
   }

@@ -10123,9 +10123,39 @@ function OverviewTab({
 // ── ROOT ──────────────────────────────────────────────────────────────────────
 // ── Hour by Hour (live today, from hourly.json) ─────────────────────────────
 function HourByHourTab({
-  hourly,
-  deptTgls
+  hourly: liveHourly,
+  deptTgls: liveDeptTgls
 }) {
+  // ── History mode: browse a past day's end-of-day snapshot ─────────────────
+  // Self-contained per John's spec — fetches its own hourly.json + livefeed.json
+  // snapshots for the selected date, independent of the live App-level poll.
+  const [histDate, setHistDate] = React.useState(null); // null = live, else "YYYY-MM-DD"
+  const [histStatus, setHistStatus] = React.useState("idle"); // idle|loading|ready|error
+  const histCacheRef = React.useRef({});
+  React.useEffect(() => {
+    if (histDate === null) return;
+    if (histCacheRef.current[histDate]) { setHistStatus("ready"); return; }
+    let alive = true;
+    setHistStatus("loading");
+    Promise.all([
+      histFetchSnapshot("hourly.json", histDate).catch(() => null),
+      histFetchSnapshot("livefeed.json", histDate).catch(() => null)
+    ]).then(([hj, lj]) => {
+      if (!alive) return;
+      if (!hj && !lj) { setHistStatus("error"); return; }
+      histCacheRef.current[histDate] = {
+        hourly: hj,
+        deptTgls: lj && Array.isArray(lj.tgls) ? lj.tgls.length : null
+      };
+      setHistStatus("ready");
+    });
+    return () => { alive = false; };
+  }, [histDate]);
+  const isHist = histDate !== null;
+  const hourly = isHist ? (histCacheRef.current[histDate] && histCacheRef.current[histDate].hourly) || null : liveHourly;
+  const deptTgls = isHist ? (histCacheRef.current[histDate] ? histCacheRef.current[histDate].deptTgls : null) : liveDeptTgls;
+  const histDays = React.useMemo(histLast14Days, []);
+
   const fmtHour = h => {
     const n = +h;
     return (n % 12 || 12) + " " + (n < 12 ? "AM" : "PM");
@@ -10230,6 +10260,27 @@ function HourByHourTab({
       marginTop: 2
     }
   }, hourly && hourly.date ? "Live from ServiceTitan hourly reports · updated " + (hourly.updated || "") : "Waiting for today's hourly reports")), /*#__PURE__*/React.createElement("div", {
+    style: { padding: "10px 24px 0", display: "flex", gap: 6, flexWrap: "wrap" }
+  }, histDays.map(d => /*#__PURE__*/React.createElement("button", {
+    key: d.key,
+    onClick: () => setHistDate(d.key === histDays[0].key ? null : d.key),
+    style: {
+      fontSize: 8.5, fontWeight: 700, letterSpacing: ".06em", padding: "4px 9px",
+      borderRadius: 5, border: "1px solid " + ((isHist ? histDate : histDays[0].key) === d.key ? "#F5B324" : "#22307a"),
+      color: (isHist ? histDate : histDays[0].key) === d.key ? "#F5B324" : "#8fa3d9",
+      cursor: "pointer", background: (isHist ? histDate : histDays[0].key) === d.key ? "rgba(245,179,36,.10)" : "#0a1130",
+      textTransform: "uppercase", whiteSpace: "nowrap"
+    }
+  }, d.label))), isHist ? /*#__PURE__*/React.createElement("div", {
+    style: { margin: "10px 24px 0", padding: "9px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, background: "linear-gradient(90deg,#3a2b06,#241a04)", border: "1px solid #f5c51888", borderRadius: 8, color: "#f5c518", fontSize: 11, fontWeight: 700, letterSpacing: ".05em" }
+  }, /*#__PURE__*/React.createElement("span", null,
+      histStatus === "loading" ? "\u{1F4FC} Loading " + histWeekdayLabel(histDate) + " snapshot…"
+      : histStatus === "error" ? "History unavailable right now — try again in a minute"
+      : "\u{1F4FC} VIEWING " + histWeekdayLabel(histDate) + " — END OF DAY · not live"),
+    /*#__PURE__*/React.createElement("button", {
+      onClick: () => setHistDate(null),
+      style: { fontSize: 10.5, fontWeight: 800, letterSpacing: ".08em", color: "#0a0e1a", background: "#f5c518", border: "none", borderRadius: 6, padding: "5px 12px", cursor: "pointer", whiteSpace: "nowrap" }
+    }, "▶ BACK TO LIVE")) : null, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "18px 24px",
       display: "flex",
@@ -10767,7 +10818,52 @@ const LF_CSS = `
 .lf2-tglrow .th{font-size:10px;color:#f5c518;font-weight:800;letter-spacing:.05em;flex-shrink:0;text-transform:uppercase}
 .lf2-tglrow .cu{font-size:9.5px;color:#cfd9f5;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;text-transform:uppercase}
 .lf2-tglrow .sb{font-size:8px;font-weight:800;letter-spacing:.1em;color:#4ade80;border:1px solid #4ade8088;background:rgba(74,222,128,.12);border-radius:4px;padding:2px 7px;flex-shrink:0;white-space:nowrap}
+.lf2-datebar{display:flex;gap:5px;flex-wrap:wrap;max-width:520px}
+.lf2-datechip{font-size:8.5px;font-weight:700;letter-spacing:.06em;padding:4px 9px;border-radius:5px;border:1px solid #22307a;color:#8fa3d9;cursor:pointer;background:#0a1130;white-space:nowrap;text-transform:uppercase}
+.lf2-datechip:hover{border-color:#7fb3e8aa;color:#c7d4f0}
+.lf2-datechip.on{border-color:#f5c518;color:#f5c518;background:#f5c51811;box-shadow:0 0 10px #f5c51822}
+.lf2-histbanner{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 22px;padding:9px 16px;background:linear-gradient(90deg,#3a2b06,#241a04);border:1px solid #f5c51888;border-radius:8px;color:#f5c518;font-size:11px;font-weight:700;letter-spacing:.05em}
+.lf2-backlive{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:#0a0e1a;background:#f5c518;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;white-space:nowrap}
+.lf2-backlive:hover{background:#ffd75e}
 `;
+
+// ── Shared past-day history fetch (used by Live Feed + Tech Board tabs) ────
+// Two-step: resolve the end-of-day snapshot commit for a given file, then
+// fetch that file's contents at that commit. Public repo — no auth needed.
+const HIST_REPO = { owner: "johnschwinghamer94-lab", name: "sierra-ropp-dashboard" };
+const histLast14Days = () => {
+  const out = [];
+  const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles" }));
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(now); d.setDate(d.getDate() - i);
+    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, "0"), day = String(d.getDate()).padStart(2, "0");
+    out.push({
+      key: y + "-" + m + "-" + day,
+      label: i === 0 ? "TODAY" : d.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase() + " " + (d.getMonth() + 1) + "/" + d.getDate()
+    });
+  }
+  return out;
+};
+const histFetchSnapshot = async (path, dateKey) => {
+  const until = dateKey + "T23:59:59-07:00";
+  const cUrl = "https://api.github.com/repos/" + HIST_REPO.owner + "/" + HIST_REPO.name + "/commits?path=" + path + "&until=" + until + "&per_page=1";
+  const cr = await fetch(cUrl);
+  if (cr.status === 403) throw new Error("RATE_LIMIT");
+  if (!cr.ok) throw new Error("HTTP_" + cr.status);
+  const cj = await cr.json();
+  if (!cj || !cj.length) throw new Error("NO_SNAPSHOT");
+  const sha = cj[0].sha;
+  const rUrl = "https://raw.githubusercontent.com/" + HIST_REPO.owner + "/" + HIST_REPO.name + "/" + sha + "/" + path;
+  const rr = await fetch(rUrl + "?t=" + Date.now());
+  if (!rr.ok) throw new Error("HTTP_" + rr.status);
+  return rr.json();
+};
+const histWeekdayLabel = dateKey => {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  return dt.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase() + " " + m + "/" + d;
+};
+
 function LiveFeedTab({
   hourly
 }) {
@@ -10777,7 +10873,24 @@ function LiveFeedTab({
   const [failed, setFailed] = React.useState(false);
   const [buFilter, setBuFilter] = React.useState("ALL");
   const [, setTick] = React.useState(0);
+  // ── History mode: browse a past day's end-of-day snapshot ─────────────────
+  const [histDate, setHistDate] = React.useState(null); // null = live, else "YYYY-MM-DD"
+  const [histStatus, setHistStatus] = React.useState("idle"); // idle|loading|ready|error
+  const histCacheRef = React.useRef({});
   React.useEffect(() => {
+    if (histDate === null) return; // live mode handled by the polling effect below
+    if (histCacheRef.current[histDate]) { setHistStatus("ready"); return; }
+    let alive = true;
+    setHistStatus("loading");
+    histFetchSnapshot("livefeed.json", histDate).then(j => {
+      if (!alive) return;
+      histCacheRef.current[histDate] = j || {};
+      setHistStatus("ready");
+    }).catch(() => { if (alive) setHistStatus("error"); });
+    return () => { alive = false; };
+  }, [histDate]);
+  React.useEffect(() => {
+    if (histDate !== null) return; // paused while viewing history
     let alive = true;
     const load = () => {
       fetch("livefeed.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
@@ -10793,7 +10906,10 @@ function LiveFeedTab({
     const id = setInterval(load, 45000);
     const tk = setInterval(() => setTick(x => x + 1), 30000);
     return () => { alive = false; clearInterval(id); clearInterval(tk); };
-  }, []);
+  }, [histDate]);
+  const isHist = histDate !== null;
+  const dLf = isHist ? histCacheRef.current[histDate] || null : lf;
+  const histDays = React.useMemo(histLast14Days, []);
 
   const vegasHour = (() => {
     try {
@@ -10804,8 +10920,8 @@ function LiveFeedTab({
   const ageMin = lf && lf.generatedMs ? Math.floor((Date.now() - lf.generatedMs) / 60000) : null;
   const stale = inOps && ageMin !== null && ageMin > 8;
 
-  const k = lf && lf.kpis || { jobs: 0, completed: 0, onSite: 0, enRoute: 0, optionsTotal: 0, optionsCount: 0, optionsJobs: 0, signedTotal: 0, signedJobs: 0 };
-  const allJobs = lf && lf.jobs || [];
+  const k = dLf && dLf.kpis || { jobs: 0, completed: 0, onSite: 0, enRoute: 0, optionsTotal: 0, optionsCount: 0, optionsJobs: 0, signedTotal: 0, signedJobs: 0 };
+  const allJobs = dLf && dLf.jobs || [];
   const buShort = b => (b || "").replace(/^HVAC - /, "").replace(/^Plumbing - /, "").split(" (")[0];
   const buList = Array.from(new Set(allJobs.map(j => buShort(j.bu)).filter(Boolean)));
   const jobsFiltered = buFilter === "ALL" ? allJobs : allJobs.filter(j => buShort(j.bu) === buFilter);
@@ -10874,12 +10990,12 @@ function LiveFeedTab({
     const lab = isWin ? "\u{1F44F} WHAT WORKED" : isFix ? "\u{1F3AF} NEXT TIME" : "\u{1F3AF} COACH POINT";
     const labCol = isWin ? "#4ade80" : "#ffb35c";
     // this call's TGL sold (install booked) — from the live feed's TGL board data
-    const tglSold = (lf && lf.tgls || []).find(x => x.soldT && String(x.src) === String(j.jobId));
+    const tglSold = (dLf && dLf.tgls || []).find(x => x.soldT && String(x.src) === String(j.jobId));
     // ServiceTitan/board evidence outranks the AI call grade (John's rule): if the
     // board shows a TGL for this job (tgls[] entry OR the TGL timeline stage is
     // reached) but the scorecard still says no-close/unknown — the card was likely
     // graded before the TGL ticket was typed. Override the displayed outcome.
-    const tglBoardEntry = (lf && lf.tgls || []).find(x => String(x.src) === String(j.jobId));
+    const tglBoardEntry = (dLf && dLf.tgls || []).find(x => String(x.src) === String(j.jobId));
     const tglEvidence = !!tglBoardEntry || !!(j.stages && j.stages.signed);
     const outcomeOverridden = tglEvidence && (c.outcome === "no-close" || c.outcome === "unknown");
     const displayOutcome = outcomeOverridden ? "flipped" : c.outcome;
@@ -10911,7 +11027,7 @@ function LiveFeedTab({
     // Late-typed TGL tickets appear on the board (livefeed.json tgls[]) before the
     // per-job stage state catches up — fall back to the board entry so the
     // timeline node reflects ServiceTitan reality, not a stale per-job snapshot.
-    const boardTgl = !s.signed ? (lf && lf.tgls || []).find(x => String(x.src) === String(j.jobId)) : null;
+    const boardTgl = !s.signed ? (dLf && dLf.tgls || []).find(x => String(x.src) === String(j.jobId)) : null;
     const sig = s.signed || (boardTgl ? { t: boardTgl.t } : null);
     const notRecording = j.status === "Working" && j.rec === false;
     const isRecording = j.status === "Working" && j.rec === true;
@@ -10975,13 +11091,27 @@ function LiveFeedTab({
     e("div", { className: "v", style: col ? { color: col } : null }, e(CountVal, { v: v })),
     e("div", { className: "s" }, sub));
 
-  const headerRight = stale ? e("div", { className: "lf2-chip-stale" }, "⚠ FEED STALE · " + ageMin + "M")
+  const headerRight = isHist ? null
+    : stale ? e("div", { className: "lf2-chip-stale" }, "⚠ FEED STALE · " + ageMin + "M")
     : inOps ? e("div", { className: "lf2-chip-live" }, e("span", { className: "lf2-dot" }), "LIVE")
     : e("div", { className: "lf2-chip-night" }, "\u{1F319} AFTER HOURS · FINAL");
 
+  const dateBar = e("div", { className: "lf2-datebar" },
+    histDays.map(d => e("button", {
+      key: d.key,
+      className: "lf2-datechip" + ((isHist ? histDate : histDays[0].key) === d.key ? " on" : ""),
+      onClick: () => setHistDate(d.key === histDays[0].key ? null : d.key)
+    }, d.label)));
+
+  const histBanner = isHist ? e("div", { className: "lf2-histbanner" },
+    histStatus === "loading" ? e("span", null, "\u{1F4FC} Loading " + histWeekdayLabel(histDate) + " snapshot…")
+    : histStatus === "error" ? e("span", null, "History unavailable right now — try again in a minute")
+    : e("span", null, "\u{1F4FC} VIEWING " + histWeekdayLabel(histDate) + " — END OF DAY · not live"),
+    e("button", { className: "lf2-backlive", onClick: () => setHistDate(null) }, "▶ BACK TO LIVE")) : null;
+
   const feedRail = e("div", { className: "lf2-feed" },
     e("div", { className: "lf2-fh" }, "◆ Live Activity"),
-    lf && lf.feed && lf.feed.length ? e("div", { className: "lf2-evs" }, lf.feed.map((ev, i) => e("div", { key: i, className: "lf2-ev" + (i === 0 ? " first" : "") },
+    dLf && dLf.feed && dLf.feed.length ? e("div", { className: "lf2-evs" }, dLf.feed.map((ev, i) => e("div", { key: i, className: "lf2-ev" + (i === 0 ? " first" : "") },
       e("span", { className: "ico" }, ev.i),
       e("div", { style: { minWidth: 0 } },
         e("div", { className: "x", style: { color: ev.c || "#9fb3cc" } }, ev.x),
@@ -10995,24 +11125,25 @@ function LiveFeedTab({
         e("div", { className: "lf2-logo" }, "S"),
         e("div", null,
           e("div", { className: "lf2-title" }, "Sierra Air — Silo Command"),
-          e("div", { className: "lf2-subtl" }, "Live Feed · " + (lf && lf.day ? lf.day : "") + (lf && lf.generated ? " · synced " + lf.generated : "")))),
-      headerRight),
+          e("div", { className: "lf2-subtl" }, (isHist ? "History · " : "Live Feed · ") + (dLf && dLf.day ? dLf.day : "") + (dLf && dLf.generated ? " · synced " + dLf.generated : "")))),
+      e("div", { style: { display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" } }, dateBar, headerRight)),
+    histBanner,
     e("div", { className: "lf2-kpis" },
       kpi("Jobs Today", k.jobs, k.completed + " completed"),
       kpi("On Site Now", k.onSite, k.enRoute + " en route", k.onSite > 0 ? "#f5c518" : null),
       kpi("Options In Play", money(k.optionsTotal), k.optionsCount + " options on " + k.optionsJobs + " jobs", "#f5c518"),
       kpi("TGLs Created", k.tglLeads != null ? k.tglLeads : k.signedJobs, (k.tglSold ? "💰 " + k.tglSold + " SOLD · " : "") + "replacement leads only" + (k.signedTotal > 0 ? " · 💵 +" + money(k.signedTotal) + " sold on calls" : ""), "#4ade80"),
       kpi("Sold TGL Revenue", hourly && hourly.today ? money(hourly.today.rev) : "—", "sales from leads created today", "#f5c518")),
-    lf && lf.tgls && lf.tgls.length > 0 && e("div", { className: "lf2-tglbd riseIn" },
+    dLf && dLf.tgls && dLf.tgls.length > 0 && e("div", { className: "lf2-tglbd riseIn" },
       e("div", { className: "lf2-tglbd-h" },
         e("span", { className: "lf2-tglbd-t" }, "⚡ TGL Board — Replacement Leads"),
-        e("span", { className: "lf2-tglbd-n" }, String(lf.tgls.length)),
-        (lf.tgls.filter(t => t.sd).length > 0) && e("span", { style: { fontSize: 10, fontWeight: 800, color: "#f5c518", letterSpacing: ".08em" } },
-          "⚡ " + lf.tgls.filter(t => t.sd).length + " SAME-DAY"),
-        (lf.tgls.filter(t => t.soldT).length > 0) && e("span", { style: { fontSize: 10, fontWeight: 800, color: "#4ade80", letterSpacing: ".08em" } },
-          "💰 " + lf.tgls.filter(t => t.soldT).length + " SOLD")),
+        e("span", { className: "lf2-tglbd-n" }, String(dLf.tgls.length)),
+        (dLf.tgls.filter(t => t.sd).length > 0) && e("span", { style: { fontSize: 10, fontWeight: 800, color: "#f5c518", letterSpacing: ".08em" } },
+          "⚡ " + dLf.tgls.filter(t => t.sd).length + " SAME-DAY"),
+        (dLf.tgls.filter(t => t.soldT).length > 0) && e("span", { style: { fontSize: 10, fontWeight: 800, color: "#4ade80", letterSpacing: ".08em" } },
+          "💰 " + dLf.tgls.filter(t => t.soldT).length + " SOLD")),
       e("div", { className: "lf2-tglbd-grid" },
-        lf.tgls.map((t, i) => e("a", {
+        dLf.tgls.map((t, i) => e("a", {
           key: i,
           className: "lf2-tglrow" + (t.soldT ? " sold" : ""),
           href: "https://go.servicetitan.com/#/Job/Index/" + (t.num || t.src),
@@ -11031,7 +11162,8 @@ function LiveFeedTab({
       e("div", { className: "lf2-grid" },
         jobsShown.length ? jobsShown.map(card)
         : e("div", { className: "lf2-empty" },
-            failed || !lf ? "LIVE FEED WARMING UP — the sync loop publishes 6:50a–8:30p Vegas. First data lands within ~3 minutes of start."
+            isHist ? (histStatus === "loading" ? "Loading history snapshot…" : histStatus === "error" ? "History unavailable right now — try again in a minute" : "No SILO jobs on the board for that day.")
+          : failed || !dLf ? "LIVE FEED WARMING UP — the sync loop publishes 6:50a–8:30p Vegas. First data lands within ~3 minutes of start."
                           : "No SILO jobs on the board yet today.")),
       feedRail));
 }

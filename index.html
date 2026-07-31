@@ -10893,12 +10893,12 @@ function LiveFeedTab({
     if (histDate !== null) return; // paused while viewing history
     let alive = true;
     const load = () => {
-      fetch("livefeed.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
+      fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/livefeed.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
         if (!alive) return;
         if (j) { setLf(j); setFailed(false); } else setFailed(true);
       }).catch(() => { if (alive) setFailed(true); });
       // FSG live-coach scorecards (published by the Mac's silo-live-scorecards task) — optional file
-      fetch("scorecards.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
+      fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/scorecards.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
         if (alive && j) setSc(j);
       }).catch(() => {});
     };
@@ -11320,7 +11320,7 @@ function CoachingTab() {
   React.useEffect(() => {
     let alive = true;
     const load = () => {
-      fetch("coaching.json?t=" + Date.now()).then(r => r.ok ? r.json() : Promise.reject()).then(j => {
+      fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/coaching.json?t=" + Date.now()).then(r => r.ok ? r.json() : Promise.reject()).then(j => {
         if (!alive) return;
         if (j && typeof j === "object") { setData(j); setErr(false); } else setErr(true);
       }).catch(() => { if (alive) setErr(true); });
@@ -11776,7 +11776,7 @@ function Root() {
     // spin the header ↻ only for a real click — the automatic 60s poll used
     // to flash it every minute (review find, 2026-07-19)
     if (manual) setRefreshing(true);
-    fetch("hourly.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
+    fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/hourly.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
       if (!j) return;
       // Midnight reset (John, 2026-07-19 — was 8 AM): if hourly.json is still
       // from a prior day, show a clean zeroed slate (TODAY gauge, revenue,
@@ -11890,7 +11890,7 @@ function Root() {
   useEffect(() => {
     let alive = true;
     const poll = () => {
-      fetch("livefeed.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
+      fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/livefeed.json?t=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
         if (!alive || !j) return;
         // dept TGLs created today (KPI boxes + Overview) — canceled TGLs still
         // count (John 2026-07-17); mis-created tickets are dropped upstream by

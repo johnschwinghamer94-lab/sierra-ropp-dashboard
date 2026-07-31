@@ -339,7 +339,8 @@ const evalJobAlerts=(j,nowMin)=>{
     }
   }
   // 5. NOT RECORDING — Siro data available, no recording for this visit, job well underway
-  if(j.siro && !j.siro.rec && (isDone || (elapsedMin!=null && elapsedMin>=45))){
+  // (never fires on a tech who is actively recording right now)
+  if(j.siro && !j.siro.rec && !j.siro.recNow && (isDone || (elapsedMin!=null && elapsedMin>=45))){
     alerts.push({code:"norec",label:"🎙 NOT RECORDING"});
   }
   // 6. MEMBER NOT CONVERTED — membership opportunity surfaced but job closed without the sale

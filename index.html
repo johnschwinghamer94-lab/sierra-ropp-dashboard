@@ -9751,7 +9751,8 @@ function OverviewTab({
     // A month with no entry shows an estimate of ~23 flips per budget day
     // and flags the label with (EST.) until the real number is added.
     const TGL_BUDGETS = {
-      "2026-07": 530
+      "2026-07": 530,
+      "2026-08": 431   // Aug budget sheet (John 7/31): 782 ROPP x 55% LTO flip = 431 flips to CA · 21 working days
     };
     let budDaysTotal = 0;
     for (let _d = 1; _d <= daysInMonth; _d++) {

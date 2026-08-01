@@ -303,6 +303,11 @@ const lf2SaveAck=(set)=>{ try{ localStorage.setItem(LF2_ACK_KEY,JSON.stringify({
 const evalJobAlerts=(j,nowMin)=>{
   const st=j.stages||{};
   const alerts=[];
+  // Part-install runs are parts drop-offs, not sales opportunities — no job-standards alerts (John 7/31)
+  const jt=(j.jobType||"").toLowerCase();
+  if(jt.includes("part") && jt.includes("install")){
+    return {alerts,isAlert:false,isSigned:!!(st.signed&&typeof st.signed==="object")};
+  }
   const onsiteRaw=st.onsite;
   const onsiteStr=typeof onsiteRaw==="string"?onsiteRaw:(onsiteRaw&&typeof onsiteRaw==="object"?onsiteRaw.t:null);
   const onsiteMin=parseStageTimeMinutes(onsiteStr);

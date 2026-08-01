@@ -9857,13 +9857,13 @@ function OverviewTab({
         color: budColor,
         margin: "5px 0 2px"
       }
-    }, budTglsLeft, /*#__PURE__*/React.createElement("span", {
+    }, budTglsLeft === 0 && mt > BUDGET_TGLS ? "+" + (mt - BUDGET_TGLS) : budTglsLeft, /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 13,
         fontWeight: 700,
         color: "#7089ab"
       }
-    }, " TGLs needed")), /*#__PURE__*/React.createElement("div", {
+    }, budTglsLeft === 0 && mt > BUDGET_TGLS ? " TGLs OVER budget" : " TGLs needed")), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 9,
         color: "#7089ab"

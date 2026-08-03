@@ -1333,6 +1333,148 @@ function ServiceHxhTab(){
   );
 }
 
+function ServiceReviewTab(){
+  const [d,setD]=React.useState(null);
+  const [err,setErr]=React.useState(false);
+  const [selWeek,setSelWeek]=React.useState(null);
+
+  const load=()=>{
+    fetch("weekreview.json?_="+Date.now())
+      .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
+      .then(j=>{ setD(j); setErr(false); })
+      .catch(()=>setErr(true));
+  };
+  React.useEffect(()=>{ load(); const id=setInterval(load,300000); return ()=>clearInterval(id); },[]);
+
+  const BLUE="#5BA4E6",GREEN="#22c55e",GOLD="#F5B324",PURP="#a78bfa",RED="#E63946";
+  const numOr0=v=>(typeof v==="number"&&isFinite(v))?v:0;
+  const str=v=>(v==null?"":String(v));
+  const fmt=v=>{ v=numOr0(v); const av=Math.abs(v); return av>=1000000?"$"+(v/1000000).toFixed(2)+"M":av>=1000?"$"+Math.round(v/1000).toLocaleString()+"k":"$"+Math.round(v); };
+  const fmtFull=v=>"$"+Math.round(numOr0(v)).toLocaleString();
+  const fmtPct=v=>numOr0(v).toFixed(1)+"%";
+
+  const weeks = (d && d.weeks && typeof d.weeks==="object" && !Array.isArray(d.weeks)) ? d.weeks : {};
+  const weekKeys = Object.keys(weeks).sort((a,b)=>b.localeCompare(a));
+  const latestKey = (d && d.latest && weeks[d.latest]) ? d.latest : (weekKeys[0]||null);
+  const activeKey = (selWeek && weeks[selWeek]) ? selWeek : latestKey;
+  const wk = activeKey ? weeks[activeKey] : null;
+
+  if(!d || !weekKeys.length){
+    return (<div className="lf2-wrap riseIn" style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"50vh"}}>
+      <div style={{color:"#8fa3d9",fontSize:12,letterSpacing:"0.1em"}}>{err?"⚠ COULD NOT LOAD weekreview.json":(d?"◆ NO WEEK REVIEW DATA YET":"◆ LOADING WEEK REVIEW…")}</div>
+    </div>);
+  }
+
+  const dept = (wk && wk.dept && typeof wk.dept==="object") ? wk.dept : {};
+  const deltas = (dept.deltas && typeof dept.deltas==="object") ? dept.deltas : {};
+  const techs = Array.isArray(wk && wk.techs) ? wk.techs : [];
+  const isFinal = str(wk && wk.audit).toLowerCase()==="final";
+  const isPrelim = str(wk && wk.audit).toLowerCase()==="prelim";
+  const label = str(wk && wk.label) || activeKey || "—";
+  const auditNote = str(wk && wk.auditNote);
+
+  // per-tech WoW deltas: check real data shape — not present in current feed, guard for future
+  const techHasDelta = techs.some(t=>t && typeof t==="object" && t.deltas && typeof t.deltas==="object" && t.deltas.sales!=null);
+
+  const deltaChip=(val,isRate,isInt)=>{
+    if(val==null || typeof val!=="number" || !isFinite(val) || val===0) return null;
+    const up = val>0;
+    const color = up?GREEN:RED;
+    const arrow = up?"▲":"▼";
+    let txt;
+    if(isRate) txt = (up?"+":"")+val.toFixed(1)+"pts";
+    else if(isInt) txt = (up?"+":"")+Math.round(val).toLocaleString();
+    else txt = (up?"+$":"-$")+Math.abs(Math.round(val)).toLocaleString();
+    return (<span style={{fontSize:9.5,fontWeight:800,color,marginLeft:6}}>{arrow} {txt}</span>);
+  };
+
+  const kpiTiles=[
+    ["SALES", fmtFull(dept.sales), GOLD, deltaChip(deltas.sales,false,false)],
+    ["REVENUE", fmtFull(dept.revenue), "#4ADE80", deltaChip(deltas.revenue,false,false)],
+    ["CLOSE RATE", fmtPct(dept.closeRate), GREEN, deltaChip(deltas.closeRate,true,false)],
+    ["OPPS", str(numOr0(dept.opps)), BLUE, deltaChip(deltas.opps,false,true)],
+    ["AVG SALE", fmtFull(dept.avgSale), BLUE, deltaChip(deltas.avgSale,false,false)],
+    ["MEMBERSHIPS", str(numOr0(dept.membershipsSold)), PURP, deltaChip(deltas.membershipsSold,false,true)],
+  ];
+
+  const techSorted = techs.slice().sort((a,b)=>numOr0(b&&b.sales)-numOr0(a&&a.sales));
+
+  return (
+    <div className="lf2-wrap riseIn">
+      <div className="lf2-head">
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <div className="lf2-logo">S</div>
+          <div>
+            <div className="lf2-title">Week Review — {label}</div>
+            <div className="lf2-subtl">HVAC SERVICE · Sun close + Mon audit</div>
+          </div>
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+          {isFinal
+            ? <div style={{background:"rgba(74,222,128,.14)",border:"1px solid #4ADE8055",color:"#4ADE80",borderRadius:6,padding:"5px 12px",fontWeight:800,fontSize:10,letterSpacing:".12em"}}>FINAL</div>
+            : <div style={{background:"rgba(245,179,36,.14)",border:"1px solid #F5B32455",color:GOLD,borderRadius:6,padding:"5px 12px",fontWeight:800,fontSize:10,letterSpacing:".08em"}}>PRELIM · RE-AUDITS MON 6 AM</div>}
+        </div>
+      </div>
+
+      {weekKeys.length>1 && (
+        <div className="lf2-bus" style={{padding:"12px 22px 0"}}>
+          {weekKeys.map(k=>(<button key={k} className={"lf2-bu"+(activeKey===k?" on":"")} onClick={()=>setSelWeek(k)}>{str(weeks[k]&&weeks[k].label)||k}</button>))}
+        </div>
+      )}
+
+      {auditNote && (
+        <div style={{padding:"10px 22px 0"}}>
+          <div style={{fontSize:10,color:"#7089ab",fontStyle:"italic"}}>{auditNote}</div>
+        </div>
+      )}
+
+      {isPrelim && (
+        <div style={{padding:"12px 22px 0"}}>
+          <div style={{background:"rgba(245,179,36,.08)",border:"1px solid #F5B32444",borderRadius:10,padding:"10px 16px",fontSize:11,color:GOLD}}>
+            Preliminary — Sunday-night postings not yet counted. Final audit runs Monday 6:00 AM.
+          </div>
+        </div>
+      )}
+
+      <div className="lf2-kpis">
+        {kpiTiles.map(([l,v,c,delta])=>(<div className="lf2-kpi" key={l}><div className="l">{l}</div><div className="v" style={{color:c}}>{v}{delta}</div></div>))}
+      </div>
+
+      <div style={{padding:"14px 24px 0"}}><div className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:16,padding:"16px 20px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",flexWrap:"wrap",gap:6}}>
+          <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>By Tech · {label}</div>
+          <div style={{fontSize:9.5,color:"#6b7a99"}}>{techSorted.length} reps · sorted by sales</div>
+        </div>
+        {techSorted.length ? (
+          <div style={{overflowX:"auto",marginTop:10}}>
+            <table style={{width:"100%",borderCollapse:"collapse",minWidth:700}}>
+              <thead><tr>
+                {["#","TECH","SALES","OPPS","CLOSE RATE","MEMBERSHIPS"].concat(techHasDelta?["WOW SALES"]:[]).map((h,i)=>(
+                  <th key={h} style={{padding:"8px",fontSize:9,color:"#9fb3cc",fontWeight:700,textAlign:i<2?"left":"right",borderBottom:"2px solid #1e2d47",whiteSpace:"nowrap"}}>{h}</th>))}
+              </tr></thead>
+              <tbody>
+                {techSorted.map((t,i)=>{
+                  const cr=numOr0(t&&t.closeRate);
+                  const crColor = cr>=40?GREEN:RED;
+                  return (
+                  <tr key={str(t&&t.name)+i} style={i<3?{background:"rgba(245,195,24,.06)"}:null}>
+                    <td style={{padding:"6px 8px",fontSize:11,color:i<3?GOLD:"#6b7a99",fontWeight:800}}>{i+1}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,color:"#e6eefb",fontWeight:i<3?800:500,whiteSpace:"nowrap"}}>{i<3?["🥇 ","🥈 ","🥉 "][i]:""}{str(t&&t.name)||"—"}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:GOLD,fontWeight:800}}>{fmtFull(t&&t.sales)}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:"#e6eefb"}}>{numOr0(t&&t.opps)}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right"}}><span style={{background:crColor===GREEN?"rgba(74,222,128,.14)":"rgba(230,57,70,.14)",border:"1px solid "+(crColor===GREEN?"#4ADE8055":"#E6394655"),color:crColor,borderRadius:6,padding:"2px 8px",fontWeight:800,fontSize:10.5}}>{fmtPct(t&&t.closeRate)}</span></td>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:PURP}}>{numOr0(t&&t.membershipsSold)}</td>
+                    {techHasDelta && <td style={{padding:"6px 8px",fontSize:11,textAlign:"right"}}>{deltaChip(t.deltas.sales,false,false)}</td>}
+                  </tr>);})}
+              </tbody>
+            </table>
+          </div>
+        ) : <div style={{color:"#5d6fa8",fontSize:11,padding:"10px 4px"}}>No tech activity for this week.</div>}
+      </div></div>
+    </div>
+  );
+}
+
 // ═══ HVAC SERVICE · standalone command deck (Field Conversion + IAQ reports) ══════
 const SVC=(typeof SERVICE_DATA!=="undefined")?SERVICE_DATA:{techs:[],dept:{},teams:[],iaqMonthly:[],months:[],dateRange:"",source:"",iaqTotal:0,elapsedFrac:0.5};
 function ServiceDash(){
@@ -1392,6 +1534,7 @@ function ServiceDash(){
     {id:"live",icon:"⚡",label:"LIVE",sub:"Real-time jobs"},
     {id:"overview",icon:"🛠",label:"OVERVIEW",sub:"Dept KPIs"},
     {id:"weekly",icon:"📅",label:"WEEKLY",sub:"WTD + trends"},
+    {id:"review",icon:"📊",label:"WK REVIEW",sub:"Sun close + Mon audit"},
     {id:"hxh",icon:"⏱",label:"HXH",sub:"pace to win"},
     {id:"trend",icon:"📈",label:"TREND",sub:"Month over month"},
     {id:"board",icon:"🏆",label:"LEADERBOARD",sub:"All "+techs.length},
@@ -1466,6 +1609,7 @@ function ServiceDash(){
       <div className="tab-fade" key={tab}>
         {tab==="live" && <ServiceLiveTab/>}
         {tab==="weekly" && <ServiceWeeklyTab/>}
+        {tab==="review" && <ServiceReviewTab/>}
         {tab==="hxh" && <ServiceHxhTab/>}
         {tab==="overview" && !showClassic && <ServicePulseTab onClassic={()=>setShowClassic(true)}/>}
         {tab==="overview" && showClassic && (<React.Fragment>

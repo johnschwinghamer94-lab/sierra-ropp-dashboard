@@ -3777,6 +3777,129 @@ function WeeklyTrends() {
   }, "Only " + activeIdx.length + " week of " + (WC.month || "the month") + " has data so far — the trend fills in as the weeks come in.")));
 }
 
+// ── WK REVIEW (weekly TGL scorecard, dept + per-tech) ───────────────────────
+const WKR_CSS = ".wkr-wrap{padding:16px 24px 4px;max-width:1500px;margin:0 auto}" +
+  ".wkr-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}" +
+  ".wkr-chip-btn{font-family:'Chakra Petch',sans-serif;font-size:11px;font-weight:700;letter-spacing:.03em;color:#8a97b8;background:rgba(255,255,255,.03);border:1px solid #1c2650;border-radius:6px;padding:6px 12px;cursor:pointer}" +
+  ".wkr-chip-btn:hover{color:#c7d4f0;border-color:#2E78C7aa}" +
+  ".wkr-chip-btn.active{color:#f5c518;border-color:#f5c518aa;background:rgba(245,197,24,.08)}" +
+  ".wkr-card{background:linear-gradient(180deg,#0d1330,#0a0e24);border:1px solid #22307a;border-radius:10px;padding:16px 18px;margin-bottom:18px}" +
+  ".wkr-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:6px}" +
+  ".wkr-title{font-family:'Chakra Petch',sans-serif;font-size:16px;font-weight:800;letter-spacing:.04em;color:#f5c518}" +
+  ".wkr-badge{font-size:10px;font-weight:800;letter-spacing:.06em;border-radius:5px;padding:4px 9px;white-space:nowrap}" +
+  ".wkr-badge-final{color:#4ADE80;background:rgba(74,222,128,.12);border:1px solid #4ADE8055}" +
+  ".wkr-badge-prelim{color:#F5B324;background:rgba(245,179,36,.12);border:1px solid #F5B32455}" +
+  ".wkr-note{font-size:11px;color:#8a97b8;font-style:italic;margin:4px 0 14px}" +
+  ".wkr-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}" +
+  ".wkr-tile{background:rgba(255,255,255,.03);border:1px solid #1c2650;border-radius:8px;padding:10px 12px}" +
+  ".wkr-tile-label{font-size:9px;letter-spacing:.08em;color:#6b7a99;font-weight:700;margin-bottom:6px}" +
+  ".wkr-tile-val{font-size:20px;font-weight:800;color:#e8ecf7;font-family:'Chakra Petch',sans-serif}" +
+  ".wkr-chip{display:inline-block;font-size:10px;font-weight:700;border-radius:5px;padding:2px 6px;margin-top:6px}" +
+  ".wkr-chip-good{color:#4ADE80;background:rgba(74,222,128,.12)}" +
+  ".wkr-chip-bad{color:#E63946;background:rgba(230,57,70,.12)}" +
+  ".wkr-chip-flat{color:#8a97b8;background:rgba(138,151,184,.12)}" +
+  ".wkr-tblwrap{overflow-x:auto}" +
+  ".wkr-tbl{width:100%;border-collapse:collapse;font-size:12px}" +
+  ".wkr-tbl th{text-align:left;font-size:9px;letter-spacing:.08em;color:#6b7a99;font-weight:700;padding:6px 10px;border-bottom:1px solid #22307a;white-space:nowrap}" +
+  ".wkr-tbl td{padding:6px 10px;color:#c7d0e8;border-bottom:1px solid #161b38;white-space:nowrap}" +
+  ".wkr-rank{font-weight:800;color:#8a97b8}" +
+  ".wkr-empty{padding:40px 24px;text-align:center;color:#6b7a99;font-size:13px}";
+
+function WkRevTab() {
+  const [wr, setWr] = React.useState(null);
+  const [pickWeek, setPickWeek] = React.useState(null);
+  React.useEffect(() => {
+    const load = () => {
+      fetch("weekreview_silo.json?t=" + Date.now())
+        .then(r => r.ok ? r.json() : null)
+        .then(j => { if (j) setWr(j); })
+        .catch(() => {});
+    };
+    load();
+    const id = setInterval(load, 5 * 60 * 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  if (!wr || !wr.weeks) {
+    return /*#__PURE__*/React.createElement("div", { className: "wkr-empty" },
+      "No weekly review data yet — check back after the next weekly pull.");
+  }
+
+  const weekKeys = Object.keys(wr.weeks).sort((a, b) => b.localeCompare(a));
+  const activeKey = pickWeek && wr.weeks[pickWeek] ? pickWeek : (wr.latest && wr.weeks[wr.latest] ? wr.latest : weekKeys[0]);
+  const wk = wr.weeks[activeKey];
+  if (!wk) {
+    return /*#__PURE__*/React.createElement("div", { className: "wkr-empty" }, "No data for this week.");
+  }
+
+  const dept = wk.dept || {};
+  const deltas = dept.deltas || {};
+  const techs = Array.isArray(wk.techs) ? wk.techs.slice().sort((a, b) => (b.tgls || 0) - (a.tgls || 0)) : [];
+  const medals = ["🥇", "🥈", "🥉"];
+  const fmtMoney = n => "$" + Math.round(n || 0).toLocaleString();
+
+  const chip = (d, isPct, isMoney) => {
+    if (d == null) return null;
+    const dd = Math.round(d * 10) / 10;
+    const cls = dd === 0 ? "wkr-chip-flat" : dd > 0 ? "wkr-chip-good" : "wkr-chip-bad";
+    const arrow = dd > 0 ? "▲" : dd < 0 ? "▼" : "→";
+    const sign = dd > 0 ? "+" : dd < 0 ? "-" : "";
+    const body = isMoney ? "$" + Math.abs(Math.round(dd)).toLocaleString() : Math.abs(dd) + (isPct ? " pts" : "");
+    return /*#__PURE__*/React.createElement("span", { className: "wkr-chip " + cls },
+      arrow + " " + sign + body);
+  };
+
+  const tiles = [
+    { label: "TGLS CREATED", val: dept.tgls, d: deltas.tgls },
+    { label: "TGL REVENUE", val: dept.tglRevenue, d: deltas.tglRevenue, money: true },
+    { label: "CONVERSION %", val: dept.conversion, d: deltas.conversion, pct: true },
+    { label: "CA CLOSE RATE", val: dept.caCloseRate, d: deltas.caCloseRate, pct: true },
+    { label: "CALLS RAN", val: dept.callsRan, d: deltas.callsRan }
+  ];
+
+  return /*#__PURE__*/React.createElement("div", { className: "wkr-wrap" },
+    /*#__PURE__*/React.createElement("style", null, WKR_CSS),
+    /*#__PURE__*/React.createElement("div", { className: "wkr-chips" },
+      weekKeys.map(k => /*#__PURE__*/React.createElement("button", {
+        key: k,
+        className: "wkr-chip-btn" + (k === activeKey ? " active" : ""),
+        onClick: () => setPickWeek(k)
+      }, wr.weeks[k].label || k))),
+    /*#__PURE__*/React.createElement("div", { className: "wkr-card" },
+      /*#__PURE__*/React.createElement("div", { className: "wkr-head" },
+        /*#__PURE__*/React.createElement("div", { className: "wkr-title" }, "WEEK REVIEW — " + (wk.label || activeKey)),
+        /*#__PURE__*/React.createElement("span", {
+          className: "wkr-badge " + (wk.audit === "prelim" ? "wkr-badge-prelim" : "wkr-badge-final")
+        }, wk.audit === "prelim" ? "PRELIM · re-audits Mon 6 AM" : "FINAL")),
+      wk.auditNote ? /*#__PURE__*/React.createElement("div", { className: "wkr-note" }, wk.auditNote) : null,
+      /*#__PURE__*/React.createElement("div", { className: "wkr-tiles" },
+        tiles.map((t, i) => /*#__PURE__*/React.createElement("div", { className: "wkr-tile", key: i },
+          /*#__PURE__*/React.createElement("div", { className: "wkr-tile-label" }, t.label),
+          /*#__PURE__*/React.createElement("div", { className: "wkr-tile-val" },
+            t.val == null ? "—" : t.money ? fmtMoney(t.val) : t.val + (t.pct ? "%" : "")),
+          chip(t.d, t.pct, t.money)))),
+      /*#__PURE__*/React.createElement("div", { className: "wkr-tblwrap" },
+        /*#__PURE__*/React.createElement("table", { className: "wkr-tbl" },
+          /*#__PURE__*/React.createElement("thead", null,
+            /*#__PURE__*/React.createElement("tr", null,
+              /*#__PURE__*/React.createElement("th", null, "#"),
+              /*#__PURE__*/React.createElement("th", null, "TECH"),
+              /*#__PURE__*/React.createElement("th", null, "TGLS"),
+              /*#__PURE__*/React.createElement("th", null, "TGL REVENUE"),
+              /*#__PURE__*/React.createElement("th", null, "CALLS RAN"),
+              /*#__PURE__*/React.createElement("th", null, "CONVERSION"),
+              /*#__PURE__*/React.createElement("th", null, "CA CLOSE"))),
+          /*#__PURE__*/React.createElement("tbody", null,
+            techs.map((t, i) => /*#__PURE__*/React.createElement("tr", { key: t.name || i },
+              /*#__PURE__*/React.createElement("td", { className: "wkr-rank" }, medals[i] || (i + 1)),
+              /*#__PURE__*/React.createElement("td", null, t.name || "—"),
+              /*#__PURE__*/React.createElement("td", null, t.tgls != null ? t.tgls : "—"),
+              /*#__PURE__*/React.createElement("td", null, t.tglRevenue != null ? fmtMoney(t.tglRevenue) : "—"),
+              /*#__PURE__*/React.createElement("td", null, t.callsRan != null ? t.callsRan : "—"),
+              /*#__PURE__*/React.createElement("td", null, t.conversion != null ? t.conversion + "%" : "—"),
+              /*#__PURE__*/React.createElement("td", null, t.caCloseRate != null ? t.caCloseRate + "%" : "—"))))))));
+}
+
 // ── Pace Report ────────────────────────────────────────────────────────────
 function PaceReport() {
   const techList = ["Alex - Oleksiy Yakovchuk","Noah Weng","Joe Mendoza","Benjamin Wyllie","Nikko April","Andrew Trujillo","Juan Tlatenchi","David Canales","Brandon Moreno","Francisco Valencia","Mario Castro","Cole Pantol","Nathan Colquitt","Andrew Alonso","Robert Silinzy","Bradley Espinoza"]; // sorted best to worst pace
@@ -11990,6 +12113,10 @@ function Root() {
     label: "📈 WEEK OVER WEEK SILO REPORT",
     sub: "Interactive · by week"
   }, {
+    id: "wkreview",
+    label: "🗓 WK REVIEW",
+    sub: "Weekly TGL scorecard"
+  }, {
     id: "pace",
     label: "🎯 PACE REPORT",
     sub: "$3.5M Annual Goal"
@@ -12328,7 +12455,7 @@ function Root() {
     data: data
   }), tab === "monthly_breakdown" && /*#__PURE__*/React.createElement(MonthlyBreakdown, {
     data: data
-  }), tab === "weekly" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(WeeklyReportPanel, null), /*#__PURE__*/React.createElement(WeeklyTrends, null)), tab === "pace" && /*#__PURE__*/React.createElement(PaceReport, null), tab === "deptpace" && /*#__PURE__*/React.createElement(DeptPaceReport, null), tab === "sameday" && /*#__PURE__*/React.createElement(SameDayConversion, null), tab === "cancel" && /*#__PURE__*/React.createElement(CancellationTab, null), tab === "allteams" && /*#__PURE__*/React.createElement(AllTeamsTab, null), tab === "siloonly" && /*#__PURE__*/React.createElement(SiloOnlyTab, null), tab === "caclose" && /*#__PURE__*/React.createElement(CACloseRateTab, null), tab === "yesterday" && /*#__PURE__*/React.createElement(YesterdayTab, null)), /*#__PURE__*/React.createElement("div", {
+  }), tab === "weekly" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(WeeklyReportPanel, null), /*#__PURE__*/React.createElement(WeeklyTrends, null)), tab === "wkreview" && /*#__PURE__*/React.createElement(WkRevTab, null), tab === "pace" && /*#__PURE__*/React.createElement(PaceReport, null), tab === "deptpace" && /*#__PURE__*/React.createElement(DeptPaceReport, null), tab === "sameday" && /*#__PURE__*/React.createElement(SameDayConversion, null), tab === "cancel" && /*#__PURE__*/React.createElement(CancellationTab, null), tab === "allteams" && /*#__PURE__*/React.createElement(AllTeamsTab, null), tab === "siloonly" && /*#__PURE__*/React.createElement(SiloOnlyTab, null), tab === "caclose" && /*#__PURE__*/React.createElement(CACloseRateTab, null), tab === "yesterday" && /*#__PURE__*/React.createElement(YesterdayTab, null)), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "12px 24px",
       borderTop: "1px solid #0a0e1a",

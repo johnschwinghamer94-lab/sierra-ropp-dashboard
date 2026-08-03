@@ -3803,7 +3803,195 @@ const WKR_CSS = ".wkr-wrap{padding:16px 24px 4px;max-width:1500px;margin:0 auto}
   ".wkr-tbl th{text-align:left;font-size:9px;letter-spacing:.08em;color:#6b7a99;font-weight:700;padding:6px 10px;border-bottom:1px solid #22307a;white-space:nowrap}" +
   ".wkr-tbl td{padding:6px 10px;color:#c7d0e8;border-bottom:1px solid #161b38;white-space:nowrap}" +
   ".wkr-rank{font-weight:800;color:#8a97b8}" +
-  ".wkr-empty{padding:40px 24px;text-align:center;color:#6b7a99;font-size:13px}";
+  ".wkr-empty{padding:40px 24px;text-align:center;color:#6b7a99;font-size:13px}" +
+  ".wkr-sect{font-family:\'Chakra Petch\',sans-serif;font-size:11px;font-weight:800;letter-spacing:.1em;color:#8a97b8;margin:20px 0 10px}" +
+  ".wkr-charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(460px,1fr));gap:16px;align-items:start}" +
+  ".wkr-chart{background:rgba(255,255,255,.02);border:1px solid #1c2650;border-radius:8px;padding:12px 14px 10px;min-width:0}" +
+  ".wkr-chart-t{font-size:10px;letter-spacing:.08em;color:#6b7a99;font-weight:700;margin-bottom:10px}" +
+  ".wkr-svg{width:100%;height:auto;display:block}" +
+  ".wkr-bar{cursor:pointer}" +
+  ".wkr-ax{font-size:9px;fill:#4d5878;font-family:\'Chakra Petch\',sans-serif}" +
+  ".wkr-dl{font-size:10px;font-weight:800;font-family:\'Chakra Petch\',sans-serif}" +
+  ".wkr-lg{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}" +
+  ".wkr-lgi{display:flex;align-items:center;gap:5px;font-size:10px;color:#8a97b8;font-weight:700}" +
+  ".wkr-lgs{width:10px;height:3px;border-radius:2px;flex:none}" +
+  ".wkr-rk{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.04em;border-radius:4px;padding:2px 5px;margin-left:6px;vertical-align:middle}" +
+  ".wkr-rk-top{color:#4ADE80;background:rgba(74,222,128,.14)}" +
+  ".wkr-rk-mid{color:#8a97b8;background:rgba(138,151,184,.12)}" +
+  ".wkr-rk-low{color:#E06C75;background:rgba(224,108,117,.12)}" +
+  ".wkr-sub{font-size:9px;color:#6b7a99;margin-top:5px;line-height:1.4}" +
+  ".wkr-hi{color:#4ADE80;font-weight:800}" +
+  ".wkr-recs{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px}" +
+  ".wkr-rec{background:rgba(255,255,255,.03);border:1px solid #1c2650;border-radius:8px;padding:10px 12px}" +
+  ".wkr-rec-l{font-size:9px;letter-spacing:.08em;color:#6b7a99;font-weight:700}" +
+  ".wkr-rec-v{font-size:17px;font-weight:800;color:#e8ecf7;font-family:\'Chakra Petch\',sans-serif;margin-top:4px}" +
+  ".wkr-rec-w{font-size:10px;color:#8a97b8;margin-top:3px}" +
+  ".wkr-tip{position:fixed;pointer-events:none;z-index:60;background:#0d1330;border:1px solid #2E78C7;border-radius:6px;padding:6px 9px;font-size:11px;color:#e8ecf7;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.55)}";
+
+// ── Week-over-week charts ──────────────────────────────────────────────────
+// Series hues are validated for the dark surface (#0a0e24) under protan/deutan/
+// tritan simulation — worst all-pairs deltaE 10.5. Do not re-tint by eye: the
+// bar charts get emphasis from a LIGHTER STEP of their own hue, never by dimming
+// the context bars below the contrast floor.
+const WKR_HUE = {
+  tgls: "#2f7fc0", tglsHi: "#5BA4E6",
+  rev: "#b8801a", revHi: "#e0a63c",
+  tglRate: "#2f7fc0", caCloseRate: "#b8801a", conversion: "#b83d84"
+};
+const wkrMoney = v => v >= 1000000 ? "$" + (v / 1000000).toFixed(2) + "M"
+  : v >= 1000 ? "$" + Math.round(v / 1000) + "k" : "$" + Math.round(v || 0);
+const wkrPct = v => (Math.round((v || 0) * 10) / 10) + "%";
+const wkrNum = v => (v || 0).toLocaleString();
+
+function WkrTip(props) {
+  if (!props.tip) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "wkr-tip",
+    style: { left: Math.min(props.tip.x + 14, (window.innerWidth || 1200) - 190), top: props.tip.y - 12 }
+  }, props.tip.text);
+}
+
+// Magnitude over time, one series -> bars. Selected week carries a direct label;
+// so does the record week when it is a different bar. No legend: the title names
+// the only series. Click a bar to jump the whole tab to that week.
+function WkrBars(props) {
+  const S = props.series || [], n = S.length;
+  const [tip, setTip] = React.useState(null);
+  if (!n) return null;
+  const W = 700, H = 190, padT = 22, padB = 26;
+  const vals = S.map(r => Number(r[props.mk]) || 0);
+  const max = Math.max.apply(null, vals) || 1;
+  const bestI = vals.indexOf(Math.max.apply(null, vals));
+  const slot = W / n, gap = Math.min(4, slot * 0.18);
+  const bw = Math.max(4, Math.min(44, slot - gap));
+  const base = H - padB;
+  const yOf = v => padT + (base - padT) * (1 - v / max);
+  const fmt = props.money ? wkrMoney : wkrNum;
+
+  const bars = S.map((r, i) => {
+    const v = vals[i], x = i * slot + (slot - bw) / 2, y = yOf(v);
+    const on = r.week === props.activeKey;
+    const rr = Math.min(4, bw / 2, Math.max(0, base - y));
+    const d = "M" + x + "," + base + "V" + (y + rr) + "Q" + x + "," + y + " " + (x + rr) + "," + y +
+      "H" + (x + bw - rr) + "Q" + (x + bw) + "," + y + " " + (x + bw) + "," + (y + rr) + "V" + base + "Z";
+    return /*#__PURE__*/React.createElement("g", { key: r.week, className: "wkr-bar" },
+      /*#__PURE__*/React.createElement("path", {
+        d: d, fill: on ? props.hi : props.color,
+        stroke: on ? "#0a0e24" : "none", strokeWidth: on ? 2 : 0,
+        onClick: () => props.onPick && props.onPick(r.week),
+        onMouseMove: e => setTip({ x: e.clientX, y: e.clientY, text: r.label + " · " + fmt(v) }),
+        onMouseLeave: () => setTip(null)
+      }),
+      (on || i === bestI) ? /*#__PURE__*/React.createElement("text", {
+        className: "wkr-dl", x: x + bw / 2, y: y - 6, textAnchor: "middle",
+        fill: on ? props.hi : "#8a97b8"
+      }, fmt(v)) : null);
+  });
+
+  // label every other week when they would collide
+  const step = slot < 34 ? 2 : 1;
+  const axis = S.map((r, i) => (i % step === 0 || i === n - 1) ? /*#__PURE__*/React.createElement("text", {
+    key: r.week, className: "wkr-ax", x: i * slot + slot / 2, y: H - 8, textAnchor: "middle"
+  }, (r.label || "").split("-")[0]) : null);
+
+  return /*#__PURE__*/React.createElement("div", { className: "wkr-chart" },
+    /*#__PURE__*/React.createElement("div", { className: "wkr-chart-t" }, props.title),
+    /*#__PURE__*/React.createElement("svg", { className: "wkr-svg", viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": props.title },
+      /*#__PURE__*/React.createElement("line", { x1: 0, y1: base, x2: W, y2: base, stroke: "#1c2650", strokeWidth: 1 }),
+      bars, axis),
+    /*#__PURE__*/React.createElement(WkrTip, { tip: tip }));
+}
+
+// Three rates share one percentage axis -> one line chart, one scale. Legend is
+// always present and each series is also labelled at its right end, so identity
+// never rests on color alone.
+function WkrLines(props) {
+  const S = props.series || [], n = S.length;
+  const [tip, setTip] = React.useState(null);
+  if (!n) return null;
+  const W = 700, H = 190, padT = 16, padB = 26, padR = 54;
+  const keys = props.keys;
+  let max = 0;
+  S.forEach(r => keys.forEach(k => { max = Math.max(max, Number(r[k.key]) || 0); }));
+  max = Math.max(10, Math.ceil(max / 10) * 10);
+  const base = H - padB, iw = W - padR;
+  const xOf = i => n === 1 ? iw / 2 : (iw / (n - 1)) * i;
+  const yOf = v => padT + (base - padT) * (1 - (Number(v) || 0) / max);
+
+  const grid = [0, 0.5, 1].map(f => /*#__PURE__*/React.createElement("line", {
+    key: f, x1: 0, y1: padT + (base - padT) * f, x2: iw, y2: padT + (base - padT) * f,
+    stroke: "#161b38", strokeWidth: 1
+  }));
+
+  const last = S[n - 1];
+  const lab = keys.map((k, i) => ({ i: i, y: yOf(last[k.key]) })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < lab.length; i++) {
+    if (lab[i].y - lab[i - 1].y < 12) lab[i].y = lab[i - 1].y + 12;
+  }
+  const labY = {};
+  lab.forEach(l => { labY[l.i] = Math.min(l.y, H - padB - 2); });
+
+  const lines = keys.map((k, ki) => {
+    const pts = S.map((r, i) => xOf(i) + "," + yOf(r[k.key]));
+    return /*#__PURE__*/React.createElement("g", { key: k.key },
+      /*#__PURE__*/React.createElement("polyline", {
+        points: pts.join(" "), fill: "none", stroke: k.color, strokeWidth: 2,
+        strokeLinejoin: "round", strokeLinecap: "round"
+      }),
+      /*#__PURE__*/React.createElement("circle", { cx: xOf(n - 1), cy: yOf(last[k.key]), r: 4, fill: k.color, stroke: "#0a0e24", strokeWidth: 2 }),
+      /*#__PURE__*/React.createElement("text", {
+        className: "wkr-dl", x: iw + 7, y: labY[ki] + 3.5, fill: k.color
+      }, wkrPct(last[k.key])));
+  });
+
+  // one hit column per week drives a single crosshair tooltip for all three series
+  const hits = S.map((r, i) => /*#__PURE__*/React.createElement("rect", {
+    key: r.week, x: xOf(i) - iw / (2 * Math.max(1, n - 1)), y: 0,
+    width: iw / Math.max(1, n - 1), height: base, fill: "transparent",
+    onMouseMove: e => setTip({
+      x: e.clientX, y: e.clientY,
+      text: r.label + " · " + keys.map(k => k.short + " " + wkrPct(r[k.key])).join("  ·  ")
+    }),
+    onMouseLeave: () => setTip(null),
+    onClick: () => props.onPick && props.onPick(r.week)
+  }));
+
+  const step = n > 8 ? 2 : 1;
+  // the leftmost tick sits on x=0, so centering it clips the label in half
+  const axis = S.map((r, i) => (i % step === 0 || i === n - 1) ? /*#__PURE__*/React.createElement("text", {
+    key: r.week, className: "wkr-ax", x: xOf(i), y: H - 8,
+    textAnchor: i === 0 ? "start" : "middle"
+  }, (r.label || "").split("-")[0]) : null);
+
+  return /*#__PURE__*/React.createElement("div", { className: "wkr-chart" },
+    /*#__PURE__*/React.createElement("div", { className: "wkr-chart-t" }, props.title),
+    /*#__PURE__*/React.createElement("svg", { className: "wkr-svg", viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": props.title },
+      grid, lines, hits, axis),
+    /*#__PURE__*/React.createElement("div", { className: "wkr-lg" },
+      keys.map(k => /*#__PURE__*/React.createElement("div", { className: "wkr-lgi", key: k.key },
+        /*#__PURE__*/React.createElement("span", { className: "wkr-lgs", style: { background: k.color } }),
+        k.label))),
+    /*#__PURE__*/React.createElement(WkrTip, { tip: tip }));
+}
+
+// "2nd of 13" + the record context underneath — the reason the engine ships a
+// ranks block per week instead of the browser recomputing it.
+function wkrRankBadge(rk) {
+  if (!rk || !rk.of || rk.of < 2) return null;
+  const cls = rk.rank === 1 ? "wkr-rk-top" : (rk.rank <= Math.ceil(rk.of / 2) ? "wkr-rk-mid" : "wkr-rk-low");
+  const s = ["st", "nd", "rd"][rk.rank - 1] || "th";
+  return /*#__PURE__*/React.createElement("span", { className: "wkr-rk " + cls }, rk.rank + s + " of " + rk.of);
+}
+function wkrRankNote(rk, fmt) {
+  if (!rk || !rk.of || rk.of < 2) return null;
+  if (rk.isNewHigh) {
+    return /*#__PURE__*/React.createElement("div", { className: "wkr-sub" },
+      /*#__PURE__*/React.createElement("span", { className: "wkr-hi" }, "New " + rk.of + "-week high"),
+      rk.priorBest != null ? " · prior best " + fmt(rk.priorBest) : "");
+  }
+  return /*#__PURE__*/React.createElement("div", { className: "wkr-sub" },
+    "Best " + fmt(rk.best) + (rk.bestWeek ? " (" + rk.bestWeek + ")" : ""));
+}
 
 function WkRevTab() {
   const [wr, setWr] = React.useState(null);
@@ -3849,12 +4037,16 @@ function WkRevTab() {
       arrow + " " + sign + body);
   };
 
+  const ranks = (wk && wk.ranks) || {};
+  const records = (wr && wr.records) || {};
+  const series = Array.isArray(records.series) ? records.series : [];
   const tiles = [
-    { label: "TGLS CREATED", val: dept.tgls, d: deltas.tgls },
-    { label: "TGL REVENUE", val: dept.tglRevenue, d: deltas.tglRevenue, money: true },
-    { label: "CONVERSION %", val: dept.conversion, d: deltas.conversion, pct: true },
-    { label: "CA CLOSE RATE", val: dept.caCloseRate, d: deltas.caCloseRate, pct: true },
-    { label: "CALLS RAN", val: dept.callsRan, d: deltas.callsRan }
+    { label: "TGLS CREATED", val: dept.tgls, d: deltas.tgls, mk: "tgls", fmt: wkrNum },
+    { label: "TGL RATE", val: dept.tglRate, d: deltas.tglRate, pct: true, mk: "tglRate", fmt: wkrPct },
+    { label: "TGL REVENUE", val: dept.tglRevenue, d: deltas.tglRevenue, money: true, mk: "tglRevenue", fmt: wkrMoney },
+    { label: "CONVERSION %", val: dept.conversion, d: deltas.conversion, pct: true, mk: "conversion", fmt: wkrPct },
+    { label: "CA CLOSE RATE", val: dept.caCloseRate, d: deltas.caCloseRate, pct: true, mk: "caCloseRate", fmt: wkrPct },
+    { label: "CALLS RAN", val: dept.callsRan, d: deltas.callsRan, mk: "callsRan", fmt: wkrNum }
   ];
 
   return /*#__PURE__*/React.createElement("div", { className: "wkr-wrap" },
@@ -3874,10 +4066,47 @@ function WkRevTab() {
       wk.auditNote ? /*#__PURE__*/React.createElement("div", { className: "wkr-note" }, wk.auditNote) : null,
       /*#__PURE__*/React.createElement("div", { className: "wkr-tiles" },
         tiles.map((t, i) => /*#__PURE__*/React.createElement("div", { className: "wkr-tile", key: i },
-          /*#__PURE__*/React.createElement("div", { className: "wkr-tile-label" }, t.label),
+          /*#__PURE__*/React.createElement("div", { className: "wkr-tile-label" },
+            t.label, wkrRankBadge(ranks[t.mk])),
           /*#__PURE__*/React.createElement("div", { className: "wkr-tile-val" },
             t.val == null ? "—" : t.money ? fmtMoney(t.val) : t.val + (t.pct ? "%" : "")),
-          chip(t.d, t.pct, t.money)))),
+          chip(t.d, t.pct, t.money),
+          wkrRankNote(ranks[t.mk], t.fmt)))),
+      series.length > 1 ? /*#__PURE__*/React.createElement(React.Fragment, null,
+        /*#__PURE__*/React.createElement("div", { className: "wkr-sect" },
+          "WEEK OVER WEEK — " + series.length + " WEEKS (" +
+          (series[0].label || "") + " → " + (series[series.length - 1].label || "") + ")"),
+        /*#__PURE__*/React.createElement("div", { className: "wkr-charts" },
+          /*#__PURE__*/React.createElement(WkrBars, {
+            series: series, mk: "tgls", activeKey: activeKey, onPick: setPickWeek,
+            color: WKR_HUE.tgls, hi: WKR_HUE.tglsHi, title: "TGLS GENERATED BY WEEK" }),
+          /*#__PURE__*/React.createElement(WkrBars, {
+            series: series, mk: "tglRevenue", activeKey: activeKey, onPick: setPickWeek, money: true,
+            color: WKR_HUE.rev, hi: WKR_HUE.revHi, title: "TGL REVENUE BY WEEK" }),
+          /*#__PURE__*/React.createElement(WkrLines, {
+            series: series, activeKey: activeKey, onPick: setPickWeek, title: "RATES BY WEEK",
+            keys: [{ key: "tglRate", label: "TGL rate", short: "TGL", color: WKR_HUE.tglRate },
+                   { key: "caCloseRate", label: "CA close rate", short: "CA", color: WKR_HUE.caCloseRate },
+                   { key: "conversion", label: "TGL conversion", short: "Conv", color: WKR_HUE.conversion }] }),
+          /*#__PURE__*/React.createElement(WkrBars, {
+            series: series, mk: "callsRan", activeKey: activeKey, onPick: setPickWeek,
+            color: WKR_HUE.tgls, hi: WKR_HUE.tglsHi, title: "CALLS RAN BY WEEK" })),
+        /*#__PURE__*/React.createElement("div", { className: "wkr-sect" }, "BEST WEEKS ON RECORD"),
+        /*#__PURE__*/React.createElement("div", { className: "wkr-recs" },
+          (records.metrics || []).map(m => {
+            const b = (records.best || {})[m.key];
+            if (!b) return null;
+            const f = m.format === "money" ? wkrMoney : m.format === "pct" ? wkrPct : wkrNum;
+            return /*#__PURE__*/React.createElement("div", {
+              className: "wkr-rec", key: m.key, onClick: () => setPickWeek(b.week),
+              style: { cursor: "pointer" }
+            },
+              /*#__PURE__*/React.createElement("div", { className: "wkr-rec-l" }, "BEST " + m.label.toUpperCase()),
+              /*#__PURE__*/React.createElement("div", { className: "wkr-rec-v" }, f(b.value)),
+              /*#__PURE__*/React.createElement("div", { className: "wkr-rec-w" },
+                b.label + (b.week === activeKey ? " · this week" : "")));
+          }))) : null,
+      /*#__PURE__*/React.createElement("div", { className: "wkr-sect" }, "TECH DETAIL — " + (wk.label || activeKey)),
       /*#__PURE__*/React.createElement("div", { className: "wkr-tblwrap" },
         /*#__PURE__*/React.createElement("table", { className: "wkr-tbl" },
           /*#__PURE__*/React.createElement("thead", null,
@@ -3885,6 +4114,7 @@ function WkRevTab() {
               /*#__PURE__*/React.createElement("th", null, "#"),
               /*#__PURE__*/React.createElement("th", null, "TECH"),
               /*#__PURE__*/React.createElement("th", null, "TGLS"),
+              /*#__PURE__*/React.createElement("th", null, "TGL RATE"),
               /*#__PURE__*/React.createElement("th", null, "TGL REVENUE"),
               /*#__PURE__*/React.createElement("th", null, "CALLS RAN"),
               /*#__PURE__*/React.createElement("th", null, "CONVERSION"),
@@ -3894,6 +4124,7 @@ function WkRevTab() {
               /*#__PURE__*/React.createElement("td", { className: "wkr-rank" }, medals[i] || (i + 1)),
               /*#__PURE__*/React.createElement("td", null, t.name || "—"),
               /*#__PURE__*/React.createElement("td", null, t.tgls != null ? t.tgls : "—"),
+              /*#__PURE__*/React.createElement("td", null, t.tglRate != null ? t.tglRate + "%" : "—"),
               /*#__PURE__*/React.createElement("td", null, t.tglRevenue != null ? fmtMoney(t.tglRevenue) : "—"),
               /*#__PURE__*/React.createElement("td", null, t.callsRan != null ? t.callsRan : "—"),
               /*#__PURE__*/React.createElement("td", null, t.conversion != null ? t.conversion + "%" : "—"),

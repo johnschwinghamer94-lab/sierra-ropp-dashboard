@@ -812,6 +812,10 @@ function ServicePulseTab({onClassic}){
   const memPct = W.membershipConv!=null ? fmtPct(W.membershipConv) : "—";
   const memSub = (W.membershipsSold!=null && W.membershipOpps!=null) ? (numOr0(W.membershipsSold)+" / "+numOr0(W.membershipOpps)+" opps") : "";
 
+  const offerPct = W.membershipOfferRate!=null ? fmtPct(W.membershipOfferRate) : "—";
+  const offerSub = (W.membershipOffered!=null && W.opps!=null) ? (numOr0(W.membershipOffered)+" / "+numOr0(W.opps)+" opps offered") : "today/WTD only";
+  const offerColor = v=>v==null?"#7a8fa0":(v>=90?"#4ADE80":(v>=70?GOLD:"#E63946"));
+
   // dept avg options built per opportunity (weighted by opps) — 4-6 is the standard
   const oppN=techRows.reduce((a,r)=>a+((r.optionsPerOpp||0)*(r.opps||0)),0);
   const oppD=techRows.reduce((a,r)=>a+(r.opps||0),0);
@@ -826,6 +830,7 @@ function ServicePulseTab({onClassic}){
     ["SALES",fmtFull(W.sales),GOLD,W.salesIsApprox?"approx (invoice lag)":"$ sold"],
     ["REVENUE",fmtFull(W.revenue),"#4ADE80","$ invoiced"],
     ["MEMBERSHIP %",memPct,PURP,memSub],
+    ["MEMBERSHIP OFFER %",offerPct,offerColor(W.membershipOfferRate),offerSub],
     ["LEADS SET",str(numOr0(W.leadsSet)),"#f5c518","turnovers"],
   ];
 
@@ -836,6 +841,7 @@ function ServicePulseTab({onClassic}){
     const pct = opps ? Math.round((sold/opps)*1000)/10 : 0;
     return sold+"/"+opps+" ("+pct.toFixed(1)+"%)";
   };
+  const offerCell=t=> t.membershipOfferRate!=null ? fmtPct(t.membershipOfferRate) : "—";
 
   // BU cards from window.revenueBU — only revenue is genuinely split by BU in this feed;
   // sales/close-rate/avg-sale/opps below the header line are department totals (not BU-split),
@@ -944,7 +950,7 @@ function ServicePulseTab({onClassic}){
           <div style={{overflowX:"auto",marginTop:10}}>
             <table style={{width:"100%",borderCollapse:"collapse",minWidth:820}}>
               <thead><tr>
-                {["TECH","TEAM","OPPS","CLOSE RATE","AVG SALE","SALES","MEM","LEADS SET","REVENUE","JOBS","AVG TICKET"].map((h,i)=>(
+                {["TECH","TEAM","OPPS","CLOSE RATE","AVG SALE","SALES","MEM","OFFER %","LEADS SET","REVENUE","JOBS","AVG TICKET"].map((h,i)=>(
                   <th key={h} style={{padding:"8px",fontSize:9,color:"#9fb3cc",fontWeight:700,textAlign:i<2?"left":"right",borderBottom:"2px solid #1e2d47",whiteSpace:"nowrap"}}>{h}</th>))}
               </tr></thead>
               <tbody>
@@ -957,6 +963,7 @@ function ServicePulseTab({onClassic}){
                     <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:"#e6eefb"}}>{fmtFull(t.avgSale)}</td>
                     <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:GOLD,fontWeight:800}}>{fmtFull(t.sales)}</td>
                     <td style={{padding:"6px 8px",fontSize:10.5,textAlign:"right",color:PURP}}>{memCell(t)}</td>
+                    <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:offerColor(t.membershipOfferRate),fontWeight:700}}>{offerCell(t)}</td>
                     <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:"#e6eefb"}}>{numOr0(t.leadsSet)}</td>
                     <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:"#4ADE80"}}>{fmtFull(t.revenue)}</td>
                     <td style={{padding:"6px 8px",fontSize:11,textAlign:"right",color:"#e6eefb"}}>{numOr0(t.jobs)}</td>

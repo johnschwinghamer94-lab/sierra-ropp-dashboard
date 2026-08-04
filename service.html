@@ -308,6 +308,11 @@ const evalJobAlerts=(j,nowMin)=>{
   if(jt.includes("part") && jt.includes("install")){
     return {alerts,isAlert:false,isSigned:!!(st.signed&&typeof st.signed==="object")};
   }
+  // SILO techs run TGL source calls in the service BUs — they appear on the board
+  // but play by TGL rules, not service job standards. No 2A/2B team = no alerts (John 8/3)
+  if(!((j.team||"").trim())){
+    return {alerts,isAlert:false,isSigned:!!(st.signed&&typeof st.signed==="object")};
+  }
   const onsiteRaw=st.onsite;
   const onsiteStr=typeof onsiteRaw==="string"?onsiteRaw:(onsiteRaw&&typeof onsiteRaw==="object"?onsiteRaw.t:null);
   const onsiteMin=parseStageTimeMinutes(onsiteStr);

@@ -1443,6 +1443,127 @@ function ServiceCallsTab(){
 }
 
 
+function ServiceCoachingTab(){
+  const [data,setData]=React.useState(null);
+  const [err,setErr]=React.useState(false);
+  const [now,setNow]=React.useState(Date.now());
+
+  const load=()=>{
+    fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/service_coaching.json?_="+Date.now())
+      .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
+      .then(j=>{ setData(j); setErr(false); })
+      .catch(()=>{ setErr(true); });
+  };
+  React.useEffect(()=>{ load(); const id=setInterval(load,300000); const t=setInterval(()=>setNow(Date.now()),60000); return ()=>{clearInterval(id);clearInterval(t);}; },[]);
+
+  const str=v=>(v==null?"":String(v));
+  const numOr0=v=>(typeof v==="number"&&isFinite(v))?v:0;
+  const bandClass=v=>"lf2-band b-"+String(v).toLowerCase().replace(/[^a-z]/g,"");
+  const BAND_RANK={"strong":0,"strongonwins":1,"solid":2,"moderate":3,"weak":4};
+  const bandRank=v=>{ const k=String(v).toLowerCase().replace(/[^a-z]/g,""); return BAND_RANK.hasOwnProperty(k)?BAND_RANK[k]:2; };
+  const planFile=name=>str(name).trim().replace(/\s+/g,"_")+".html";
+
+  const reps = (data && Array.isArray(data.reps)) ? data.reps : [];
+  const skipped = (data && Array.isArray(data.skipped)) ? data.skipped : [];
+  const dates = (data && Array.isArray(data.dates)) ? data.dates.slice().sort((a,b)=>b.localeCompare(a)) : [];
+  const date = data ? str(data.date) : "";
+
+  if(!data || !reps.length){
+    return (<div className="lf2-wrap riseIn" style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"50vh"}}>
+      <div style={{color:"#8fa3d9",fontSize:12,letterSpacing:"0.06em",textAlign:"center",maxWidth:440,lineHeight:1.6}}>
+        {err ? "No service coaching plans published yet — they generate each morning at 7:15 AM." : "◆ LOADING COACHING…"}
+      </div>
+    </div>);
+  }
+
+  const ageMin = data.generated ? Math.max(0, Math.round((now-new Date(data.generated).getTime())/60000)) : null;
+  const ageTxt = ageMin==null ? "—" : (ageMin<60 ? ageMin+"m ago" : Math.round(ageMin/60)+"h ago");
+
+  // worst-first: most failed critical flags first, tie-broken by weakest band (worse band = higher rank)
+  const repsSorted = reps.slice().sort((a,b)=>{
+    const failsA = a.critical ? Object.values(a.critical).filter(v=>v===false).length : 0;
+    const failsB = b.critical ? Object.values(b.critical).filter(v=>v===false).length : 0;
+    if(failsB!==failsA) return failsB-failsA;
+    const worstA = a.bands ? Math.max(...Object.values(a.bands).map(bandRank)) : 0;
+    const worstB = b.bands ? Math.max(...Object.values(b.bands).map(bandRank)) : 0;
+    return worstB-worstA;
+  });
+
+  const critPills=[["expectations","EXPECTATIONS"],["options","4+ OPTIONS"],["membership","MEMBERSHIP"],["close","CLOSE ASK"]];
+  const bandKeys=["welcome","diagnosis","options","close"];
+
+  return (
+    <div className="lf2-wrap riseIn">
+      <div className="lf2-head">
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <div className="lf2-logo">S</div>
+          <div>
+            <div className="lf2-title">📋 SERVICE COACHING — {date}</div>
+            <div className="lf2-subtl">sorted by coaching need — most critical gaps first</div>
+          </div>
+        </div>
+        <div style={{background:"rgba(91,164,230,.1)",border:"1px solid #5BA4E655",color:"#5BA4E6",borderRadius:6,padding:"5px 12px",fontWeight:700,fontSize:10,letterSpacing:".1em"}}>updated {ageTxt}</div>
+      </div>
+
+      {dates.length>1 && (
+        <div className="lf2-bus" style={{padding:"12px 22px 0"}}>
+          {dates.map(d=>(
+            d===date
+              ? <span key={d} className="lf2-bu on">{d}</span>
+              : <a key={d} className="lf2-bu" href={"coaching/plans_service/"+d+"/_index.html"} target="_blank" rel="noopener" style={{textDecoration:"none"}}>{d}</a>
+          ))}
+        </div>
+      )}
+
+      <div style={{padding:"14px 24px 24px",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:14}}>
+        {repsSorted.map((r,i)=>{
+          const critical = (r.critical && typeof r.critical==="object") ? r.critical : {};
+          const bands = (r.bands && typeof r.bands==="object") ? r.bands : {};
+          // prefer the path the feed supplies; only reconstruct if it is missing
+          const planHref = str(r.plan) || ("coaching/plans_service/"+date+"/"+planFile(r.name));
+          return (
+            <div key={i} className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:14,padding:"14px 16px",display:"flex",flexDirection:"column",gap:8}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:8,flexWrap:"wrap"}}>
+                <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>{str(r.name)}</div>
+                <div style={{fontSize:9.5,color:"#7089ab"}}>{numOr0(r.calls)} call{numOr0(r.calls)===1?"":"s"} · <span style={{color:"#F5B324",fontWeight:800}}>{str(r.closeRate)}</span> close</div>
+              </div>
+
+              <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                {bandKeys.map(k=>bands[k]?(<span key={k} className={bandClass(bands[k])}>{k}: {bands[k]}</span>):null)}
+              </div>
+
+              <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                {critPills.map(([k,l])=>{
+                  const ok = !!critical[k];
+                  return (<span key={k} style={{fontSize:8.5,fontWeight:800,letterSpacing:".04em",borderRadius:5,padding:"2px 7px",
+                    background:ok?"rgba(74,222,128,.12)":"rgba(230,57,70,.12)",border:"1px solid "+(ok?"#4ADE8055":"#E6394655"),color:ok?"#4ADE80":"#ff8c93"}}>{ok?"✓":"✗"} {l}</span>);
+                })}
+              </div>
+
+              {r.headlineGap && (
+                <div style={{fontSize:10.5,color:"#cfd9ee",lineHeight:1.5,background:"#0e1626",border:"1px solid #1e2d47",borderLeft:"3px solid #E63946",borderRadius:8,padding:"8px 10px"}}>{str(r.headlineGap)}</div>
+              )}
+
+              <a href={planHref} target="_blank" rel="noopener" style={{alignSelf:"flex-start",marginTop:2,fontSize:9.5,fontWeight:800,letterSpacing:".06em",color:"#5BA4E6",textDecoration:"none",border:"1px solid #5BA4E655",background:"rgba(91,164,230,.08)",borderRadius:6,padding:"5px 10px"}}>📄 OPEN PLAN</a>
+            </div>
+          );
+        })}
+      </div>
+
+      {skipped.length>0 && (
+        <div style={{padding:"0 24px 24px"}}>
+          <div style={{fontSize:9.5,color:"#5d6fa8",fontWeight:700,letterSpacing:".06em",marginBottom:6}}>SKIPPED RECORDINGS</div>
+          <div style={{display:"flex",flexDirection:"column",gap:4}}>
+            {skipped.map((s,i)=>(
+              <div key={i} style={{fontSize:9.5,color:"#6b7a99"}}><span style={{color:"#8fa3d9",fontWeight:700}}>{str(s.rep)}</span> — {str(s.reason)}</div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ServiceReviewTab(){
   const [d,setD]=React.useState(null);
   const [err,setErr]=React.useState(false);
@@ -1647,6 +1768,7 @@ function ServiceDash(){
     {id:"review",icon:"📊",label:"WK REVIEW",sub:"Sun close + Mon audit"},
     {id:"hxh",icon:"⏱",label:"HXH",sub:"pace to win"},
     {id:"calls",icon:"📞",label:"CALLS",sub:"next 5 days"},
+    {id:"coaching",icon:"📋",label:"COACHING",sub:"daily plans"},
     {id:"trend",icon:"📈",label:"TREND",sub:"Month over month"},
     {id:"board",icon:"🏆",label:"LEADERBOARD",sub:"All "+techs.length},
     {id:"conv",icon:"🎯",label:"CONVERSION",sub:"Opportunity %"},
@@ -1723,6 +1845,7 @@ function ServiceDash(){
         {tab==="review" && <ServiceReviewTab/>}
         {tab==="hxh" && <ServiceHxhTab/>}
         {tab==="calls" && <ServiceCallsTab/>}
+        {tab==="coaching" && <ServiceCoachingTab/>}
         {tab==="overview" && !showClassic && <ServicePulseTab onClassic={()=>setShowClassic(true)}/>}
         {tab==="overview" && showClassic && (<React.Fragment>
           <div style={{padding:"9px 24px 0",display:"flex",justifyContent:"flex-end"}}>

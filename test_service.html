@@ -1338,6 +1338,104 @@ function ServiceHxhTab(){
   );
 }
 
+function ServiceCallsTab(){
+  const [data,setData]=React.useState(null);
+  const [err,setErr]=React.useState(false);
+  const [now,setNow]=React.useState(Date.now());
+
+  const load=()=>{
+    fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/servicecalls.json?_="+Date.now())
+      .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
+      .then(j=>{ setData(j); setErr(false); })
+      .catch(()=>{ setErr(true); });
+  };
+  React.useEffect(()=>{ load(); const id=setInterval(load,120000); const t=setInterval(()=>setNow(Date.now()),30000); return ()=>{clearInterval(id);clearInterval(t);}; },[]);
+
+  const str=v=>(v==null?"":String(v));
+  const numOr0=v=>(typeof v==="number"&&isFinite(v))?v:0;
+  const trunc=(s,n)=>{ s=str(s); return s.length>n?s.slice(0,n-1)+"…":s; };
+
+  const days = (data && Array.isArray(data.days)) ? data.days.slice(0,5) : [];
+
+  if(!data || !days.length){
+    return (<div className="lf2-wrap riseIn" style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"50vh"}}>
+      <div style={{color:"#8fa3d9",fontSize:12,letterSpacing:"0.06em",textAlign:"center",maxWidth:440,lineHeight:1.6}}>
+        {err ? "Calls board data arrives with the next engine landing — check back shortly." : "◆ LOADING CALLS BOARD…"}
+      </div>
+    </div>);
+  }
+
+  const ageMin = data.generated ? Math.max(0, Math.round((now-new Date(data.generated).getTime())/60000)) : null;
+  const stale = ageMin!=null && ageMin>10;
+  const BLUE="#5BA4E6",GREEN="#22c55e",GOLD="#F5B324",AMBER="#F5B324";
+
+  return (
+    <div className="lf2-wrap riseIn">
+      <div className="lf2-head">
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <div className="lf2-logo">S</div>
+          <div>
+            <div className="lf2-title">📞 Calls Board — Next 5 Days</div>
+            <div className="lf2-subtl">Booked appointments by tech · demand + maintenance</div>
+          </div>
+        </div>
+        {stale
+          ? <div className="lf2-chip-stale">⚠ UPDATED {ageMin}M AGO · STAGING SNAPSHOT</div>
+          : <div className="lf2-chip-live"><span className="lf2-dot"/>updated {ageMin!=null?ageMin+"m ago":"—"}</div>}
+      </div>
+
+      <div style={{padding:"14px 24px 24px",display:"grid",gridTemplateColumns:"repeat(5,minmax(230px,1fr))",gap:12,overflowX:"auto"}}>
+        {days.map((d,di)=>{
+          const techs = Array.isArray(d.techs) ? d.techs : [];
+          const unassigned = numOr0(d.unassigned);
+          return (
+          <div key={di} className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:14,padding:"12px 12px 14px",minWidth:230,display:"flex",flexDirection:"column"}}>
+            <div style={{fontSize:12,fontWeight:800,color:"#fff",letterSpacing:".04em"}}>{str(d.label)||str(d.date)}</div>
+            <div style={{fontSize:19,fontWeight:900,color:GOLD,marginTop:2}}>{numOr0(d.total)}<span style={{fontSize:9,fontWeight:700,color:"#7089ab",marginLeft:5}}>BOOKED</span></div>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:6}}>
+              <span style={{background:"rgba(91,164,230,.12)",border:"1px solid #5BA4E655",color:BLUE,borderRadius:6,padding:"3px 8px",fontWeight:700,fontSize:9.5}}>⚡ {numOr0(d.demand)} DEMAND</span>
+              <span style={{background:"rgba(34,197,94,.12)",border:"1px solid #22c55e55",color:GREEN,borderRadius:6,padding:"3px 8px",fontWeight:700,fontSize:9.5}}>🔧 {numOr0(d.maintenance)} MAINT</span>
+              {unassigned>0 && <span style={{background:"rgba(245,179,36,.14)",border:"1px solid #F5B32455",color:AMBER,borderRadius:6,padding:"3px 8px",fontWeight:800,fontSize:9.5}}>⚠ {unassigned} UNASSIGNED</span>}
+            </div>
+
+            <div style={{marginTop:10,maxHeight:"65vh",overflowY:"auto",display:"flex",flexDirection:"column",gap:10,paddingRight:2}}>
+              {techs.map((t,ti)=>{
+                const appts = Array.isArray(t.appts) ? t.appts : [];
+                const isUnassigned = str(t.name).toUpperCase()==="UNASSIGNED";
+                const group = (
+                  <div key={ti} style={isUnassigned?{border:"1px solid #F5B32455",background:"rgba(245,179,36,.06)",borderRadius:10,padding:"7px 8px"}:null}>
+                    <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
+                      <span style={{fontSize:10.5,fontWeight:800,color:isUnassigned?AMBER:"#e6eefb"}}>{str(t.name)}</span>
+                      {t.team ? <span style={{fontSize:8,fontWeight:700,color:"#7089ab",background:"#0e1626",border:"1px solid #1e2d47",borderRadius:5,padding:"1px 6px"}}>{str(t.team)}</span> : null}
+                      <span style={{fontSize:8.5,color:"#5d6fa8"}}>{appts.length}</span>
+                    </div>
+                    <div style={{display:"flex",flexDirection:"column",gap:3,marginTop:4}}>
+                      {appts.map((a,ai)=>(
+                        <a key={ai} href={a.jobId?("https://go.servicetitan.com/#/Job/Index/"+a.jobId):undefined}
+                          target="_blank" rel="noopener"
+                          onClick={ev=>{ ev.stopPropagation(); if(!a.jobId) ev.preventDefault(); }}
+                          style={{display:"flex",alignItems:"center",gap:6,textDecoration:"none",borderLeft:"3px solid "+(a.kind==="demand"?BLUE:a.kind==="maintenance"?GREEN:"#2a3a5a"),
+                            background:"#0e1626",borderRadius:6,padding:"4px 7px",cursor:a.jobId?"pointer":"default"}}>
+                          <span style={{fontSize:9.5,fontWeight:800,color:"#e6eefb",width:38,flexShrink:0}}>{str(a.time)}</span>
+                          <span style={{fontSize:9.5,color:"#9fb3cc",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{trunc(a.customer,24)}</span>
+                          {a.jobType && <span style={{fontSize:7.5,fontWeight:700,color:"#7089ab",background:"#131c30",border:"1px solid #1e2d47",borderRadius:4,padding:"1px 5px",whiteSpace:"nowrap"}}>{str(a.jobType)}</span>}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                );
+                return group;
+              })}
+              {!techs.length && <div style={{fontSize:9.5,color:"#5d6fa8",padding:"6px 2px"}}>No appointments booked.</div>}
+            </div>
+          </div>);
+        })}
+      </div>
+    </div>
+  );
+}
+
+
 function ServiceReviewTab(){
   const [d,setD]=React.useState(null);
   const [err,setErr]=React.useState(false);
@@ -1541,6 +1639,7 @@ function ServiceDash(){
     {id:"weekly",icon:"📅",label:"WEEKLY",sub:"WTD + trends"},
     {id:"review",icon:"📊",label:"WK REVIEW",sub:"Sun close + Mon audit"},
     {id:"hxh",icon:"⏱",label:"HXH",sub:"pace to win"},
+    {id:"calls",icon:"📞",label:"CALLS",sub:"next 5 days"},
     {id:"trend",icon:"📈",label:"TREND",sub:"Month over month"},
     {id:"board",icon:"🏆",label:"LEADERBOARD",sub:"All "+techs.length},
     {id:"conv",icon:"🎯",label:"CONVERSION",sub:"Opportunity %"},
@@ -1616,6 +1715,7 @@ function ServiceDash(){
         {tab==="weekly" && <ServiceWeeklyTab/>}
         {tab==="review" && <ServiceReviewTab/>}
         {tab==="hxh" && <ServiceHxhTab/>}
+        {tab==="calls" && <ServiceCallsTab/>}
         {tab==="overview" && !showClassic && <ServicePulseTab onClassic={()=>setShowClassic(true)}/>}
         {tab==="overview" && showClassic && (<React.Fragment>
           <div style={{padding:"9px 24px 0",display:"flex",justifyContent:"flex-end"}}>

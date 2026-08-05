@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-05T06:21:21.275629-07:00",
-  "generatedMs": 1785936081275,
+  "generated": "2026-08-05T06:22:06.232471-07:00",
+  "generatedMs": 1785936126232,
   "worst": "ok",
   "counts": {
     "ok": 12,
@@ -12,7 +12,7 @@
       "key": "livefeed",
       "label": "SILO live feed",
       "status": "ok",
-      "ageMin": 4,
+      "ageMin": 5,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-05T06:16:38.603000-07:00",
       "note": "fresh"
@@ -21,7 +21,7 @@
       "key": "servicefeed",
       "label": "Service live feed",
       "status": "ok",
-      "ageMin": 4,
+      "ageMin": 5,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-05T06:17:03.531000-07:00",
       "note": "fresh"
@@ -39,7 +39,7 @@
       "key": "servicedata",
       "label": "Service Pulse data",
       "status": "ok",
-      "ageMin": 249,
+      "ageMin": 250,
       "expectMaxMin": 45,
       "lastUpdate": "2026-08-05T02:12:03.582749-07:00",
       "note": "outside ops hours"
@@ -48,7 +48,7 @@
       "key": "servicecalls",
       "label": "Calls board",
       "status": "ok",
-      "ageMin": 249,
+      "ageMin": 250,
       "expectMaxMin": 60,
       "lastUpdate": "2026-08-05T02:12:03.582749-07:00",
       "note": "outside ops hours"
@@ -93,7 +93,7 @@
       "key": "tgl_conv",
       "label": "ServiceTitan TGL truth (conv.json)",
       "status": "ok",
-      "ageMin": 484,
+      "ageMin": 485,
       "expectMaxMin": 1800,
       "lastUpdate": "2026-08-04T22:16:45.387582-07:00",
       "note": "fresh"

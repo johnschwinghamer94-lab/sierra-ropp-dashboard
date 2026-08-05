@@ -1,0 +1,132 @@
+{
+  "generated": "2026-08-05T06:32:00.263100-07:00",
+  "generatedMs": 1785936720263,
+  "forDate": "2026-08-04",
+  "yesterday": {
+    "service": {
+      "revenue": 0,
+      "calls": 0,
+      "closeRate": 0,
+      "avgTicket": 0,
+      "membershipsSold": 0,
+      "membershipOfferRate": 0.0,
+      "vsPriorDay": null
+    },
+    "silo": {
+      "calls": 0,
+      "tgls": 0,
+      "rate": 0.0,
+      "revenue": 0,
+      "vsPriorDay": null
+    }
+  },
+  "risks": [
+    {
+      "severity": "high",
+      "area": "recording",
+      "text": "Service recording compliance is 16.7% over the last 7 days \u2014 below the 90% target.",
+      "metric": {
+        "deptPct": 16.7
+      }
+    },
+    {
+      "severity": "high",
+      "area": "pipeline",
+      "text": "Service membership offer rate is 0.0% dept-wide \u2014 well below a healthy target.",
+      "metric": {
+        "offerRate": 0.0
+      }
+    },
+    {
+      "severity": "medium",
+      "area": "board",
+      "text": "WED 8/5 has 4 unassigned appointments still on the board.",
+      "metric": {
+        "date": "2026-08-05",
+        "unassigned": 4
+      }
+    },
+    {
+      "severity": "medium",
+      "area": "board",
+      "text": "FRI 8/7 has 1 unassigned appointment still on the board.",
+      "metric": {
+        "date": "2026-08-07",
+        "unassigned": 1
+      }
+    },
+    {
+      "severity": "medium",
+      "area": "board",
+      "text": "MON 8/10 has 2 unassigned appointments still on the board.",
+      "metric": {
+        "date": "2026-08-10",
+        "unassigned": 2
+      }
+    },
+    {
+      "severity": "medium",
+      "area": "pipeline",
+      "text": "Stanley Kim offered a membership on 0% of 1 jobs today.",
+      "metric": {
+        "tech": "Stanley Kim",
+        "jobs": 1
+      }
+    },
+    {
+      "severity": "low",
+      "area": "pipeline",
+      "text": "August is ahead of pace: $104,302 MTD vs ~$71,936 expected through 2 of 21 working days (+$32,366).",
+      "metric": {
+        "mtdActual": 104302,
+        "expected": 71936,
+        "gap": 32366
+      }
+    }
+  ],
+  "coachFocus": [
+    {
+      "tech": "Stanley Kim",
+      "reason": "Never resets customer's time expectations, and sales process drags through repeated manager pricing lookups.",
+      "evidence": "failed critical flags: expectations, options, membership, close; close rate 100%; recording compliance 16.7% (7-day)",
+      "planLink": "coaching/plans_service/2026-08-03/Stanley_Kim.html"
+    },
+    {
+      "tech": "Jose Huesca",
+      "reason": "Strong diagnosis and rapport aren't bookended by a clean opening or confident single-pass price presentation.",
+      "evidence": "failed critical flags: expectations, options, membership, close; close rate 100%",
+      "planLink": "coaching/plans_service/2026-08-03/Jose_Huesca.html"
+    },
+    {
+      "tech": "Josue Arciga",
+      "reason": "Membership pitch is not yet a habit - it lands well when made but is skipped on visits that aren't the biggest-ticket repair.",
+      "evidence": "failed critical flags: expectations, options, membership, close; close rate 100%",
+      "planLink": "coaching/plans_service/2026-08-03/Josue_Arciga.html"
+    },
+    {
+      "tech": "Matthew Arnold",
+      "reason": "Repeated multi-item upsell pitches on systems with no real issues are creating customer churn risk.",
+      "evidence": "failed critical flags: expectations, options, membership, close; close rate 75%",
+      "planLink": "coaching/plans_service/2026-08-03/Matthew_Arnold.html"
+    },
+    {
+      "tech": "AJ Munoz",
+      "reason": "Presented only one repair scope with two pricing variants instead of a true 4-6 option menu.",
+      "evidence": "failed critical flags: expectations, membership, close; close rate 100%",
+      "planLink": "coaching/plans_service/2026-08-03/AJ_Munoz.html"
+    }
+  ],
+  "wins": [],
+  "health": {
+    "worst": "ok",
+    "dead": [],
+    "warn": []
+  },
+  "notes": [
+    "servicedata.json's 'today' bucket is dated 2026-08-05, not the target business day 2026-08-04 \u2014 Service Pulse had not rolled to a new day (or is ahead of it) at digest run time, so service.yesterday reflects the most recent available snapshot instead of a confirmed closed day.",
+    "vsPriorDay is null for Service: none of this engine's allowed sources (servicedata.json / servicecalls.json / servicefeed.json) retain a second day of per-day revenue/close-rate history \u2014 only the current live day is exposed.",
+    "hourly.json is dated 2026-08-05, not the target business day 2026-08-04 \u2014 SILO yesterday numbers reflect the most recent available snapshot instead of a confirmed closed day.",
+    "SILO vsPriorDay unavailable \u2014 tgl_truth/conv.json has no per-tech day data for 2026-08-04 and/or the prior business day 2026-08-03.",
+    "board-fill trend risk skipped \u2014 servicecalls_history.json does not yet contain 2+ trailing samples for any of the same weekdays as the next 5 business days (the snapshot history is too new/short to compute a trailing weekday average)."
+  ]
+}

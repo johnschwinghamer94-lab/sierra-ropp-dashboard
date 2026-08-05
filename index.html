@@ -8643,10 +8643,15 @@ const GOALPACE_CSS = `
   border-radius:999px;padding:2px 7px;margin-left:6px;letter-spacing:.04em;text-transform:uppercase;}
 .gp-block{margin-top:12px;}
 .gp-lbl{font-size:9.5px;color:#7089ab;letter-spacing:.08em;text-transform:uppercase;font-weight:700;
-  display:flex;justify-content:space-between;margin-bottom:5px;}
-.gp-track{height:14px;background:#101a35;border-radius:6px;overflow:hidden;}
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;margin-bottom:5px;}
+.gp-track{height:14px;width:100%;box-sizing:border-box;background:#101a35;border-radius:6px;overflow:hidden;}
 .gp-fill{height:100%;border-radius:6px;transition:width .4s ease;}
 .gp-sub{display:flex;justify-content:space-between;font-size:10.5px;color:#9fb3cc;margin-top:5px;}
+.gp-early-note{font-size:9.5px;color:#9fb3cc;font-style:italic;margin-top:2px;}
+.gp-avg{font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;font-weight:700;}
+.gp-avg-lbl{color:#7089ab;}
+.gp-avg-val{color:#eaf1fb;}
+.gp-mult{color:#F5B324;font-weight:800;}
 .gp-coach{margin-top:14px;padding-top:12px;border-top:1px dashed #22307a;}
 .gp-sw{font-size:10.5px;color:#9fb3cc;margin-bottom:6px;}
 .gp-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;}
@@ -8707,11 +8712,11 @@ function GoalPaceTab({ data }) {
     const ytd = (rec && rec.ytd) || { revenue: 0, calls: 0, tgls: 0, rate: 0 };
     const mtd = (rec && rec.mtd) || { revenue: 0, calls: 0, tgls: 0, rate: 0 };
 
+    const avgMonthly = monthsCompleted > 0 ? (ytd.revenue - mtd.revenue) / monthsCompleted : 0;
     let goalRevK = t.revK;
     let goalRevDerived = false;
     if (goalRevK == null) {
       goalRevDerived = true;
-      const avgMonthly = monthsCompleted > 0 ? (ytd.revenue - mtd.revenue) / monthsCompleted : 0;
       goalRevK = avgMonthly > 0 ? avgMonthly / 1000 : 0;
     }
     let goalTglPct = t.tglPct;
@@ -8727,25 +8732,33 @@ function GoalPaceTab({ data }) {
     const onPace = projectedEOM >= goalRev;
     const gap = goalRev - projectedEOM;
 
+    const isEarly = bizDaysElapsed < 5;
     let status = "NEW";
     if (!isNew) {
-      const behindPct = expected > 0 ? (expected - mtd.revenue) / expected * 100 : 0;
-      if (behindPct > 40) status = "BEHIND_HARD";
-      else if (onPace && pacePct >= 100) status = "AHEAD";
-      else if (onPace) status = "ON_PACE";
-      else status = "BEHIND";
+      if (isEarly) {
+        status = "EARLY";
+      } else {
+        const behindPct = expected > 0 ? (expected - mtd.revenue) / expected * 100 : 0;
+        if (behindPct > 40) status = "BEHIND_HARD";
+        else if (onPace && pacePct >= 100) status = "AHEAD";
+        else if (onPace) status = "ON_PACE";
+        else status = "BEHIND";
+      }
     }
     const statusMeta = {
       NEW:        { label: "NEW",     color: "#9fb3cc" },
+      EARLY:      { label: "EARLY \u00B7 DAY " + bizDaysElapsed, color: "#9fb3cc" },
       AHEAD:      { label: "AHEAD",   color: "#4ADE80" },
       ON_PACE:    { label: "ON PACE", color: "#2E78C7" },
       BEHIND:     { label: "BEHIND",  color: "#F5B324" },
       BEHIND_HARD:{ label: "BEHIND",  color: "#E63946" }
     }[status];
 
+    const avgMultiple = (!isNew && avgMonthly > 0) ? goalRev / avgMonthly : 0;
+
     return {
       t, ytd, mtd, goalRev, goalRevDerived, goalTglPct, goalTglDerived,
-      isNew, expected, projectedEOM, pacePct, onPace, gap, status, statusMeta,
+      isNew, isEarly, avgMonthly, avgMultiple, expected, projectedEOM, pacePct, onPace, gap, status, statusMeta,
       coachRec: findCoach(t.key)
     };
   });
@@ -8758,6 +8771,7 @@ function GoalPaceTab({ data }) {
     return a.pacePct - b.pacePct;
   });
 
+  const isEarlyMonth = bizDaysElapsed < 5;
   const activeRows = rows.filter(r => !r.isNew);
   const teamMtd = activeRows.reduce((s, r) => s + r.mtd.revenue, 0);
   const teamProj = activeRows.reduce((s, r) => s + r.projectedEOM, 0);
@@ -8767,10 +8781,16 @@ function GoalPaceTab({ data }) {
   const insights = [
     { icon: "\u{1F3AF}", label: "TEAM MONTHLY GOAL", value: fmtK(GOAL_DATA.teamMonthlyGoalK * 1000), color: "#F5B324" },
     { icon: "\u{1F4B0}", label: "COMBINED MTD ACTUAL", value: fmtK(teamMtd), color: "#2E78C7" },
-    { icon: "\u{1F4C8}", label: "PROJECTED EOM", value: fmtK(teamProj), color: teamProj >= GOAL_DATA.teamMonthlyGoalK * 1000 ? "#4ADE80" : "#F5B324" },
+    isEarlyMonth
+      ? { icon: "\u{1F4C8}", label: "PROJECTED EOM", value: "—", color: "#9fb3cc", sub: "too early to project" }
+      : { icon: "\u{1F4C8}", label: "PROJECTED EOM", value: fmtK(teamProj), color: teamProj >= GOAL_DATA.teamMonthlyGoalK * 1000 ? "#4ADE80" : "#F5B324" },
     { icon: "\u{1F5D3}", label: "BIZ DAYS ELAPSED", value: bizDaysElapsed + " / " + bizDaysTotal, color: "#9fb3cc" },
-    { icon: "✅", label: "ON PACE", value: onPaceCount + " techs", color: "#4ADE80" },
-    { icon: "⚠", label: "BEHIND", value: behindCount + " techs", color: behindCount > 0 ? "#E63946" : "#4ADE80" }
+    ...(isEarlyMonth
+      ? [{ icon: "\u{1F556}", label: "EARLY IN MONTH", value: activeRows.length + " techs", color: "#9fb3cc" }]
+      : [
+          { icon: "✅", label: "ON PACE", value: onPaceCount + " techs", color: "#4ADE80" },
+          { icon: "⚠", label: "BEHIND", value: behindCount + " techs", color: behindCount > 0 ? "#E63946" : "#4ADE80" }
+        ])
   ];
 
   const revBar = row => {
@@ -8778,12 +8798,17 @@ function GoalPaceTab({ data }) {
     return e("div", { className: "gp-block" },
       e("div", { className: "gp-lbl" },
         e("span", null, "REVENUE · GOAL " + (row.goalRev > 0 ? fmtK(row.goalRev) : "—")),
-        e("span", null, "MTD " + fmtK(row.mtd.revenue))),
+        e("span", null, "MTD " + fmtK(row.mtd.revenue)),
+        !row.isNew && e("span", { className: "gp-avg" },
+          e("span", { className: "gp-avg-lbl" }, "AVG/MO "),
+          e("span", { className: "gp-avg-val" }, fmtK(row.avgMonthly)),
+          row.avgMultiple >= 1.5 && e("span", { className: "gp-mult" }, " \u00B7 " + (Math.round(row.avgMultiple * 10) / 10) + "\u00D7 avg"))),
       e("div", { className: "gp-track" },
         e("div", { className: "gp-fill", style: { width: pct + "%", background: row.statusMeta.color } })),
       !row.isNew && e("div", { className: "gp-sub" },
-        e("span", null, "Projected EOM " + fmtK(row.projectedEOM)),
-        e("span", null, "Expected by today " + fmtK(row.expected))));
+        e("span", null, row.isEarly ? "Projected EOM —" : "Projected EOM " + fmtK(row.projectedEOM)),
+        e("span", null, "Expected by today " + fmtK(row.expected))),
+      row.isEarly && !row.isNew && e("div", { className: "gp-early-note" }, "too early to project"));
   };
 
   const tglBar = row => {

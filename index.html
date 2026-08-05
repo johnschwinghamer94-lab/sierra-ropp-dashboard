@@ -11656,15 +11656,22 @@ function DigestTab() {
   const dateTxt = forDate ? forDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) : "";
   const genTxt = d.generated ? new Date(d.generated).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "";
 
+  // Risks only count on the SILO deck when they carry an explicit dept tag
+  // of "silo" or "both" — an OLD payload with no dept tags at all yields NO
+  // risks here (never all of them; that would be showing Service risks on
+  // the SILO board).
   const allRisks = Array.isArray(d.risks) ? d.risks : [];
-  const risks = allRisks.filter(r => r.dept === "silo" || r.dept === "both" || r.dept == null);
+  const risks = allRisks.filter(r => r.dept === "silo" || r.dept === "both");
   const risksBySev = { high: risks.filter(r => r.severity === "high"), medium: risks.filter(r => r.severity === "medium"), low: risks.filter(r => r.severity === "low") };
   const yest = d.yesterday || {};
   const silo = yest.silo || {};
-  // New dept-scoped fields with fallback to the old combined fields until the
-  // next engine run publishes the new payload shape.
-  const coachFocus = Array.isArray(d.siloCoachFocus) ? d.siloCoachFocus : (Array.isArray(d.coachFocus) ? d.coachFocus : []);
-  const wins = Array.isArray(d.siloWins) ? d.siloWins : (Array.isArray(d.wins) ? d.wins : []);
+  // SILO-only fields — NO fallback to the old combined coachFocus/wins
+  // (that data is Service's, not SILO's). If the engine hasn't published
+  // siloCoachFocus/siloWins yet, treat it as "not yet available" rather than
+  // rendering another department's content.
+  const hasSiloDigest = Array.isArray(d.siloCoachFocus);
+  const coachFocus = hasSiloDigest ? d.siloCoachFocus : [];
+  const wins = Array.isArray(d.siloWins) ? d.siloWins : [];
   const notes = Array.isArray(d.notes) ? d.notes : [];
 
   const siloStats = [
@@ -11712,7 +11719,9 @@ function DigestTab() {
 
     e("div", { style: { padding: "18px 24px 0" } },
       e("div", { style: { fontSize: 10, fontWeight: 800, color: "#9fb3cc", letterSpacing: ".1em", marginBottom: 8 } }, "WHO TO COACH TODAY"),
-      coachFocus.length === 0
+      !hasSiloDigest
+        ? e("div", { style: { fontSize: 10.5, color: "#6b7a99" } }, "SILO briefing refreshes at 6:30 AM.")
+        : coachFocus.length === 0
         ? e("div", { style: { fontSize: 10.5, color: "#6b7a99" } }, "No coaching priorities flagged.")
         : e("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 10 } },
           coachFocus.map((c, i) => e("div", { key: i, style: { background: "#131c30", border: "1px solid #1e2d47", borderRadius: 10, padding: "10px 14px" } },

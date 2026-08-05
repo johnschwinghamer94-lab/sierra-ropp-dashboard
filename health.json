@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-05T09:42:58.123952-07:00",
-  "generatedMs": 1785948178123,
+  "generated": "2026-08-05T09:43:15.536530-07:00",
+  "generatedMs": 1785948195536,
   "worst": "warn",
   "counts": {
     "ok": 11,
@@ -21,16 +21,16 @@
       "key": "servicefeed",
       "label": "Service live feed",
       "status": "ok",
-      "ageMin": 1,
+      "ageMin": 0,
       "expectMaxMin": 6,
-      "lastUpdate": "2026-08-05T09:41:42.718000-07:00",
+      "lastUpdate": "2026-08-05T09:43:04.958000-07:00",
       "note": "fresh"
     },
     {
       "key": "hourly",
       "label": "ROPP hourly capture",
       "status": "ok",
-      "ageMin": 0,
+      "ageMin": 1,
       "expectMaxMin": 40,
       "lastUpdate": "2026-08-05T09:42:02.977000-07:00",
       "note": "fresh"

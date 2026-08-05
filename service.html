@@ -904,8 +904,8 @@ function ServiceLiveTab(){
             {/* Siro is INFORMATIONAL ONLY and can never raise an alert (see evalJobAlerts).
                 It is the only in-flight hint that exists, because Field Pro reports nothing
                 until a job is closed — so it shows only while ServiceTitan is still blind. */}
-            {j.rec && j.rec.state!=="recording" && j.siro && j.siro.recNow && j.stages && j.stages.onsite && !j.stages.done && <span className="lf2-recnow">REC ●</span>}
-            {j.rec && j.rec.state!=="recording" && j.siro && !j.siro.recNow && j.siro.liveTech && j.stages && j.stages.onsite && !j.stages.done && <span className="lf2-reccarry">🎙 REC · RUNNING</span>}
+            {(!j.rec || j.rec.state!=="recording") && j.siro && j.siro.recNow && j.stages && j.stages.onsite && !j.stages.done && <span className="lf2-recnow">REC ●</span>}
+            {(!j.rec || j.rec.state!=="recording") && j.siro && !j.siro.recNow && j.siro.liveTech && j.stages && j.stages.onsite && !j.stages.done && <span className="lf2-reccarry">🎙 REC · RUNNING</span>}
             {j.membershipSold && <span title="Membership sold">🎟</span>}
           </span>
         </div>

@@ -25,10 +25,18 @@ body{background:#070b16;color:#eaf1fb;font-family:'Inter','Segoe UI',system-ui,s
 @keyframes glowPulse{0%,100%{filter:drop-shadow(0 0 3px currentColor);}50%{filter:drop-shadow(0 0 13px currentColor);}}
 @keyframes growW{from{width:0;}}
 /* ═══ TEST ENHANCEMENTS ═══════════════════════════════════════════════════ */
-/* Header — scrolls with the page on every screen size. It is ~272px tall
-   (title + rate chips + two tab rows); pinning it ate the top third-to-half
+/* Header is split in two. The title block (logo + rate chips + buttons) scrolls
+   away with the page — pinning the whole 272px header ate the top third-to-half
    of the viewport and made the page feel like only the bottom half scrolled. */
 .sticky-hdr{position:static;z-index:100;backdrop-filter:blur(14px);}
+/* Only the tab strip stays pinned (~116px). It is a SIBLING of .sticky-hdr, not
+   a child: a sticky child is clipped to its parent's box, so nested inside the
+   header it would scroll away the moment the header did. */
+.tabs-pinned{position:sticky;top:0;z-index:120;padding:8px 24px 0;
+  background:linear-gradient(90deg,#0b1230f8,#101b45f8);
+  border-bottom:1px solid #f5b32488;
+  box-shadow:0 6px 18px rgba(0,0,0,.45);
+  backdrop-filter:blur(14px);}
 /* Animated number counter */
 @keyframes numPop{0%{transform:translateY(6px);opacity:.3}100%{transform:translateY(0);opacity:1}}
 .num-pop{display:inline-block;animation:numPop .35s cubic-bezier(.2,.7,.2,1) both;}
@@ -133,6 +141,10 @@ input[type=range].kpi-range::-webkit-slider-thumb{-webkit-appearance:none;width:
   .sec-pad{padding-left:12px!important;padding-right:12px!important;}
   /* Header is already static everywhere; phones just drop the blur too */
   .sticky-hdr{backdrop-filter:none!important;}
+  /* Phones wrap the tabs into 4-5 rows (~346px) — pinning that would eat the
+     viewport all over again, so there the strip scrolls with the page. */
+  .tabs-pinned{position:static!important;backdrop-filter:none!important;
+    box-shadow:none!important;padding-left:12px!important;padding-right:12px!important;}
 }
 
 /* ── Round 4 Global ─────────────────────────────────────────── */
@@ -12810,14 +12822,16 @@ function Root() {
       color: "#FFFFFF",
       fontWeight: 400
     }
-  }, "ADD · REMOVE · EDIT")))), /*#__PURE__*/React.createElement("div", {
+  }, "ADD · REMOVE · EDIT"))))), /*#__PURE__*/React.createElement("div", {
+    className: "tabs-pinned"
+  }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexWrap: "wrap",
       justifyContent: "center",
       rowGap: 2,
       columnGap: 2,
-      marginTop: 16
+      marginTop: 0
     }
   }, tabs.map(t => /*#__PURE__*/React.createElement("button", {
     "data-tab": t.id,

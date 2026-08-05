@@ -1,10 +1,10 @@
 {
-  "generated": "2026-08-05T00:42:14.087667-07:00",
-  "generatedMs": 1785915734087,
-  "worst": "warn",
+  "generated": "2026-08-05T01:00:41.121126-07:00",
+  "generatedMs": 1785916841121,
+  "worst": "ok",
   "counts": {
-    "ok": 10,
-    "warn": 2,
+    "ok": 12,
+    "warn": 0,
     "dead": 0
   },
   "checks": [
@@ -12,7 +12,7 @@
       "key": "livefeed",
       "label": "SILO live feed",
       "status": "ok",
-      "ageMin": 47,
+      "ageMin": 65,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-04T23:55:00.874000-07:00",
       "note": "outside ops hours"
@@ -21,7 +21,7 @@
       "key": "servicefeed",
       "label": "Service live feed",
       "status": "ok",
-      "ageMin": 41,
+      "ageMin": 59,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-05T00:00:40.797000-07:00",
       "note": "outside ops hours"
@@ -32,14 +32,14 @@
       "status": "ok",
       "ageMin": 0,
       "expectMaxMin": 40,
-      "lastUpdate": "2026-08-05T00:41:56.816000-07:00",
+      "lastUpdate": "2026-08-05T01:00:24.637000-07:00",
       "note": "outside ops hours"
     },
     {
       "key": "servicedata",
       "label": "Service Pulse data",
       "status": "ok",
-      "ageMin": 88,
+      "ageMin": 107,
       "expectMaxMin": 45,
       "lastUpdate": "2026-08-04T23:13:20.244002-07:00",
       "note": "outside ops hours"
@@ -48,7 +48,7 @@
       "key": "servicecalls",
       "label": "Calls board",
       "status": "ok",
-      "ageMin": 88,
+      "ageMin": 107,
       "expectMaxMin": 60,
       "lastUpdate": "2026-08-04T23:13:20.244002-07:00",
       "note": "outside ops hours"
@@ -57,7 +57,7 @@
       "key": "scorecards",
       "label": "SILO live scorecards",
       "status": "ok",
-      "ageMin": 116,
+      "ageMin": 135,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-04T22:45:17.896000-07:00",
       "note": "outside ops hours"
@@ -66,7 +66,7 @@
       "key": "servicecards",
       "label": "Service live scorecards",
       "status": "ok",
-      "ageMin": 167,
+      "ageMin": 185,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-04T21:55:12.661000-07:00",
       "note": "outside ops hours"
@@ -74,26 +74,26 @@
     {
       "key": "coaching",
       "label": "SILO daily plans",
-      "status": "warn",
+      "status": "ok",
       "ageMin": 2880,
       "expectMaxMin": 1440,
       "lastUpdate": "2026-08-03",
-      "note": "Daily coaching plan is 2 days behind \u2014 close-rate metrics may fall back to graded-call sampling."
+      "note": "fresh (pre-generation window)"
     },
     {
       "key": "service_coaching",
       "label": "Service daily plans",
-      "status": "warn",
+      "status": "ok",
       "ageMin": 2880,
       "expectMaxMin": 1440,
       "lastUpdate": "2026-08-03",
-      "note": "Daily coaching plan is 2 days behind \u2014 close-rate metrics may fall back to graded-call sampling."
+      "note": "fresh (pre-generation window)"
     },
     {
       "key": "tgl_conv",
       "label": "ServiceTitan TGL truth (conv.json)",
       "status": "ok",
-      "ageMin": 145,
+      "ageMin": 163,
       "expectMaxMin": 1800,
       "lastUpdate": "2026-08-04T22:16:45.387582-07:00",
       "note": "fresh"

@@ -1,0 +1,120 @@
+{
+  "generated": "2026-08-05T00:42:14.087667-07:00",
+  "generatedMs": 1785915734087,
+  "worst": "warn",
+  "counts": {
+    "ok": 10,
+    "warn": 2,
+    "dead": 0
+  },
+  "checks": [
+    {
+      "key": "livefeed",
+      "label": "SILO live feed",
+      "status": "ok",
+      "ageMin": 47,
+      "expectMaxMin": 6,
+      "lastUpdate": "2026-08-04T23:55:00.874000-07:00",
+      "note": "outside ops hours"
+    },
+    {
+      "key": "servicefeed",
+      "label": "Service live feed",
+      "status": "ok",
+      "ageMin": 41,
+      "expectMaxMin": 6,
+      "lastUpdate": "2026-08-05T00:00:40.797000-07:00",
+      "note": "outside ops hours"
+    },
+    {
+      "key": "hourly",
+      "label": "ROPP hourly capture",
+      "status": "ok",
+      "ageMin": 0,
+      "expectMaxMin": 40,
+      "lastUpdate": "2026-08-05T00:41:56.816000-07:00",
+      "note": "outside ops hours"
+    },
+    {
+      "key": "servicedata",
+      "label": "Service Pulse data",
+      "status": "ok",
+      "ageMin": 88,
+      "expectMaxMin": 45,
+      "lastUpdate": "2026-08-04T23:13:20.244002-07:00",
+      "note": "outside ops hours"
+    },
+    {
+      "key": "servicecalls",
+      "label": "Calls board",
+      "status": "ok",
+      "ageMin": 88,
+      "expectMaxMin": 60,
+      "lastUpdate": "2026-08-04T23:13:20.244002-07:00",
+      "note": "outside ops hours"
+    },
+    {
+      "key": "scorecards",
+      "label": "SILO live scorecards",
+      "status": "ok",
+      "ageMin": 116,
+      "expectMaxMin": 180,
+      "lastUpdate": "2026-08-04T22:45:17.896000-07:00",
+      "note": "outside ops hours"
+    },
+    {
+      "key": "servicecards",
+      "label": "Service live scorecards",
+      "status": "ok",
+      "ageMin": 167,
+      "expectMaxMin": 180,
+      "lastUpdate": "2026-08-04T21:55:12.661000-07:00",
+      "note": "outside ops hours"
+    },
+    {
+      "key": "coaching",
+      "label": "SILO daily plans",
+      "status": "warn",
+      "ageMin": 2880,
+      "expectMaxMin": 1440,
+      "lastUpdate": "2026-08-03",
+      "note": "Daily coaching plan is 2 days behind \u2014 close-rate metrics may fall back to graded-call sampling."
+    },
+    {
+      "key": "service_coaching",
+      "label": "Service daily plans",
+      "status": "warn",
+      "ageMin": 2880,
+      "expectMaxMin": 1440,
+      "lastUpdate": "2026-08-03",
+      "note": "Daily coaching plan is 2 days behind \u2014 close-rate metrics may fall back to graded-call sampling."
+    },
+    {
+      "key": "tgl_conv",
+      "label": "ServiceTitan TGL truth (conv.json)",
+      "status": "ok",
+      "ageMin": 145,
+      "expectMaxMin": 1800,
+      "lastUpdate": "2026-08-04T22:16:45.387582-07:00",
+      "note": "fresh"
+    },
+    {
+      "key": "tgl_truth_daily",
+      "label": "TGL truth daily files",
+      "status": "ok",
+      "ageMin": 1440,
+      "expectMaxMin": 1440,
+      "lastUpdate": "2026-08-04",
+      "note": "fresh"
+    },
+    {
+      "key": "deck_blob",
+      "label": "Service classic deck blob",
+      "status": "ok",
+      "ageMin": null,
+      "expectMaxMin": null,
+      "lastUpdate": "Jan 1 \\u2013 Aug 4, 2026",
+      "note": "dateRange='Jan 1 \\u2013 Aug 4, 2026' mentions today/yesterday"
+    }
+  ]
+}

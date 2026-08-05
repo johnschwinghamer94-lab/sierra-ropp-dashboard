@@ -349,9 +349,37 @@ const evalJobAlerts=(j,nowMin)=>{
       alerts.push({code:"zero",label:"$0 TICKET"});
     }
   }
-  // 5. NOT RECORDING — Siro data available, no recording for this visit, job well underway
-  // (never fires on a tech who is actively recording right now)
-  if(j.siro && !j.siro.rec && !j.siro.recNow && !j.siro.liveTech && (isDone || (elapsedMin!=null && elapsedMin>=45))){
+  // 5. NOT RECORDING — ServiceTitan Field Pro, joined per JOB NUMBER (rebuilt 8/5).
+  // This rule used to run off Siro and was provably false-accusing techs on the
+  // wall: Sierra's service techs record through ST Field Pro in the ServiceTitan
+  // Mobile app, not through Siro, so "no Siro recording" was the normal case and
+  // not a violation. servicefeed_sync.py now owns the entire judgment (it has the
+  // evidence) and publishes j.rec.state:
+  //    "recording"  — ServiceTitan logged Field Pro activity on this job number
+  //    "unverified" — job finished with no job-attributed recording row; NOT a
+  //                   violation, see below
+  //    "unknown"    — report unavailable, job still in flight, or just-finished
+  //    "none"       — an asserted violation (currently never emitted)
+  // Only "none" accuses anybody. Anything else — including a missing j.rec on a
+  // stale cached payload — stays silent by construction.
+  // DO NOT loosen this to `!== "recording"`. ServiceTitan reports no Field Pro
+  // rows at all until a job is closed out, so that would put every tech who is
+  // currently standing on a roof onto a full-screen red accusation.
+  //
+  // *** THIS ALERT IS CURRENTLY DISABLED ON PURPOSE (8/5) — it cannot fire. ***
+  // servicefeed_sync.py ships FP_ACCUSE_OK=False, so it never emits state
+  // "none"; finished jobs with no job-attributed recording come through as
+  // "unverified" instead and are deliberately ignored here. Reason: the Field
+  // Pro report only ties SOME recordings to a job number. Aaron Davis's job
+  // 662208158 has no job-attributed recording row, yet his technician-level
+  // event stream shows "Recording started" 16 seconds after "Technician Arrived
+  // on the Appointment" for that job — he WAS recording. At least 5 of the 14
+  // jobs this rule would have flagged on 8/4 are provably false accusations.
+  // Absence of a job-attributed row is not evidence; presence is.
+  // The rule below is correct and stays wired up: closing the attribution gap
+  // and flipping FP_ACCUSE_OK in servicefeed_sync.py turns it back on with no
+  // change needed here. Do NOT special-case "unverified" into an alert.
+  if(j.rec && j.rec.state==="none"){
     alerts.push({code:"norec",label:"🎙 NOT RECORDING"});
   }
   // 6. MEMBER NOT CONVERTED — membership opportunity surfaced but job closed without the sale
@@ -868,9 +896,16 @@ function ServiceLiveTab(){
             {optsCount>0 && <span style={{color:"#f5c518",fontWeight:700}}>{optsCount} opt · {fmt$(optsTotal)}</span>}
             {sold && <span style={{color:"#4ade80",fontWeight:800,border:"1px solid #4ade8088",background:"rgba(74,222,128,.12)",borderRadius:4,padding:"2px 7px"}}>{fmt$(soldTotal)}</span>}
             {sold && <span className="lf2-signedchip">✦ SIGNED</span>}
-            {j.siro && j.siro.recNow && j.stages && j.stages.onsite && !j.stages.done && <span className="lf2-recnow">REC ●</span>}
-            {j.siro && !j.siro.recNow && j.siro.liveTech && j.stages && j.stages.onsite && !j.stages.done && <span className="lf2-reccarry">🎙 REC · RUNNING</span>}
-            {j.siro && j.siro.rec && !j.siro.recNow && <span className="lf2-recchip">🎙 REC</span>}
+            {/* Authoritative recording chip: ServiceTitan Field Pro, per job number.
+                Only rendered on positive evidence — there is deliberately no
+                "did not record" chip, because absence of a job-attributed row
+                does not prove absence of a recording (see servicefeed_sync.py). */}
+            {j.rec && j.rec.state==="recording" && <span className="lf2-recchip">🎙 REC{j.rec.first?" · "+j.rec.first:""}</span>}
+            {/* Siro is INFORMATIONAL ONLY and can never raise an alert (see evalJobAlerts).
+                It is the only in-flight hint that exists, because Field Pro reports nothing
+                until a job is closed — so it shows only while ServiceTitan is still blind. */}
+            {j.rec && j.rec.state!=="recording" && j.siro && j.siro.recNow && j.stages && j.stages.onsite && !j.stages.done && <span className="lf2-recnow">REC ●</span>}
+            {j.rec && j.rec.state!=="recording" && j.siro && !j.siro.recNow && j.siro.liveTech && j.stages && j.stages.onsite && !j.stages.done && <span className="lf2-reccarry">🎙 REC · RUNNING</span>}
             {j.membershipSold && <span title="Membership sold">🎟</span>}
           </span>
         </div>
@@ -915,7 +950,11 @@ function ServiceLiveTab(){
             </div>
             <button className="lf2-alarm-exit" onClick={()=>{ const ack=ackRef.current; if(seenAlertKeysRef.current){ seenAlertKeysRef.current.forEach(k=>ack.add(k)); } lf2SaveAck(ack); setAlarmItems([]); stopAlarmLoop(); }}>✕ ACKNOWLEDGE — STOP ALARM</button>
           </div>,document.getElementById("root"))}
-          {lf && lf.siroToday && <div className="lf2-recchip" style={{padding:"5px 12px"}}>🎙 {lf.siroToday.recorded}/{lf.siroToday.of} RECORDING TODAY</div>}
+          {/* Confirmed-recording COUNT, deliberately with no denominator. An X/Y
+              would assert that the remainder failed to record, and ServiceTitan
+              does not tie every recording to a job number — so that claim is not
+              supported. See the fact-6 note in servicefeed_sync.py. */}
+          {lf && lf.recToday && lf.recToday.recorded>0 && <div className="lf2-recchip" style={{padding:"5px 12px"}} title={"ServiceTitan Field Pro \u2014 "+lf.recToday.recorded+" job(s) with a confirmed recording today. "+(lf.recToday.pending||0)+" still in flight; "+(lf.recToday.unverified||0)+" finished with no job-attributed recording row (NOT proof the tech did not record \u2014 ServiceTitan does not tag every recording with a job)."}>🎙 {lf.recToday.recorded} RECORDED (FIELD PRO)</div>}
           {redAlertCount>0 && <div className="lf2-headalert">🔴 {redAlertCount} ALERT{redAlertCount===1?"":"S"}</div>}
           {stale
             ? <div className="lf2-chip-stale">⚠ UPDATED {ageMin}M AGO · STAGING SNAPSHOT</div>

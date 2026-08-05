@@ -11625,6 +11625,118 @@ const COACH_CSS = `
 .co-obj-playbook-type{font-family:'Chakra Petch',sans-serif;font-size:15px;font-weight:800;color:#f5c518;margin:22px 0 10px}
 .co-obj-playbook-type:first-child{margin-top:0}
 `;
+function DigestTab() {
+  const e = React.createElement;
+  const [d, setD] = React.useState(null);
+  const [err, setErr] = React.useState(false);
+  React.useEffect(() => {
+    let alive = true;
+    const load = () => {
+      fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/digest.json?_=" + Date.now())
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(j => { if (alive) { setD(j); setErr(false); } })
+        .catch(() => { if (alive) setErr(true); });
+    };
+    load();
+    const id = setInterval(load, 300000);
+    return () => { alive = false; clearInterval(id); };
+  }, []);
+
+  const BLUE = "#5BA4E6", GREEN = "#22c55e", GOLD = "#F5B324", RED = "#E63946", AMBER = "#F5B324";
+  const fmt$ = v => "$" + Math.round(v || 0).toLocaleString();
+  const SEV = { high: { c: RED, l: "HIGH" }, medium: { c: AMBER, l: "MEDIUM" }, low: { c: BLUE, l: "LOW" } };
+
+  if (!d) {
+    return e("div", { className: "riseIn", style: { display: "flex", alignItems: "center", justifyContent: "center", minHeight: "40vh" } },
+      e("div", { style: { color: "#8fa3d9", fontSize: 12, letterSpacing: "0.06em", textAlign: "center", maxWidth: 440, lineHeight: 1.6 } },
+        err ? "Today's briefing generates at 6:30 AM." : "◆ LOADING MORNING BRIEFING…"));
+  }
+
+  const forDate = d.forDate ? new Date(d.forDate + "T12:00:00") : null;
+  const dateTxt = forDate ? forDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) : "";
+  const genTxt = d.generated ? new Date(d.generated).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "";
+
+  const risks = Array.isArray(d.risks) ? d.risks : [];
+  const risksBySev = { high: risks.filter(r => r.severity === "high"), medium: risks.filter(r => r.severity === "medium"), low: risks.filter(r => r.severity === "low") };
+  const yest = d.yesterday || {};
+  const svc = yest.service || {};
+  const silo = yest.silo || {};
+  const coachFocus = Array.isArray(d.coachFocus) ? d.coachFocus : [];
+  const wins = Array.isArray(d.wins) ? d.wins : [];
+  const notes = Array.isArray(d.notes) ? d.notes : [];
+
+  const svcStats = [
+    ["Revenue", svc.revenue != null ? fmt$(svc.revenue) : "—"],
+    ["Calls", svc.calls != null ? svc.calls : "—"],
+    ["Close Rate", svc.closeRate != null ? svc.closeRate + "%" : "—"],
+    ["Avg Ticket", svc.avgTicket != null ? fmt$(svc.avgTicket) : "—"],
+    ["Memberships", svc.membershipsSold != null ? svc.membershipsSold : "—"],
+    ["Offer Rate", svc.membershipOfferRate != null ? svc.membershipOfferRate + "%" : "—"]
+  ];
+  const siloStats = [
+    ["Calls", silo.calls != null ? silo.calls : "—"],
+    ["TGLs", silo.tgls != null ? silo.tgls : "—"],
+    ["Rate", silo.rate != null ? silo.rate + "%" : "—"],
+    ["Revenue", silo.revenue != null ? fmt$(silo.revenue) : "—"]
+  ];
+
+  const statBlock = (title, stats, vsPriorDay, color) => e("div", {
+    className: "liftCard", style: { flex: "1 1 260px", background: "#131c30", border: "1px solid #1e2d47", borderRadius: 14, padding: "14px 16px" }
+  },
+    e("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "baseline" } },
+      e("div", { style: { fontSize: 11, fontWeight: 800, color: color, letterSpacing: ".08em" } }, title),
+      vsPriorDay != null ? e("div", { style: { fontSize: 9.5, color: vsPriorDay >= 0 ? GREEN : RED, fontWeight: 700 } }, (vsPriorDay >= 0 ? "▲ " : "▼ ") + Math.abs(vsPriorDay) + "% vs prior day") : null),
+    e("div", { style: { display: "flex", flexWrap: "wrap", gap: 14, marginTop: 10 } },
+      stats.map((s, i) => e("div", { key: i },
+        e("div", { style: { fontSize: 15, fontWeight: 800, color: "#fff" } }, s[1]),
+        e("div", { style: { fontSize: 8.5, color: "#7089ab", letterSpacing: ".04em" } }, s[0])))));
+
+  const riskRows = ["high", "medium", "low"].reduce((acc, sev) => acc.concat(risksBySev[sev].map((r, i) => e("div", {
+    key: sev + i, style: { background: "#131c30", border: "1px solid #1e2d47", borderLeft: "3px solid " + SEV[sev].c, borderRadius: 8, padding: "10px 14px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }
+  },
+    e("div", null,
+      e("span", { style: { fontSize: 8.5, fontWeight: 800, letterSpacing: ".08em", color: SEV[sev].c, marginRight: 8 } }, SEV[sev].l),
+      e("span", { style: { fontSize: 11.5, color: "#e6eefb" } }, r.text),
+      r.area ? e("span", { style: { fontSize: 9, color: "#5d6fa8", marginLeft: 8 } }, "· " + r.area) : null),
+    r.metric ? e("span", { style: { fontSize: 9.5, fontWeight: 800, color: SEV[sev].c, background: SEV[sev].c + "1a", border: "1px solid " + SEV[sev].c + "55", borderRadius: 6, padding: "2px 8px" } }, r.metric) : null))), []);
+
+  return e("div", { className: "riseIn", style: { padding: "0 0 40px" } },
+    e("div", { style: { padding: "14px 24px", background: "linear-gradient(135deg,#0e1f33,#12263f)", borderBottom: "1px solid #1e3050" } },
+      e("div", { style: { fontSize: 15, fontWeight: 800, color: "#fff" } }, "☀ MORNING BRIEFING — " + dateTxt),
+      genTxt ? e("div", { style: { fontSize: 9.5, color: "#6b7a99", marginTop: 2 } }, "generated " + genTxt) : null),
+
+    e("div", { style: { padding: "14px 24px 0" } },
+      e("div", { style: { fontSize: 10, fontWeight: 800, color: "#9fb3cc", letterSpacing: ".1em", marginBottom: 8 } }, "RISKS"),
+      risks.length === 0
+        ? e("div", { style: { background: "rgba(74,222,128,.08)", border: "1px solid #4ADE8055", borderLeft: "3px solid #4ADE80", borderRadius: 8, padding: "10px 14px", fontSize: 11.5, color: "#4ADE80", fontWeight: 700 } }, "✓ No risks flagged this morning.")
+        : e("div", { style: { display: "flex", flexDirection: "column", gap: 8 } }, riskRows)),
+
+    e("div", { style: { padding: "18px 24px 0" } },
+      e("div", { style: { fontSize: 10, fontWeight: 800, color: "#9fb3cc", letterSpacing: ".1em", marginBottom: 8 } }, "YESTERDAY"),
+      e("div", { style: { display: "flex", gap: 14, flexWrap: "wrap" } },
+        statBlock("SERVICE", svcStats, svc.vsPriorDay, BLUE),
+        statBlock("SILO", siloStats, silo.vsPriorDay, GOLD))),
+
+    e("div", { style: { padding: "18px 24px 0" } },
+      e("div", { style: { fontSize: 10, fontWeight: 800, color: "#9fb3cc", letterSpacing: ".1em", marginBottom: 8 } }, "WHO TO COACH TODAY"),
+      coachFocus.length === 0
+        ? e("div", { style: { fontSize: 10.5, color: "#6b7a99" } }, "No coaching priorities flagged.")
+        : e("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 10 } },
+          coachFocus.map((c, i) => e("div", { key: i, style: { background: "#131c30", border: "1px solid #1e2d47", borderRadius: 10, padding: "10px 14px" } },
+            e("div", { style: { fontSize: 12, fontWeight: 800, color: "#fff" } }, c.tech),
+            e("div", { style: { fontSize: 10.5, color: "#cfd9ee", marginTop: 3, lineHeight: 1.4 } }, c.reason),
+            c.evidence ? e("div", { style: { fontSize: 9, color: "#6b7a99", marginTop: 4 } }, c.evidence) : null,
+            c.planLink ? e("a", { href: c.planLink, target: "_blank", rel: "noopener", style: { display: "inline-block", marginTop: 6, fontSize: 9, fontWeight: 800, letterSpacing: ".06em", color: BLUE, textDecoration: "none", border: "1px solid #5BA4E655", background: "rgba(91,164,230,.08)", borderRadius: 6, padding: "4px 9px" } }, "📄 OPEN PLAN") : null)))),
+
+    wins.length > 0 ? e("div", { style: { padding: "18px 24px 0" } },
+      e("div", { style: { fontSize: 10, fontWeight: 800, color: "#9fb3cc", letterSpacing: ".1em", marginBottom: 8 } }, "WINS"),
+      e("div", { style: { display: "flex", flexDirection: "column", gap: 6 } },
+        wins.map((w, i) => e("div", { key: i, style: { background: "rgba(74,222,128,.08)", border: "1px solid #4ADE8055", borderLeft: "3px solid #4ADE80", borderRadius: 8, padding: "8px 14px", fontSize: 11, color: "#cfeede" } },
+          w.tech ? e("span", { style: { fontWeight: 800, color: "#4ADE80", marginRight: 6 } }, w.tech) : null, w.text)))) : null,
+
+    notes.length > 0 ? e("div", { style: { padding: "18px 24px 40px" } },
+      notes.map((n, i) => e("div", { key: i, style: { fontSize: 9, color: "#4a5a70", marginTop: 2 } }, n))) : null);
+}
 function CoachingTab() {
   const e = React.createElement;
   // Same palettes as LiveFeedTab's (those are locals there, out of scope here).
@@ -12389,6 +12501,10 @@ function Root() {
     };
   }, [takeover]);
   const tabs = [{
+    id: "digest",
+    label: "☀ DIGEST",
+    sub: "morning briefing"
+  }, {
     id: "overview",
     label: "⌂ OVERVIEW",
     sub: "At a glance"
@@ -12746,7 +12862,7 @@ function Root() {
       maxWidth: 1760,
       margin: "0 auto"
     }
-  }, tab === "overview" && /*#__PURE__*/React.createElement(OverviewTab, {
+  }, tab === "digest" && /*#__PURE__*/React.createElement(DigestTab, null), tab === "overview" && /*#__PURE__*/React.createElement(OverviewTab, {
     data: data,
     hourly: hourly,
     deptTgls: deptTgls,

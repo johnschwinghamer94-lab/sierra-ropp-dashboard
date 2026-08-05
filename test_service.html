@@ -422,6 +422,153 @@ function HealthPill(){
   );
 }
 
+function ServiceDigestTab(){
+  const [d,setD]=React.useState(null);
+  const [err,setErr]=React.useState(false);
+
+  const load=()=>{
+    fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/digest.json?_="+Date.now())
+      .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
+      .then(j=>{ setD(j); setErr(false); })
+      .catch(()=>setErr(true));
+  };
+  React.useEffect(()=>{ load(); const id=setInterval(load,300000); return ()=>clearInterval(id); },[]);
+
+  const BLUE="#5BA4E6",GREEN="#22c55e",GOLD="#F5B324",RED="#E63946",AMBER="#F5B324";
+  const fmt$=v=>"$"+Math.round(v||0).toLocaleString();
+  const SEV={high:{c:RED,l:"HIGH"},medium:{c:AMBER,l:"MEDIUM"},low:{c:BLUE,l:"LOW"}};
+
+  if(!d){
+    return (<div className="lf2-wrap riseIn" style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"50vh"}}>
+      <div style={{color:"#8fa3d9",fontSize:12,letterSpacing:"0.06em",textAlign:"center",maxWidth:440,lineHeight:1.6}}>
+        {err ? "Today's briefing generates at 6:30 AM." : "◆ LOADING MORNING BRIEFING…"}
+      </div>
+    </div>);
+  }
+
+  const forDate=d.forDate?new Date(d.forDate+"T12:00:00"):null;
+  const dateTxt=forDate?forDate.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"}):"";
+  const genTxt=d.generated?new Date(d.generated).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}):"";
+
+  const risks=Array.isArray(d.risks)?d.risks:[];
+  const risksBySev={high:risks.filter(r=>r.severity==="high"),medium:risks.filter(r=>r.severity==="medium"),low:risks.filter(r=>r.severity==="low")};
+  const yest=d.yesterday||{};
+  const svc=yest.service||{};
+  const silo=yest.silo||{};
+  const coachFocus=Array.isArray(d.coachFocus)?d.coachFocus:[];
+  const wins=Array.isArray(d.wins)?d.wins:[];
+  const notes=Array.isArray(d.notes)?d.notes:[];
+
+  const svcStats=[
+    ["Revenue",svc.revenue!=null?fmt$(svc.revenue):"—"],
+    ["Calls",svc.calls!=null?svc.calls:"—"],
+    ["Close Rate",svc.closeRate!=null?svc.closeRate+"%":"—"],
+    ["Avg Ticket",svc.avgTicket!=null?fmt$(svc.avgTicket):"—"],
+    ["Memberships",svc.membershipsSold!=null?svc.membershipsSold:"—"],
+    ["Offer Rate",svc.membershipOfferRate!=null?svc.membershipOfferRate+"%":"—"],
+  ];
+  const siloStats=[
+    ["Calls",silo.calls!=null?silo.calls:"—"],
+    ["TGLs",silo.tgls!=null?silo.tgls:"—"],
+    ["Rate",silo.rate!=null?silo.rate+"%":"—"],
+    ["Revenue",silo.revenue!=null?fmt$(silo.revenue):"—"],
+  ];
+
+  const statBlock=(title,stats,vsPriorDay,color)=>(
+    <div className="liftCard" style={{flex:"1 1 260px",background:"#131c30",border:"1px solid #1e2d47",borderRadius:14,padding:"14px 16px"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
+        <div style={{fontSize:11,fontWeight:800,color:color,letterSpacing:".08em"}}>{title}</div>
+        {vsPriorDay!=null && <div style={{fontSize:9.5,color:vsPriorDay>=0?GREEN:RED,fontWeight:700}}>{vsPriorDay>=0?"▲":"▼"} {Math.abs(vsPriorDay)}% vs prior day</div>}
+      </div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:14,marginTop:10}}>
+        {stats.map(([l,v],i)=>(<div key={i}>
+          <div style={{fontSize:15,fontWeight:800,color:"#fff"}}>{v}</div>
+          <div style={{fontSize:8.5,color:"#7089ab",letterSpacing:".04em"}}>{l}</div>
+        </div>))}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="lf2-wrap riseIn">
+      <div className="lf2-head">
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <div className="lf2-logo">S</div>
+          <div>
+            <div className="lf2-title">☀ MORNING BRIEFING — {dateTxt}</div>
+            {genTxt && <div className="lf2-subtl">generated {genTxt}</div>}
+          </div>
+        </div>
+      </div>
+
+      <div style={{padding:"14px 24px 0"}}>
+        <div style={{fontSize:10,fontWeight:800,color:"#9fb3cc",letterSpacing:".1em",marginBottom:8}}>RISKS</div>
+        {risks.length===0 ? (
+          <div style={{background:"rgba(74,222,128,.08)",border:"1px solid #4ADE8055",borderLeft:"3px solid #4ADE80",borderRadius:8,padding:"10px 14px",fontSize:11.5,color:"#4ADE80",fontWeight:700}}>✓ No risks flagged this morning.</div>
+        ) : (
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {["high","medium","low"].map(sev=>risksBySev[sev].map((r,i)=>(
+              <div key={sev+i} style={{background:"#131c30",border:"1px solid #1e2d47",borderLeft:"3px solid "+SEV[sev].c,borderRadius:8,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+                <div>
+                  <span style={{fontSize:8.5,fontWeight:800,letterSpacing:".08em",color:SEV[sev].c,marginRight:8}}>{SEV[sev].l}</span>
+                  <span style={{fontSize:11.5,color:"#e6eefb"}}>{r.text}</span>
+                  {r.area && <span style={{fontSize:9,color:"#5d6fa8",marginLeft:8}}>· {r.area}</span>}
+                </div>
+                {r.metric && <span style={{fontSize:9.5,fontWeight:800,color:SEV[sev].c,background:SEV[sev].c+"1a",border:"1px solid "+SEV[sev].c+"55",borderRadius:6,padding:"2px 8px"}}>{r.metric}</span>}
+              </div>
+            )))}
+          </div>
+        )}
+      </div>
+
+      <div style={{padding:"18px 24px 0"}}>
+        <div style={{fontSize:10,fontWeight:800,color:"#9fb3cc",letterSpacing:".1em",marginBottom:8}}>YESTERDAY</div>
+        <div style={{display:"flex",gap:14,flexWrap:"wrap"}}>
+          {statBlock("SERVICE",svcStats,svc.vsPriorDay,BLUE)}
+          {statBlock("SILO",siloStats,silo.vsPriorDay,GOLD)}
+        </div>
+      </div>
+
+      <div style={{padding:"18px 24px 0"}}>
+        <div style={{fontSize:10,fontWeight:800,color:"#9fb3cc",letterSpacing:".1em",marginBottom:8}}>WHO TO COACH TODAY</div>
+        {coachFocus.length===0 ? (
+          <div style={{fontSize:10.5,color:"#6b7a99"}}>No coaching priorities flagged.</div>
+        ) : (
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:10}}>
+            {coachFocus.map((c,i)=>(
+              <div key={i} style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:10,padding:"10px 14px"}}>
+                <div style={{fontSize:12,fontWeight:800,color:"#fff"}}>{c.tech}</div>
+                <div style={{fontSize:10.5,color:"#cfd9ee",marginTop:3,lineHeight:1.4}}>{c.reason}</div>
+                {c.evidence && <div style={{fontSize:9,color:"#6b7a99",marginTop:4}}>{c.evidence}</div>}
+                {c.planLink && <a href={c.planLink} target="_blank" rel="noopener" style={{display:"inline-block",marginTop:6,fontSize:9,fontWeight:800,letterSpacing:".06em",color:BLUE,textDecoration:"none",border:"1px solid #5BA4E655",background:"rgba(91,164,230,.08)",borderRadius:6,padding:"4px 9px"}}>📄 OPEN PLAN</a>}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {wins.length>0 && (
+        <div style={{padding:"18px 24px 0"}}>
+          <div style={{fontSize:10,fontWeight:800,color:"#9fb3cc",letterSpacing:".1em",marginBottom:8}}>WINS</div>
+          <div style={{display:"flex",flexDirection:"column",gap:6}}>
+            {wins.map((w,i)=>(
+              <div key={i} style={{background:"rgba(74,222,128,.08)",border:"1px solid #4ADE8055",borderLeft:"3px solid #4ADE80",borderRadius:8,padding:"8px 14px",fontSize:11,color:"#cfeede"}}>
+                {w.tech && <span style={{fontWeight:800,color:"#4ADE80",marginRight:6}}>{w.tech}</span>}{w.text}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {notes.length>0 && (
+        <div style={{padding:"18px 24px 40px"}}>
+          {notes.map((n,i)=>(<div key={i} style={{fontSize:9,color:"#4a5a70",marginTop:2}}>{n}</div>))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ServiceLiveTab(){
   const [lf,setLf]=React.useState(null);
   const [err,setErr]=React.useState(false);
@@ -2043,6 +2190,7 @@ function ServiceDash(){
       </div>))}
     </div>);};
   const TABS=[
+    {id:"digest",icon:"☀",label:"DIGEST",sub:"morning briefing"},
     {id:"live",icon:"⚡",label:"LIVE",sub:"Real-time jobs"},
     {id:"overview",icon:"🛠",label:"OVERVIEW",sub:"Dept KPIs"},
     {id:"weekly",icon:"📅",label:"WEEKLY",sub:"WTD + trends"},
@@ -2121,6 +2269,7 @@ function ServiceDash(){
       </div>
 
       <div className="tab-fade" key={tab}>
+        {tab==="digest" && <ServiceDigestTab/>}
         {tab==="live" && <ServiceLiveTab/>}
         {tab==="weekly" && <ServiceWeeklyTab/>}
         {tab==="review" && <ServiceReviewTab/>}

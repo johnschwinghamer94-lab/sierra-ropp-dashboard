@@ -12056,6 +12056,87 @@ function HealthBanner() {
     "⚠ Dashboard alert · " + probs.join(" · ") + " — numbers on screen may be behind");
 }
 
+// ── System health pill (health.json) — compact header chip + expandable panel.
+//    Mirrors the service.html HealthPill component/conventions. Tolerates a
+//    404/parse failure from health.json (watcher may not be publishing yet) by
+//    falling back to a grey "HEALTH UNKNOWN" state. ─────────────────────────
+function HealthPill() {
+  const e = React.createElement;
+  const [health, setHealth] = React.useState(null);
+  const [err, setErr] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [now, setNow] = React.useState(Date.now());
+  React.useEffect(() => {
+    const load = () => {
+      fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/health.json?_=" + Date.now())
+        .then(r => { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+        .then(j => { setHealth(j); setErr(false); })
+        .catch(() => { setErr(true); });
+    };
+    load();
+    const id = setInterval(load, 120000);
+    const t = setInterval(() => setNow(Date.now()), 60000);
+    return () => { clearInterval(id); clearInterval(t); };
+  }, []);
+
+  const humanAge = min => {
+    if (min == null || isNaN(min)) return "—";
+    if (min < 1) return "just now";
+    if (min < 60) return Math.round(min) + "m";
+    if (min < 1440) return Math.round(min / 60) + "h";
+    return "yesterday";
+  };
+  const genMs = health && health.generatedMs ? health.generatedMs : (health && health.generated ? Date.parse(health.generated) : null);
+  const healthAgeMin = genMs ? (now - genMs) / 60000 : null;
+  const unknown = !health || err || healthAgeMin == null || healthAgeMin > 45;
+  const worst = health ? health.worst : null;
+  const counts = (health && health.counts) || {};
+  const checks = Array.isArray(health && health.checks) ? health.checks.slice() : [];
+  const RANK = { dead: 0, warn: 1, ok: 2 };
+  checks.sort((a, b) => (RANK[a.status] != null ? RANK[a.status] : 3) - (RANK[b.status] != null ? RANK[b.status] : 3));
+
+  let pillBg, pillColor, pillBorder, pillText;
+  if (unknown) { pillBg = "rgba(107,122,153,.12)"; pillColor = "#9fb3cc"; pillBorder = "#6b7a9955"; pillText = "HEALTH UNKNOWN"; }
+  else if (worst === "dead") { pillBg = "rgba(230,57,70,.12)"; pillColor = "#ff7b86"; pillBorder = "#e6394655"; pillText = "\u{1F6D1} " + (counts.dead || 0) + " PIPELINE" + ((counts.dead || 0) === 1 ? "" : "S") + " DOWN"; }
+  else if (worst === "warn") { pillBg = "rgba(245,179,36,.12)"; pillColor = "#F5B324"; pillBorder = "#F5B32455"; pillText = "⚠ " + (counts.warn || 0) + " DEGRADED"; }
+  else { pillBg = "rgba(74,222,128,.12)"; pillColor = "#4ADE80"; pillBorder = "#4ADE8055"; pillText = "✓ SYSTEMS OK"; }
+
+  const dotColor = s => s === "dead" ? "#ff7b86" : s === "warn" ? "#F5B324" : "#4ADE80";
+
+  return e("div", { style: { position: "relative", display: "inline-block" } },
+    e("button", {
+      onClick: () => setOpen(o => !o),
+      title: "System health — click to expand",
+      style: { background: pillBg, border: "1px solid " + pillBorder, color: pillColor, borderRadius: 8, padding: "6px 12px",
+        cursor: "pointer", fontFamily: "inherit", fontSize: 10.5, fontWeight: 800, letterSpacing: "0.06em",
+        display: "flex", alignItems: "center", gap: 6 }
+    }, pillText, checks.length ? e("span", { style: { fontSize: 9, opacity: .7 } }, open ? "▲" : "▼") : null),
+    open && e("div", {
+      style: { position: "absolute", right: 0, top: "calc(100% + 6px)", zIndex: 2000, background: "#0e1626",
+        border: "1px solid #1e2d47", borderRadius: 12, padding: "12px 14px", minWidth: 300, maxWidth: 420,
+        maxHeight: 400, overflowY: "auto", boxShadow: "0 10px 30px rgba(0,0,0,.5)" }
+    },
+      e("div", { style: { fontSize: 10, fontWeight: 800, color: "#9fb3cc", letterSpacing: ".08em", marginBottom: 8 } }, "SYSTEM HEALTH"),
+      checks.length
+        ? checks.map((c, i) => e("div", {
+            key: c.key || i,
+            style: { display: "flex", alignItems: "flex-start", gap: 8, padding: "6px 0", borderTop: i ? "1px solid #1e2d47" : "none" }
+          },
+            e("span", { style: { width: 8, height: 8, borderRadius: "50%", background: dotColor(c.status), marginTop: 4, flexShrink: 0 } }),
+            e("div", { style: { flex: 1, minWidth: 0 } },
+              e("div", { style: { display: "flex", justifyContent: "space-between", gap: 8 } },
+                e("span", { style: { fontSize: 11, fontWeight: 700, color: "#e6eefb" } }, c.label || c.key || "—"),
+                e("span", { style: { fontSize: 9.5, color: "#6b7a99", flexShrink: 0 } }, humanAge(c.ageMin))
+              ),
+              c.note ? e("div", { style: { fontSize: 9.5, color: "#6b7a99", marginTop: 2 } }, c.note) : null
+            )
+          ))
+        : e("div", { style: { fontSize: 10.5, color: "#6b7a99" } }, unknown ? "health.json unavailable or stale — the watcher itself may be down." : "No checks reported."),
+      health && health.generated ? e("div", { style: { fontSize: 9, color: "#4a5a70", marginTop: 8, paddingTop: 8, borderTop: "1px solid #1e2d47" } }, "health.json generated " + humanAge(healthAgeMin) + " ago") : null
+    )
+  );
+}
+
 // ── TGL paint-splat overlay: white splatter + tech name on every tab whenever
 //    ANY tech creates a new TGL (John, 2026-07-24; splat modeled on his reference).
 //    Self-contained: carries its own <style>. Manual demo: window.__tglSplash("NAME")
@@ -12578,7 +12659,7 @@ function Root() {
   }, updLabel), countdown && /*#__PURE__*/React.createElement("span", {
     className: "countdown",
     title: "Next hourly data refresh"
-  }, "⏱ ", countdown), /*#__PURE__*/React.createElement("button", {
+  }, "⏱ ", countdown), /*#__PURE__*/React.createElement(HealthPill, null), /*#__PURE__*/React.createElement("button", {
     className: "refresh-btn" + (refreshing ? " spinning" : ""),
     onClick: loadHourly,
     title: "Refresh hourly data now"

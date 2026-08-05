@@ -361,6 +361,67 @@ const evalJobAlerts=(j,nowMin)=>{
   return {alerts,isAlert:alerts.length>0,isSigned};
 };
 
+function HealthPill(){
+  const [health,setHealth]=React.useState(null);
+  const [err,setErr]=React.useState(false);
+  const [open,setOpen]=React.useState(false);
+  const [now,setNow]=React.useState(Date.now());
+  React.useEffect(()=>{
+    const load=()=>{
+      fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/health.json?_="+Date.now())
+        .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
+        .then(j=>{ setHealth(j); setErr(false); })
+        .catch(()=>{ setErr(true); });
+    };
+    load(); const id=setInterval(load,120000); const t=setInterval(()=>setNow(Date.now()),60000);
+    return ()=>{clearInterval(id);clearInterval(t);};
+  },[]);
+
+  const humanAge=min=>{ if(min==null||isNaN(min)) return "—"; if(min<1) return "just now"; if(min<60) return Math.round(min)+"m"; if(min<1440) return Math.round(min/60)+"h"; return "yesterday"; };
+  const genMs = health&&health.generatedMs ? health.generatedMs : (health&&health.generated?Date.parse(health.generated):null);
+  const healthAgeMin = genMs ? (now-genMs)/60000 : null;
+  const unknown = !health || err || healthAgeMin==null || healthAgeMin>45;
+  const worst = health ? health.worst : null;
+  const counts = (health && health.counts) || {};
+  const checks = Array.isArray(health&&health.checks) ? health.checks.slice() : [];
+  const RANK={dead:0,warn:1,ok:2};
+  checks.sort((a,b)=>(RANK[a.status]!=null?RANK[a.status]:3)-(RANK[b.status]!=null?RANK[b.status]:3));
+
+  let pillBg,pillColor,pillBorder,pillText;
+  if(unknown){ pillBg="rgba(107,122,153,.12)"; pillColor="#9fb3cc"; pillBorder="#6b7a9955"; pillText="HEALTH UNKNOWN"; }
+  else if(worst==="dead"){ pillBg="rgba(230,57,70,.12)"; pillColor="#ff7b86"; pillBorder="#e6394655"; pillText="🛑 "+(counts.dead||0)+" PIPELINE"+((counts.dead||0)===1?"":"S")+" DOWN"; }
+  else if(worst==="warn"){ pillBg="rgba(245,179,36,.12)"; pillColor="#F5B324"; pillBorder="#F5B32455"; pillText="⚠ "+(counts.warn||0)+" DEGRADED"; }
+  else { pillBg="rgba(74,222,128,.12)"; pillColor="#4ADE80"; pillBorder="#4ADE8055"; pillText="✓ SYSTEMS OK"; }
+
+  const dotColor=s=>s==="dead"?"#ff7b86":s==="warn"?"#F5B324":"#4ADE80";
+
+  return (
+    <div style={{position:"relative",display:"inline-block"}}>
+      <button onClick={()=>setOpen(o=>!o)} title="System health — click to expand" style={{background:pillBg,border:"1px solid "+pillBorder,color:pillColor,borderRadius:8,padding:"6px 12px",cursor:"pointer",fontFamily:"inherit",fontSize:10.5,fontWeight:800,letterSpacing:"0.06em",display:"flex",alignItems:"center",gap:6}}>
+        {pillText}{checks.length?<span style={{fontSize:9,opacity:.7}}>{open?"▲":"▼"}</span>:null}
+      </button>
+      {open && (
+        <div style={{position:"absolute",right:0,top:"calc(100% + 6px)",zIndex:2000,background:"#0e1626",border:"1px solid #1e2d47",borderRadius:12,padding:"12px 14px",minWidth:300,maxWidth:420,maxHeight:400,overflowY:"auto",boxShadow:"0 10px 30px rgba(0,0,0,.5)"}}>
+          <div style={{fontSize:10,fontWeight:800,color:"#9fb3cc",letterSpacing:".08em",marginBottom:8}}>SYSTEM HEALTH</div>
+          {checks.length ? checks.map((c,i)=>(
+            <div key={c.key||i} style={{display:"flex",alignItems:"flex-start",gap:8,padding:"6px 0",borderTop:i?"1px solid #1e2d47":"none"}}>
+              <span style={{width:8,height:8,borderRadius:"50%",background:dotColor(c.status),marginTop:4,flexShrink:0}}/>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{display:"flex",justifyContent:"space-between",gap:8}}>
+                  <span style={{fontSize:11,fontWeight:700,color:"#e6eefb"}}>{c.label||c.key||"—"}</span>
+                  <span style={{fontSize:9.5,color:"#6b7a99",flexShrink:0}}>{humanAge(c.ageMin)}</span>
+                </div>
+                {c.note && <div style={{fontSize:9.5,color:"#6b7a99",marginTop:2}}>{c.note}</div>}
+              </div>
+            </div>
+          )) : <div style={{fontSize:10.5,color:"#6b7a99"}}>{unknown?"health.json unavailable or stale — the watcher itself may be down.":"No checks reported."}</div>}
+          {health && health.generated && <div style={{fontSize:9,color:"#4a5a70",marginTop:8,paddingTop:8,borderTop:"1px solid #1e2d47"}}>health.json generated {humanAge(healthAgeMin)} ago</div>}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ServiceLiveTab(){
   const [lf,setLf]=React.useState(null);
   const [err,setErr]=React.useState(false);
@@ -768,6 +829,44 @@ function ServiceLiveTab(){
 }
 
 // ═══ DEPARTMENT PULSE (new "overview" tab) — servicedata.json ══════
+function MonthPaceCard({budget,mtdRevenue}){
+  const numOr0=v=>(typeof v==="number"&&isFinite(v))?v:0;
+  const fmtFull=v=>"$"+Math.round(numOr0(v)).toLocaleString();
+  const BLUE="#5BA4E6",GREEN="#22c55e",GOLD="#F5B324",RED="#E63946";
+  const b=budget||{};
+  const preMonth=!!b.preMonth;
+  const target=numOr0(b.revenueTarget)||755333;
+  const workingDays=numOr0(b.workingDays);
+  const remainingDays=numOr0(b.remainingWorkingDays);
+  const elapsedDays=Math.max(0,workingDays-remainingDays);
+  const dailyTarget=numOr0(b.dailyRevTarget);
+  const rev=numOr0(mtdRevenue);
+  const pctOfTarget=target?Math.round((rev/target)*1000)/10:0;
+  const projected = elapsedDays>0 ? (rev/elapsedDays)*workingDays : 0;
+  const expectedToDate = dailyTarget*elapsedDays;
+  const paceDelta = rev-expectedToDate;
+  return (
+    <div className="riseIn liftCard" style={{flex:"1 1 240px",background:"linear-gradient(160deg,#131c30,#0e1626)",border:"1px solid #1e2d47",borderRadius:16,padding:"14px 18px"}}>
+      <div style={{fontSize:9,letterSpacing:"0.12em",color:"#7089ab",fontWeight:700}}>MONTH PACE</div>
+      <div style={{display:"flex",alignItems:"baseline",gap:8,marginTop:4}}>
+        <div style={{fontSize:26,fontWeight:900,color:BLUE}}>{pctOfTarget}%</div>
+        <div style={{fontSize:9.5,color:"#6b7a99"}}>of {fmtFull(target)} target</div>
+      </div>
+      <div style={{display:"flex",gap:16,marginTop:10,flexWrap:"wrap"}}>
+        <div>
+          <div style={{fontSize:8,color:"#6b7a99",fontWeight:700,letterSpacing:"0.08em"}}>PROJECTED EOM</div>
+          <div style={{fontSize:14,fontWeight:800,color:GOLD}}>{elapsedDays>0?fmtFull(projected):"—"}</div>
+        </div>
+        <div>
+          <div style={{fontSize:8,color:"#6b7a99",fontWeight:700,letterSpacing:"0.08em"}}>PACE</div>
+          <div style={{fontSize:14,fontWeight:800,color:paceDelta>=0?GREEN:RED}}>{paceDelta>=0?"▲ AHEAD ":"▼ BEHIND "}{fmtFull(Math.abs(paceDelta))}</div>
+        </div>
+      </div>
+      <div style={{fontSize:9,color:"#6b7a99",marginTop:8}}>{preMonth?("month not yet started · preview vs "+fmtFull(dailyTarget)+"/working day"):(elapsedDays+" of "+workingDays+" working days elapsed")}</div>
+    </div>
+  );
+}
+
 function ServicePulseTab({onClassic}){
   const [d,setD]=React.useState(null);
   const [err,setErr]=React.useState(false);
@@ -921,6 +1020,10 @@ function ServicePulseTab({onClassic}){
 
       <div className="lf2-kpis">
         {kpis.map(([l,v,c,s])=>(<div className="lf2-kpi" key={l}><div className="l">{l}</div><div className="v" style={{color:c}}>{v}</div>{s?<div className="s">{s}</div>:null}</div>))}
+      </div>
+
+      <div style={{padding:"14px 24px 0",display:"flex",gap:12,flexWrap:"wrap"}}>
+        <MonthPaceCard budget={d.budget} mtdRevenue={d.mtd && d.mtd.revenue}/>
       </div>
 
       <div style={{padding:"14px 24px 0",display:"flex",gap:12,flexWrap:"wrap"}}>
@@ -1345,16 +1448,76 @@ function ServiceHxhTab(){
   );
 }
 
+function BoardFillTrendSection({days,history}){
+  const str=v=>(v==null?"":String(v));
+  const now=Date.now();
+  const trendFor=date=>{
+    return (history||[]).filter(s=>s&&s.counts&&typeof s.counts[date]==="number")
+      .map(s=>({t:Date.parse(s.ts),v:s.counts[date]}))
+      .filter(p=>!isNaN(p.t)&&(now-p.t)<=48*3600*1000)
+      .sort((a,b)=>a.t-b.t);
+  };
+  if(!history || !history.length){
+    return (
+      <div style={{padding:"0 24px 24px"}}>
+        <div style={{fontSize:10.5,fontWeight:800,color:"#fff",marginBottom:6}}>BOARD FILL TREND</div>
+        <div style={{fontSize:10,color:"#6b7a99"}}>Snapshot history not published yet.</div>
+      </div>
+    );
+  }
+  return (
+    <div style={{padding:"0 24px 24px"}}>
+      <div style={{fontSize:10.5,fontWeight:800,color:"#fff",marginBottom:8}}>BOARD FILL TREND <span style={{fontSize:9,color:"#6b7a99",fontWeight:600}}>· last ~48h of snapshots</span></div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(5,minmax(140px,1fr))",gap:10}}>
+        {days.map((d,i)=>{
+          const pts=trendFor(d.date);
+          if(pts.length<2){
+            return (<div key={i} className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:10,padding:"8px 10px"}}>
+              <div style={{fontSize:9.5,fontWeight:700,color:"#9fb3cc"}}>{str(d.label)||str(d.date)}</div>
+              <div style={{fontSize:9,color:"#5d6fa8",marginTop:4}}>not enough history yet</div>
+            </div>);
+          }
+          const first=pts[0].v,last=pts[pts.length-1].v,delta=last-first;
+          const mx=Math.max(1,...pts.map(p=>p.v)),mn=Math.min(...pts.map(p=>p.v));
+          const Wsp=110,Hsp=24;
+          const X=j=>pts.length>1?(j/(pts.length-1))*Wsp:0;
+          const Y=v=>mx>mn?Hsp-((v-mn)/(mx-mn))*Hsp:Hsp/2;
+          const path=pts.map((p,j)=>(j?"L":"M")+X(j).toFixed(1)+" "+Y(p.v).toFixed(1)).join(" ");
+          const dCol=delta>0?"#4ADE80":delta<0?"#E63946":"#6b7a99";
+          return (
+            <div key={i} className="liftCard" style={{background:"#131c30",border:"1px solid #1e2d47",borderRadius:10,padding:"8px 10px"}}>
+              <div style={{fontSize:9.5,fontWeight:700,color:"#9fb3cc"}}>{str(d.label)||str(d.date)}</div>
+              <div style={{display:"flex",alignItems:"center",gap:6,marginTop:4}}>
+                <svg viewBox={"0 0 "+Wsp+" "+Hsp} width={Wsp} height={Hsp} style={{flexShrink:0}}><path d={path} fill="none" stroke="#5BA4E6" strokeWidth="1.6"/></svg>
+                <span style={{fontSize:9,fontWeight:800,color:dCol}}>{delta>0?"+":""}{delta} today</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function ServiceCallsTab(){
   const [data,setData]=React.useState(null);
   const [err,setErr]=React.useState(false);
   const [now,setNow]=React.useState(Date.now());
+  const [history,setHistory]=React.useState(null);
+  const agingRef=React.useRef(null);
+  if(agingRef.current===null){
+    try{ agingRef.current = JSON.parse(sessionStorage.getItem("svc_unassigned_hist")||"{}"); }catch(e){ agingRef.current={}; }
+  }
 
   const load=()=>{
     fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/servicecalls.json?_="+Date.now())
       .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
       .then(j=>{ setData(j); setErr(false); })
       .catch(()=>{ setErr(true); });
+    fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/servicecalls_history.json?_="+Date.now())
+      .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
+      .then(j=>{ setHistory(Array.isArray(j)?j:null); })
+      .catch(()=>{ setHistory(null); });
   };
   React.useEffect(()=>{ load(); const id=setInterval(load,120000); const t=setInterval(()=>setNow(Date.now()),30000); return ()=>{clearInterval(id);clearInterval(t);}; },[]);
 
@@ -1363,6 +1526,22 @@ function ServiceCallsTab(){
   const trunc=(s,n)=>{ s=str(s); return s.length>n?s.slice(0,n-1)+"…":s; };
 
   const days = (data && Array.isArray(data.days)) ? data.days.slice(0,5) : [];
+
+  // browser-session aging tracker: servicecalls_history.json only stores booked
+  // totals per day, not per-day unassigned counts, so "aging" (unassigned>0 for
+  // 3+ consecutive polls) is tracked client-side across this tab's own 2-min
+  // poll cycle and cached in sessionStorage so it survives a same-tab refresh.
+  React.useEffect(()=>{
+    if(!days.length) return;
+    const rec = agingRef.current;
+    days.forEach(d=>{
+      const arr = rec[d.date] || [];
+      arr.push(numOr0(d.unassigned));
+      rec[d.date] = arr.slice(-5);
+    });
+    try{ sessionStorage.setItem("svc_unassigned_hist", JSON.stringify(rec)); }catch(e){}
+  },[data]);
+  const isAging=date=>{ const arr=(agingRef.current&&agingRef.current[date])||[]; if(arr.length<3) return false; return arr.slice(-3).every(v=>v>0); };
 
   if(!data || !days.length){
     return (<div className="lf2-wrap riseIn" style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"50vh"}}>
@@ -1403,6 +1582,7 @@ function ServiceCallsTab(){
               <span style={{background:"rgba(91,164,230,.12)",border:"1px solid #5BA4E655",color:BLUE,borderRadius:6,padding:"3px 8px",fontWeight:700,fontSize:9.5}}>⚡ {numOr0(d.demand)} DEMAND</span>
               <span style={{background:"rgba(34,197,94,.12)",border:"1px solid #22c55e55",color:GREEN,borderRadius:6,padding:"3px 8px",fontWeight:700,fontSize:9.5}}>🔧 {numOr0(d.maintenance)} MAINT</span>
               {unassigned>0 && <span style={{background:"rgba(245,179,36,.14)",border:"1px solid #F5B32455",color:AMBER,borderRadius:6,padding:"3px 8px",fontWeight:800,fontSize:9.5}}>⚠ {unassigned} UNASSIGNED</span>}
+              {unassigned>0 && isAging(d.date) && <span title="unassigned for 3+ consecutive checks" style={{background:"rgba(230,57,70,.14)",border:"1px solid #E6394655",color:"#ff7b86",borderRadius:6,padding:"3px 8px",fontWeight:800,fontSize:9.5}}>⚠ AGING</span>}
             </div>
 
             <div style={{marginTop:10,maxHeight:"65vh",overflowY:"auto",display:"flex",flexDirection:"column",gap:10,paddingRight:2}}>
@@ -1438,21 +1618,119 @@ function ServiceCallsTab(){
           </div>);
         })}
       </div>
+
+      <BoardFillTrendSection days={days} history={history}/>
     </div>
   );
 }
 
 
+function CoachingCompliancePanel({compliance}){
+  const numOr0=v=>(typeof v==="number"&&isFinite(v))?v:0;
+  if(!compliance || !compliance.dept){
+    return (
+      <div style={{padding:"0 24px 24px"}}>
+        <div style={{fontSize:11,fontWeight:800,color:"#fff",marginBottom:4}}>🎙 RECORDING COMPLIANCE — LAST 7 DAYS</div>
+        <div style={{fontSize:10.5,color:"#6b7a99"}}>Compliance data not published yet.</div>
+      </div>
+    );
+  }
+  const dept=compliance.dept||{};
+  const techs=compliance.techs||{};
+  const rows=Object.entries(techs).map(([name,v])=>({
+    name,
+    recorded:numOr0(v.recorded),
+    eligible:numOr0(v.eligible),
+    pct: v.pct!=null ? numOr0(v.pct) : (v.eligible?Math.round((numOr0(v.recorded)/numOr0(v.eligible))*1000)/10:0),
+  })).sort((a,b)=>a.pct-b.pct);
+  const color=p=>p>=90?"#4ADE80":p>=70?"#F5B324":"#E63946";
+  const days=compliance.windowDays||7;
+  const deptPct = dept.pct!=null?numOr0(dept.pct):0;
+  return (
+    <div style={{padding:"0 24px 24px"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",flexWrap:"wrap",gap:6,marginBottom:10}}>
+        <div style={{fontSize:11,fontWeight:800,color:"#fff"}}>🎙 RECORDING COMPLIANCE — LAST {days} DAYS</div>
+        <div style={{fontSize:14,fontWeight:900,color:color(deptPct)}}>{deptPct}% <span style={{fontSize:9,color:"#6b7a99",fontWeight:600}}>dept · {numOr0(dept.recorded)}/{numOr0(dept.eligible)}</span></div>
+      </div>
+      <div style={{display:"flex",flexDirection:"column",gap:6}}>
+        {rows.length ? rows.map(r=>(
+          <div key={r.name} style={{display:"flex",alignItems:"center",gap:10}}>
+            <div style={{width:140,fontSize:10.5,color:"#cfeede",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{r.name}</div>
+            <div style={{flex:1,background:"#0a1220",borderRadius:5,height:14,overflow:"hidden"}}><div style={{width:Math.max(2,r.pct)+"%",height:"100%",borderRadius:5,background:color(r.pct)}}/></div>
+            <div style={{width:110,fontSize:10,fontWeight:700,color:color(r.pct),textAlign:"right"}}>{r.pct}% ({r.recorded}/{r.eligible})</div>
+          </div>
+        )) : <div style={{fontSize:10.5,color:"#6b7a99"}}>No per-tech compliance rows yet.</div>}
+      </div>
+    </div>
+  );
+}
+
+function CoachingOutcomesPanel({outcomes,notes}){
+  const str=v=>(v==null?"":String(v));
+  const trunc=(s,n)=>{ s=str(s); return s.length>n?s.slice(0,n-1)+"…":s; };
+  const rows=Array.isArray(outcomes)?outcomes:[];
+  const notesArr=Array.isArray(notes)?notes:[];
+  const verdictStyle=v=>{
+    const k=str(v).toLowerCase();
+    if(k==="improved") return {color:"#4ADE80",bg:"rgba(74,222,128,.12)",border:"#4ADE8055",label:"IMPROVED"};
+    if(k==="declined") return {color:"#ff7b86",bg:"rgba(230,57,70,.12)",border:"#e6394655",label:"DECLINED"};
+    if(k==="flat") return {color:"#9fb3cc",bg:"rgba(159,179,204,.1)",border:"#9fb3cc55",label:"FLAT"};
+    if(k==="insufficient-data") return {color:"#6b7a99",bg:"rgba(107,122,153,.1)",border:"#6b7a9955",label:"INSUFFICIENT DATA",title:"Fewer than ~5 business days of data on one side of the plan"};
+    if(k==="unmeasured") return {color:"#6b7a99",bg:"rgba(107,122,153,.1)",border:"#6b7a9955",label:"UNMEASURED",title:"No metric tracked for this plan yet"};
+    return {color:"#9fb3cc",bg:"rgba(159,179,204,.1)",border:"#9fb3cc55",label:str(v).toUpperCase()||"—"};
+  };
+  const allInsufficient = rows.length>0 && rows.every(r=>{ const k=str(r.verdict).toLowerCase(); return k==="insufficient-data"||k==="unmeasured"; });
+  return (
+    <div style={{padding:"0 24px 24px"}}>
+      <div style={{fontSize:11,fontWeight:800,color:"#fff",marginBottom:8}}>📈 DID THE COACHING LAND?</div>
+      {!rows.length ? (
+        <div style={{fontSize:10.5,color:"#6b7a99"}}>No coaching outcomes published yet — verdicts begin once ~5 business days accumulate on each side of a plan.</div>
+      ) : (<React.Fragment>
+        {allInsufficient && <div style={{fontSize:10,color:"#6b7a99",marginBottom:8,fontStyle:"italic"}}>Verdicts begin once ~5 business days accumulate on each side of a plan — all rows below are still building history.</div>}
+        <div style={{overflowX:"auto"}}>
+          <table style={{width:"100%",borderCollapse:"collapse",minWidth:640}}>
+            <thead><tr>
+              {["TECH","WHAT THEY WERE TOLD","METRIC","BEFORE → AFTER","Δ","VERDICT"].map(h=>(
+                <th key={h} style={{padding:"6px 8px",fontSize:9,color:"#9fb3cc",fontWeight:700,textAlign:"left",borderBottom:"2px solid #1e2d47",whiteSpace:"nowrap"}}>{h}</th>))}
+            </tr></thead>
+            <tbody>
+              {rows.map((r,i)=>{ const v=verdictStyle(r.verdict); return (
+                <tr key={i} style={{borderTop:"1px solid #1e2d47"}}>
+                  <td style={{padding:"6px 8px",fontSize:10.5,color:"#fff",fontWeight:700,whiteSpace:"nowrap"}}>{str(r.tech)}</td>
+                  <td style={{padding:"6px 8px",fontSize:10,color:"#9fb3cc"}}>{trunc(r.focusText,70)}</td>
+                  <td style={{padding:"6px 8px",fontSize:10,color:"#9fb3cc",whiteSpace:"nowrap"}}>{str(r.metric)}</td>
+                  <td style={{padding:"6px 8px",fontSize:10,color:"#e6eefb",whiteSpace:"nowrap"}}>{str(r.before)} → {str(r.after)}</td>
+                  <td style={{padding:"6px 8px",fontSize:10,fontWeight:700,color:v.color,whiteSpace:"nowrap"}}>{str(r.delta)}</td>
+                  <td style={{padding:"6px 8px"}}><span title={v.title||""} style={{fontSize:8.5,fontWeight:800,letterSpacing:".04em",borderRadius:5,padding:"2px 7px",background:v.bg,border:"1px solid "+v.border,color:v.color}}>{v.label}</span></td>
+                </tr>);})}
+            </tbody>
+          </table>
+        </div>
+      </React.Fragment>)}
+      {notesArr.length>0 && (
+        <div style={{marginTop:10,display:"flex",flexDirection:"column",gap:3}}>
+          {notesArr.map((n,i)=>(<div key={i} style={{fontSize:9.5,color:"#5d6fa8"}}>· {str(n)}</div>))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ServiceCoachingTab(){
   const [data,setData]=React.useState(null);
   const [err,setErr]=React.useState(false);
   const [now,setNow]=React.useState(Date.now());
+  const [outcomesData,setOutcomesData]=React.useState(null);
 
   const load=()=>{
     fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/service_coaching.json?_="+Date.now())
       .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
       .then(j=>{ setData(j); setErr(false); })
       .catch(()=>{ setErr(true); });
+    fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/coaching_outcomes.json?_="+Date.now())
+      .then(r=>{ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
+      .then(j=>{ setOutcomesData(j); })
+      .catch(()=>{ setOutcomesData(null); });
   };
   React.useEffect(()=>{ load(); const id=setInterval(load,300000); const t=setInterval(()=>setNow(Date.now()),60000); return ()=>{clearInterval(id);clearInterval(t);}; },[]);
 
@@ -1560,6 +1838,9 @@ function ServiceCoachingTab(){
           </div>
         </div>
       )}
+
+      <CoachingCompliancePanel compliance={outcomesData && outcomesData.compliance}/>
+      <CoachingOutcomesPanel outcomes={outcomesData && outcomesData.outcomes} notes={outcomesData && outcomesData.notes}/>
     </div>
   );
 }
@@ -2013,6 +2294,7 @@ function Site(){
     <div style={{minHeight:"100vh",background:"#0a0e1a"}}>
       <div style={{display:"flex",gap:9,alignItems:"center",padding:"8px 18px",background:"linear-gradient(90deg,#0c1424,#111d33)",borderBottom:"1px solid #1e2d47",position:"sticky",top:0,zIndex:1000}}>
         <span style={{display:"flex",alignItems:"center",gap:7,fontSize:12,fontWeight:800,letterSpacing:"0.06em",color:"#5BA4E6"}}><span style={{fontSize:14}}>🛠</span>SIERRA SERVICE</span>
+        <HealthPill/>
         <span style={{marginLeft:"auto",fontSize:9,color:"#4a5a70",fontWeight:700,letterSpacing:"0.08em"}}>STAGING · SERVICE TEST · test_service.html</span>
       </div>
       <ServiceDash/>

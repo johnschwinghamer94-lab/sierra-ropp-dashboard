@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-05T08:01:44.970088-07:00",
-  "generatedMs": 1785942104970,
+  "generated": "2026-08-05T08:02:24.744974-07:00",
+  "generatedMs": 1785942144744,
   "worst": "warn",
   "counts": {
     "ok": 11,
@@ -12,7 +12,7 @@
       "key": "livefeed",
       "label": "SILO live feed",
       "status": "ok",
-      "ageMin": 3,
+      "ageMin": 4,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-05T07:57:45.126000-07:00",
       "note": "fresh"
@@ -30,9 +30,9 @@
       "key": "hourly",
       "label": "ROPP hourly capture",
       "status": "ok",
-      "ageMin": 3,
+      "ageMin": 1,
       "expectMaxMin": 40,
-      "lastUpdate": "2026-08-05T07:58:23.604000-07:00",
+      "lastUpdate": "2026-08-05T08:01:15.240000-07:00",
       "note": "fresh"
     },
     {
@@ -57,7 +57,7 @@
       "key": "scorecards",
       "label": "SILO live scorecards",
       "status": "ok",
-      "ageMin": 76,
+      "ageMin": 77,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-05T06:45:02.843000-07:00",
       "note": "fresh"
@@ -93,7 +93,7 @@
       "key": "tgl_conv",
       "label": "ServiceTitan TGL truth (conv.json)",
       "status": "ok",
-      "ageMin": 584,
+      "ageMin": 585,
       "expectMaxMin": 1800,
       "lastUpdate": "2026-08-04T22:16:45.387582-07:00",
       "note": "fresh"

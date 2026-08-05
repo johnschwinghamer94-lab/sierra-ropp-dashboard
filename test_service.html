@@ -462,13 +462,15 @@ function ServiceDigestTab(){
   const dateTxt=forDate?forDate.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"}):"";
   const genTxt=d.generated?new Date(d.generated).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}):"";
 
-  const risks=Array.isArray(d.risks)?d.risks:[];
+  const allRisks=Array.isArray(d.risks)?d.risks:[];
+  const risks=allRisks.filter(r=>r.dept==="service"||r.dept==="both"||r.dept==null);
   const risksBySev={high:risks.filter(r=>r.severity==="high"),medium:risks.filter(r=>r.severity==="medium"),low:risks.filter(r=>r.severity==="low")};
   const yest=d.yesterday||{};
   const svc=yest.service||{};
-  const silo=yest.silo||{};
-  const coachFocus=Array.isArray(d.coachFocus)?d.coachFocus:[];
-  const wins=Array.isArray(d.wins)?d.wins:[];
+  // New dept-scoped fields with fallback to the old combined fields until the
+  // next engine run publishes the new payload shape.
+  const coachFocus=Array.isArray(d.serviceCoachFocus)?d.serviceCoachFocus:(Array.isArray(d.coachFocus)?d.coachFocus:[]);
+  const wins=Array.isArray(d.serviceWins)?d.serviceWins:(Array.isArray(d.wins)?d.wins:[]);
   const notes=Array.isArray(d.notes)?d.notes:[];
 
   const svcStats=[
@@ -478,12 +480,6 @@ function ServiceDigestTab(){
     ["Avg Ticket",svc.avgTicket!=null?fmt$(svc.avgTicket):"—"],
     ["Memberships",svc.membershipsSold!=null?svc.membershipsSold:"—"],
     ["Offer Rate",svc.membershipOfferRate!=null?svc.membershipOfferRate+"%":"—"],
-  ];
-  const siloStats=[
-    ["Calls",silo.calls!=null?silo.calls:"—"],
-    ["TGLs",silo.tgls!=null?silo.tgls:"—"],
-    ["Rate",silo.rate!=null?silo.rate+"%":"—"],
-    ["Revenue",silo.revenue!=null?fmt$(silo.revenue):"—"],
   ];
 
   const statBlock=(title,stats,vsPriorDay,color)=>(
@@ -507,7 +503,7 @@ function ServiceDigestTab(){
         <div style={{display:"flex",alignItems:"center",gap:12}}>
           <div className="lf2-logo">S</div>
           <div>
-            <div className="lf2-title">☀ MORNING BRIEFING — {dateTxt}</div>
+            <div className="lf2-title">☀ MORNING BRIEFING · SERVICE — {dateTxt}</div>
             {genTxt && <div className="lf2-subtl">generated {genTxt}</div>}
           </div>
         </div>
@@ -537,7 +533,6 @@ function ServiceDigestTab(){
         <div style={{fontSize:10,fontWeight:800,color:"#9fb3cc",letterSpacing:".1em",marginBottom:8}}>YESTERDAY</div>
         <div style={{display:"flex",gap:14,flexWrap:"wrap"}}>
           {statBlock("SERVICE",svcStats,svc.vsPriorDay,BLUE)}
-          {statBlock("SILO",siloStats,silo.vsPriorDay,GOLD)}
         </div>
       </div>
 

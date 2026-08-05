@@ -11656,23 +11656,17 @@ function DigestTab() {
   const dateTxt = forDate ? forDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) : "";
   const genTxt = d.generated ? new Date(d.generated).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "";
 
-  const risks = Array.isArray(d.risks) ? d.risks : [];
+  const allRisks = Array.isArray(d.risks) ? d.risks : [];
+  const risks = allRisks.filter(r => r.dept === "silo" || r.dept === "both" || r.dept == null);
   const risksBySev = { high: risks.filter(r => r.severity === "high"), medium: risks.filter(r => r.severity === "medium"), low: risks.filter(r => r.severity === "low") };
   const yest = d.yesterday || {};
-  const svc = yest.service || {};
   const silo = yest.silo || {};
-  const coachFocus = Array.isArray(d.coachFocus) ? d.coachFocus : [];
-  const wins = Array.isArray(d.wins) ? d.wins : [];
+  // New dept-scoped fields with fallback to the old combined fields until the
+  // next engine run publishes the new payload shape.
+  const coachFocus = Array.isArray(d.siloCoachFocus) ? d.siloCoachFocus : (Array.isArray(d.coachFocus) ? d.coachFocus : []);
+  const wins = Array.isArray(d.siloWins) ? d.siloWins : (Array.isArray(d.wins) ? d.wins : []);
   const notes = Array.isArray(d.notes) ? d.notes : [];
 
-  const svcStats = [
-    ["Revenue", svc.revenue != null ? fmt$(svc.revenue) : "—"],
-    ["Calls", svc.calls != null ? svc.calls : "—"],
-    ["Close Rate", svc.closeRate != null ? svc.closeRate + "%" : "—"],
-    ["Avg Ticket", svc.avgTicket != null ? fmt$(svc.avgTicket) : "—"],
-    ["Memberships", svc.membershipsSold != null ? svc.membershipsSold : "—"],
-    ["Offer Rate", svc.membershipOfferRate != null ? svc.membershipOfferRate + "%" : "—"]
-  ];
   const siloStats = [
     ["Calls", silo.calls != null ? silo.calls : "—"],
     ["TGLs", silo.tgls != null ? silo.tgls : "—"],
@@ -11702,7 +11696,7 @@ function DigestTab() {
 
   return e("div", { className: "riseIn", style: { padding: "0 0 40px" } },
     e("div", { style: { padding: "14px 24px", background: "linear-gradient(135deg,#0e1f33,#12263f)", borderBottom: "1px solid #1e3050" } },
-      e("div", { style: { fontSize: 15, fontWeight: 800, color: "#fff" } }, "☀ MORNING BRIEFING — " + dateTxt),
+      e("div", { style: { fontSize: 15, fontWeight: 800, color: "#fff" } }, "☀ MORNING BRIEFING · SILO — " + dateTxt),
       genTxt ? e("div", { style: { fontSize: 9.5, color: "#6b7a99", marginTop: 2 } }, "generated " + genTxt) : null),
 
     e("div", { style: { padding: "14px 24px 0" } },
@@ -11714,7 +11708,6 @@ function DigestTab() {
     e("div", { style: { padding: "18px 24px 0" } },
       e("div", { style: { fontSize: 10, fontWeight: 800, color: "#9fb3cc", letterSpacing: ".1em", marginBottom: 8 } }, "YESTERDAY"),
       e("div", { style: { display: "flex", gap: 14, flexWrap: "wrap" } },
-        statBlock("SERVICE", svcStats, svc.vsPriorDay, BLUE),
         statBlock("SILO", siloStats, silo.vsPriorDay, GOLD))),
 
     e("div", { style: { padding: "18px 24px 0" } },

@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-05T08:38:01.553510-07:00",
-  "generatedMs": 1785944281553,
+  "generated": "2026-08-05T09:23:20.213460-07:00",
+  "generatedMs": 1785947000213,
   "forDate": "2026-08-04",
   "yesterday": {
     "service": {
@@ -48,10 +48,10 @@
       "severity": "medium",
       "area": "board",
       "dept": "service",
-      "text": "WED 8/5 has 3 unassigned appointments still on the board.",
+      "text": "WED 8/5 has 4 unassigned appointments still on the board.",
       "metric": {
         "date": "2026-08-05",
-        "unassigned": 3
+        "unassigned": 4
       }
     },
     {

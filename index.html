@@ -25,8 +25,10 @@ body{background:#070b16;color:#eaf1fb;font-family:'Inter','Segoe UI',system-ui,s
 @keyframes glowPulse{0%,100%{filter:drop-shadow(0 0 3px currentColor);}50%{filter:drop-shadow(0 0 13px currentColor);}}
 @keyframes growW{from{width:0;}}
 /* ═══ TEST ENHANCEMENTS ═══════════════════════════════════════════════════ */
-/* Sticky header */
-.sticky-hdr{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);}
+/* Header — scrolls with the page on every screen size. It is ~272px tall
+   (title + rate chips + two tab rows); pinning it ate the top third-to-half
+   of the viewport and made the page feel like only the bottom half scrolled. */
+.sticky-hdr{position:static;z-index:100;backdrop-filter:blur(14px);}
 /* Animated number counter */
 @keyframes numPop{0%{transform:translateY(6px);opacity:.3}100%{transform:translateY(0);opacity:1}}
 .num-pop{display:inline-block;animation:numPop .35s cubic-bezier(.2,.7,.2,1) both;}
@@ -129,9 +131,8 @@ input[type=range].kpi-range::-webkit-slider-thumb{-webkit-appearance:none;width:
   .tech-filter,.tab-search{width:100%!important;}
   /* Trim heavy section padding so content isn't squeezed */
   .sec-pad{padding-left:12px!important;padding-right:12px!important;}
-  /* Phones: header scrolls away with the page instead of pinning and
-     eating half the viewport (it stays sticky on desktop/TV) */
-  .sticky-hdr{position:static!important;backdrop-filter:none!important;}
+  /* Header is already static everywhere; phones just drop the blur too */
+  .sticky-hdr{backdrop-filter:none!important;}
 }
 
 /* ── Round 4 Global ─────────────────────────────────────────── */

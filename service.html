@@ -366,19 +366,22 @@ const evalJobAlerts=(j,nowMin)=>{
   // rows at all until a job is closed out, so that would put every tech who is
   // currently standing on a roof onto a full-screen red accusation.
   //
-  // *** THIS ALERT IS CURRENTLY DISABLED ON PURPOSE (8/5) — it cannot fire. ***
-  // servicefeed_sync.py ships FP_ACCUSE_OK=False, so it never emits state
-  // "none"; finished jobs with no job-attributed recording come through as
-  // "unverified" instead and are deliberately ignored here. Reason: the Field
-  // Pro report only ties SOME recordings to a job number. Aaron Davis's job
-  // 662208158 has no job-attributed recording row, yet his technician-level
-  // event stream shows "Recording started" 16 seconds after "Technician Arrived
-  // on the Appointment" for that job — he WAS recording. At least 5 of the 14
-  // jobs this rule would have flagged on 8/4 are provably false accusations.
-  // Absence of a job-attributed row is not evidence; presence is.
-  // The rule below is correct and stays wired up: closing the attribution gap
-  // and flipping FP_ACCUSE_OK in servicefeed_sync.py turns it back on with no
-  // change needed here. Do NOT special-case "unverified" into an alert.
+  // *** LIVE AS OF 8/5 — this alert CAN fire. It was disabled until then. ***
+  // The Field Pro report ties only ~3 of 4 recordings to a job number, so
+  // "no job-attributed row" used to mean "we cannot tell", not "he skipped it"
+  // (Aaron Davis job 662208158: no job-attributed row, yet his technician-level
+  // stream shows "Recording started" 16 seconds after "Technician Arrived on
+  // the Appointment" — he WAS recording). fieldpro_attrib.py now correlates
+  // those blank-job recording sessions into per-tech arrival/completion windows
+  // and publishes fieldpro_attrib.json; servicefeed_sync.py merges it and ships
+  // FP_ACCUSE_OK=True, so "none" is finally reachable — but ONLY from an
+  // explicit correlator verdict on a fresh artifact for a job that is Done and
+  // settled. Missing artifact, stale artifact, in-flight job, unplaced
+  // recording session, or dead app telemetry all resolve "unverified".
+  // Replayed over 8/3 and 8/4 this flagged 2 jobs out of 278, both verified by
+  // hand against the raw event stream as genuine.
+  // Do NOT special-case "unverified" into an alert: that is the bucket every
+  // "we do not know" lands in, and it is deliberately silent.
   if(j.rec && j.rec.state==="none"){
     alerts.push({code:"norec",label:"🎙 NOT RECORDING"});
   }

@@ -422,6 +422,18 @@ function HealthPill(){
   );
 }
 
+class TabBoundary extends React.Component{
+  constructor(p){super(p);this.state={err:null};}
+  static getDerivedStateFromError(e){return {err:e};}
+  componentDidUpdate(prev){ if(prev.tabKey!==this.props.tabKey && this.state.err) this.setState({err:null}); }
+  render(){
+    if(this.state.err) return (<div style={{padding:"40px 24px",textAlign:"center",color:"#ff8c93",fontSize:12,lineHeight:1.7}}>
+      <div style={{fontWeight:800,letterSpacing:".08em",marginBottom:8}}>⚠ THIS TAB HIT AN ERROR</div>
+      <div style={{color:"#8fa3d9"}}>The rest of the dashboard is unaffected — pick another tab.<br/>{String((this.state.err&&this.state.err.message)||this.state.err).slice(0,160)}</div>
+    </div>);
+    return this.props.children;
+  }
+}
 function ServiceDigestTab(){
   const [d,setD]=React.useState(null);
   const [err,setErr]=React.useState(false);
@@ -514,7 +526,7 @@ function ServiceDigestTab(){
                   <span style={{fontSize:11.5,color:"#e6eefb"}}>{r.text}</span>
                   {r.area && <span style={{fontSize:9,color:"#5d6fa8",marginLeft:8}}>· {r.area}</span>}
                 </div>
-                {r.metric && <span style={{fontSize:9.5,fontWeight:800,color:SEV[sev].c,background:SEV[sev].c+"1a",border:"1px solid "+SEV[sev].c+"55",borderRadius:6,padding:"2px 8px"}}>{r.metric}</span>}
+                {(r.metric && typeof r.metric==="object" ? Object.entries(r.metric) : r.metric!=null ? [["",r.metric]] : []).map((kv,ki)=>(<span key={ki} style={{fontSize:9.5,fontWeight:800,color:SEV[sev].c,background:SEV[sev].c+"1a",border:"1px solid "+SEV[sev].c+"55",borderRadius:6,padding:"2px 8px",marginLeft:4}}>{(kv[0]?kv[0]+" ":"")+String(kv[1])}</span>))}
               </div>
             )))}
           </div>
@@ -2269,6 +2281,7 @@ function ServiceDash(){
       </div>
 
       <div className="tab-fade" key={tab}>
+        <TabBoundary tabKey={tab}>
         {tab==="digest" && <ServiceDigestTab/>}
         {tab==="live" && <ServiceLiveTab/>}
         {tab==="weekly" && <ServiceWeeklyTab/>}
@@ -2430,6 +2443,7 @@ function ServiceDash(){
               </div>);})}
           </div>
         </React.Fragment>)}
+        </TabBoundary>
       </div>
 
       <div style={{fontSize:9,color:"#4a5a70",padding:"16px 24px 0",lineHeight:1.5}}>Source: {D.source} · Opp conversion = converted ÷ opportunity jobs · memberships = service agreements sold · leads set = service turnovers to ROPP · IAQ excludes ROPP &amp; parts. *current period partial.</div>

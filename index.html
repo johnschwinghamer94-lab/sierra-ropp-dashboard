@@ -11698,7 +11698,7 @@ function DigestTab() {
       e("span", { style: { fontSize: 8.5, fontWeight: 800, letterSpacing: ".08em", color: SEV[sev].c, marginRight: 8 } }, SEV[sev].l),
       e("span", { style: { fontSize: 11.5, color: "#e6eefb" } }, r.text),
       r.area ? e("span", { style: { fontSize: 9, color: "#5d6fa8", marginLeft: 8 } }, "· " + r.area) : null),
-    r.metric ? e("span", { style: { fontSize: 9.5, fontWeight: 800, color: SEV[sev].c, background: SEV[sev].c + "1a", border: "1px solid " + SEV[sev].c + "55", borderRadius: 6, padding: "2px 8px" } }, r.metric) : null))), []);
+    (r.metric && typeof r.metric === "object" ? Object.entries(r.metric) : r.metric != null ? [["", r.metric]] : []).map(function (kv, ki) { return e("span", { key: ki, style: { fontSize: 9.5, fontWeight: 800, color: SEV[sev].c, background: SEV[sev].c + "1a", border: "1px solid " + SEV[sev].c + "55", borderRadius: 6, padding: "2px 8px", marginLeft: 4 } }, (kv[0] ? kv[0] + " " : "") + String(kv[1])); })))), []);
 
   return e("div", { className: "riseIn", style: { padding: "0 0 40px" } },
     e("div", { style: { padding: "14px 24px", background: "linear-gradient(135deg,#0e1f33,#12263f)", borderBottom: "1px solid #1e3050" } },

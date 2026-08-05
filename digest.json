@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-05T09:23:20.213460-07:00",
-  "generatedMs": 1785947000213,
+  "generated": "2026-08-05T10:18:38.694108-07:00",
+  "generatedMs": 1785950318694,
   "forDate": "2026-08-04",
   "yesterday": {
     "service": {
@@ -37,11 +37,33 @@
     },
     {
       "severity": "high",
-      "area": "pipeline",
+      "area": "membership",
       "dept": "service",
-      "text": "Service membership offer rate is 0.0% dept-wide \u2014 well below a healthy target.",
+      "text": "Membership offered on 56 of 250 eligible calls this week (22.4%) \u2014 the standard is every eligible call.",
       "metric": {
-        "offerRate": 0.0
+        "offerRate": 22.4,
+        "offered": 56,
+        "eligible": 250
+      }
+    },
+    {
+      "severity": "high",
+      "area": "membership",
+      "dept": "service",
+      "text": "Fabian Pantoja has not offered a membership once this week \u2014 10 eligible calls.",
+      "metric": {
+        "tech": "Fabian Pantoja",
+        "eligibleCalls": 10
+      }
+    },
+    {
+      "severity": "high",
+      "area": "membership",
+      "dept": "service",
+      "text": "J Boothe has not offered a membership once this week \u2014 3 eligible calls.",
+      "metric": {
+        "tech": "J Boothe",
+        "eligibleCalls": 3
       }
     },
     {
@@ -75,16 +97,6 @@
       }
     },
     {
-      "severity": "medium",
-      "area": "pipeline",
-      "dept": "service",
-      "text": "Stanley Kim offered a membership on 0% of 1 jobs today.",
-      "metric": {
-        "tech": "Stanley Kim",
-        "jobs": 1
-      }
-    },
-    {
       "severity": "low",
       "area": "pipeline",
       "dept": "service",
@@ -98,11 +110,11 @@
       "severity": "low",
       "area": "pipeline",
       "dept": "service",
-      "text": "August is ahead of pace: $108,362 MTD vs ~$71,936 expected through 2 of 21 working days (+$36,426).",
+      "text": "August is ahead of pace: $111,951 MTD vs ~$71,936 expected through 2 of 21 working days (+$40,015).",
       "metric": {
-        "mtdActual": 108362,
+        "mtdActual": 111951,
         "expected": 71936,
-        "gap": 36426
+        "gap": 40015
       }
     }
   ],

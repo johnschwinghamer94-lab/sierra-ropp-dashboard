@@ -1,7 +1,7 @@
 {
-  "generated": "2026-08-05T10:18:38.694108-07:00",
-  "generatedMs": 1785950318694,
-  "forDate": "2026-08-04",
+  "generated": "2026-08-06T06:30:32.890404-07:00",
+  "generatedMs": 1786023032890,
+  "forDate": "2026-08-05",
   "yesterday": {
     "service": {
       "revenue": null,
@@ -13,47 +13,239 @@
       "vsPriorDay": null
     },
     "silo": {
-      "calls": 39,
-      "tgls": 26,
-      "rate": 66.7,
+      "calls": null,
+      "tgls": null,
+      "rate": null,
       "revenue": null,
-      "vsPriorDay": {
-        "calls": -6,
-        "tgls": -1,
-        "rate": 6.7,
-        "revenue": null
-      }
+      "vsPriorDay": null
     }
   },
   "risks": [
     {
       "severity": "high",
+      "area": "board",
+      "dept": "service",
+      "text": "TUE 8/11 has 5 unassigned appointments still on the board.",
+      "metric": {
+        "date": "2026-08-11",
+        "unassigned": 5
+      }
+    },
+    {
+      "severity": "high",
       "area": "recording",
       "dept": "service",
-      "text": "Service recording compliance is 66.7% over the last 7 days \u2014 below the 90% target.",
+      "text": "Service recording compliance is 0.0% over the last 7 days \u2014 below the 90% target.",
       "metric": {
-        "deptPct": 66.7
+        "deptPct": 0.0
       }
     },
     {
       "severity": "high",
-      "area": "membership",
+      "area": "recording",
       "dept": "service",
-      "text": "Membership offered on 56 of 250 eligible calls this week (22.4%) \u2014 the standard is every eligible call.",
+      "text": "AJ Munoz recorded 0% of 2 eligible jobs over the last 7 days.",
       "metric": {
-        "offerRate": 22.4,
-        "offered": 56,
-        "eligible": 250
+        "tech": "AJ Munoz",
+        "eligible": 2,
+        "pct": 0
       }
     },
     {
       "severity": "high",
-      "area": "membership",
+      "area": "recording",
       "dept": "service",
-      "text": "Fabian Pantoja has not offered a membership once this week \u2014 10 eligible calls.",
+      "text": "Adrian Muniz recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Adrian Muniz",
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Chris Thomas recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Chris Thomas",
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Corey Reding recorded 0% of 4 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Corey Reding",
+        "eligible": 4,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Fabian Pantoja recorded 0% of 2 eligible jobs over the last 7 days.",
       "metric": {
         "tech": "Fabian Pantoja",
-        "eligibleCalls": 10
+        "eligible": 2,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Jack Jonathon Vanos recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Jack Jonathon Vanos",
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Jose Huesca recorded 0% of 5 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Jose Huesca",
+        "eligible": 5,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Joseph Byrd recorded 0% of 5 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Joseph Byrd",
+        "eligible": 5,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Josue Arciga recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Josue Arciga",
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Juan Bernal recorded 0% of 2 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Juan Bernal",
+        "eligible": 2,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Kevin Rodriguez recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Kevin Rodriguez",
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Mario Conant recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Mario Conant",
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Matthew Arnold recorded 0% of 6 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Matthew Arnold",
+        "eligible": 6,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Michael Washington recorded 0% of 2 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Michael Washington",
+        "eligible": 2,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Mike (Jiangtao) Li recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Mike (Jiangtao) Li",
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Stanley Kim recorded 0% of 5 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Stanley Kim",
+        "eligible": 5,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Xavier Paredes recorded 0% of 2 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Xavier Paredes",
+        "eligible": 2,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "membership",
+      "dept": "service",
+      "text": "Membership offered on 76 of 306 eligible calls this week (24.8%) \u2014 the standard is every eligible call.",
+      "metric": {
+        "offerRate": 24.8,
+        "offered": 76,
+        "eligible": 306
+      }
+    },
+    {
+      "severity": "high",
+      "area": "membership",
+      "dept": "service",
+      "text": "Fabian Pantoja has not offered a membership once this week \u2014 9 eligible calls.",
+      "metric": {
+        "tech": "Fabian Pantoja",
+        "eligibleCalls": 9
       }
     },
     {
@@ -70,9 +262,9 @@
       "severity": "medium",
       "area": "board",
       "dept": "service",
-      "text": "WED 8/5 has 4 unassigned appointments still on the board.",
+      "text": "THU 8/6 has 4 unassigned appointments still on the board.",
       "metric": {
-        "date": "2026-08-05",
+        "date": "2026-08-06",
         "unassigned": 4
       }
     },
@@ -80,20 +272,10 @@
       "severity": "medium",
       "area": "board",
       "dept": "service",
-      "text": "FRI 8/7 has 1 unassigned appointment still on the board.",
-      "metric": {
-        "date": "2026-08-07",
-        "unassigned": 1
-      }
-    },
-    {
-      "severity": "medium",
-      "area": "board",
-      "dept": "service",
-      "text": "MON 8/10 has 2 unassigned appointments still on the board.",
+      "text": "MON 8/10 has 3 unassigned appointments still on the board.",
       "metric": {
         "date": "2026-08-10",
-        "unassigned": 2
+        "unassigned": 3
       }
     },
     {
@@ -109,48 +291,63 @@
     {
       "severity": "low",
       "area": "pipeline",
-      "dept": "service",
-      "text": "August is ahead of pace: $111,951 MTD vs ~$71,936 expected through 2 of 21 working days (+$40,015).",
+      "dept": "silo",
+      "text": "TGL truth daily files is warn: TGL truth daily files are running a day behind.",
       "metric": {
-        "mtdActual": 111951,
-        "expected": 71936,
-        "gap": 40015
+        "key": "tgl_truth_daily",
+        "status": "warn"
+      }
+    },
+    {
+      "severity": "low",
+      "area": "pipeline",
+      "dept": "service",
+      "text": "August is ahead of pace: $169,103 MTD vs ~$107,905 expected through 3 of 21 working days (+$61,198).",
+      "metric": {
+        "mtdActual": 169103,
+        "expected": 107905,
+        "gap": 61198
       }
     }
   ],
   "serviceCoachFocus": [
     {
-      "tech": "Josue Arciga",
-      "reason": "Membership pitch is not yet a habit - it lands well when made but is skipped on visits that aren't the biggest-ticket repair.",
-      "evidence": "failed critical flags: expectations, options, membership, close; close rate 100%; recording compliance 50.0% (7-day)",
-      "planLink": "coaching/plans_service/2026-08-03/Josue_Arciga.html"
-    },
-    {
       "tech": "Jose Huesca",
       "reason": "Strong diagnosis and rapport aren't bookended by a clean opening or confident single-pass price presentation.",
-      "evidence": "failed critical flags: expectations, options, membership, close; close rate 100%",
+      "evidence": "failed critical flags: expectations, options, membership, close; close rate 100%; recording compliance 0.0% (7-day)",
       "planLink": "coaching/plans_service/2026-08-03/Jose_Huesca.html"
+    },
+    {
+      "tech": "Josue Arciga",
+      "reason": "Membership pitch is not yet a habit - it lands well when made but is skipped on visits that aren't the biggest-ticket repair.",
+      "evidence": "failed critical flags: expectations, options, membership, close; close rate 100%; recording compliance 0.0% (7-day)",
+      "planLink": "coaching/plans_service/2026-08-03/Josue_Arciga.html"
     },
     {
       "tech": "Matthew Arnold",
       "reason": "Repeated multi-item upsell pitches on systems with no real issues are creating customer churn risk.",
-      "evidence": "failed critical flags: expectations, options, membership, close; close rate 75%",
+      "evidence": "failed critical flags: expectations, options, membership, close; close rate 75%; recording compliance 0.0% (7-day)",
       "planLink": "coaching/plans_service/2026-08-03/Matthew_Arnold.html"
     },
     {
       "tech": "Stanley Kim",
       "reason": "Never resets customer's time expectations, and sales process drags through repeated manager pricing lookups.",
-      "evidence": "failed critical flags: expectations, options, membership, close; close rate 100%",
+      "evidence": "failed critical flags: expectations, options, membership, close; close rate 100%; recording compliance 0.0% (7-day)",
       "planLink": "coaching/plans_service/2026-08-03/Stanley_Kim.html"
     },
     {
       "tech": "AJ Munoz",
       "reason": "Presented only one repair scope with two pricing variants instead of a true 4-6 option menu.",
-      "evidence": "failed critical flags: expectations, membership, close; close rate 100%",
+      "evidence": "failed critical flags: expectations, membership, close; close rate 100%; recording compliance 0.0% (7-day)",
       "planLink": "coaching/plans_service/2026-08-03/AJ_Munoz.html"
     }
   ],
-  "serviceWins": [],
+  "serviceWins": [
+    {
+      "tech": "Stanley Kim",
+      "text": "Stanley Kim's closeRate improved from 54.15 to 66.7 since the 2026-08-03 coaching plan."
+    }
+  ],
   "siloCoachFocus": [
     {
       "tech": "Mario Castro",
@@ -161,7 +358,7 @@
     {
       "tech": "David Canales",
       "reason": "Cost objections are answered with a benefits pitch instead of a question, which closes the conversation rather than opening the specialist path.",
-      "evidence": "failed critical flags: expectations, questions, options; close rate 50% (from graded calls); flip rate 100.0% (3/3 calls)",
+      "evidence": "failed critical flags: expectations, questions, options; close rate 50% (from graded calls)",
       "planLink": "coaching/plans/2026-08-04/David_Canales.html"
     },
     {
@@ -173,63 +370,69 @@
     {
       "tech": "Andrew Trujillo",
       "reason": "Stated replacement timelines are agreed with rather than converted into a specialist visit, so no second path is ever named.",
-      "evidence": "failed critical flags: expectations, questions; weak/moderate bands: decision, deliver; close rate 25% (from graded calls); flip rate 33.3% (1/3 calls)",
+      "evidence": "failed critical flags: expectations, questions; weak/moderate bands: decision, deliver; close rate 25% (from graded calls)",
       "planLink": "coaching/plans/2026-08-04/Andrew_Trujillo.html"
     },
     {
       "tech": "Benjamin Wyllie",
       "reason": "Absent-owner hand-offs go out as a report without two written directions attached, so the decision-maker has nothing to choose between.",
-      "evidence": "failed critical flags: expectations, questions; weak/moderate bands: decision; close rate 80% (from graded calls); flip rate 66.7% (2/3 calls)",
+      "evidence": "failed critical flags: expectations, questions; weak/moderate bands: decision; close rate 80% (from graded calls)",
       "planLink": "coaching/plans/2026-08-04/Benjamin_Wyllie.html"
     }
   ],
   "siloWins": [],
   "coachFocus": [
     {
-      "tech": "Josue Arciga",
-      "reason": "Membership pitch is not yet a habit - it lands well when made but is skipped on visits that aren't the biggest-ticket repair.",
-      "evidence": "failed critical flags: expectations, options, membership, close; close rate 100%; recording compliance 50.0% (7-day)",
-      "planLink": "coaching/plans_service/2026-08-03/Josue_Arciga.html"
-    },
-    {
       "tech": "Jose Huesca",
       "reason": "Strong diagnosis and rapport aren't bookended by a clean opening or confident single-pass price presentation.",
-      "evidence": "failed critical flags: expectations, options, membership, close; close rate 100%",
+      "evidence": "failed critical flags: expectations, options, membership, close; close rate 100%; recording compliance 0.0% (7-day)",
       "planLink": "coaching/plans_service/2026-08-03/Jose_Huesca.html"
+    },
+    {
+      "tech": "Josue Arciga",
+      "reason": "Membership pitch is not yet a habit - it lands well when made but is skipped on visits that aren't the biggest-ticket repair.",
+      "evidence": "failed critical flags: expectations, options, membership, close; close rate 100%; recording compliance 0.0% (7-day)",
+      "planLink": "coaching/plans_service/2026-08-03/Josue_Arciga.html"
     },
     {
       "tech": "Matthew Arnold",
       "reason": "Repeated multi-item upsell pitches on systems with no real issues are creating customer churn risk.",
-      "evidence": "failed critical flags: expectations, options, membership, close; close rate 75%",
+      "evidence": "failed critical flags: expectations, options, membership, close; close rate 75%; recording compliance 0.0% (7-day)",
       "planLink": "coaching/plans_service/2026-08-03/Matthew_Arnold.html"
     },
     {
       "tech": "Stanley Kim",
       "reason": "Never resets customer's time expectations, and sales process drags through repeated manager pricing lookups.",
-      "evidence": "failed critical flags: expectations, options, membership, close; close rate 100%",
+      "evidence": "failed critical flags: expectations, options, membership, close; close rate 100%; recording compliance 0.0% (7-day)",
       "planLink": "coaching/plans_service/2026-08-03/Stanley_Kim.html"
     },
     {
       "tech": "AJ Munoz",
       "reason": "Presented only one repair scope with two pricing variants instead of a true 4-6 option menu.",
-      "evidence": "failed critical flags: expectations, membership, close; close rate 100%",
+      "evidence": "failed critical flags: expectations, membership, close; close rate 100%; recording compliance 0.0% (7-day)",
       "planLink": "coaching/plans_service/2026-08-03/AJ_Munoz.html"
     }
   ],
-  "wins": [],
+  "wins": [
+    {
+      "tech": "Stanley Kim",
+      "text": "Stanley Kim's closeRate improved from 54.15 to 66.7 since the 2026-08-03 coaching plan."
+    }
+  ],
   "health": {
     "worst": "warn",
     "dead": [],
     "warn": [
-      "Service daily plans"
+      "Service daily plans",
+      "TGL truth daily files"
     ]
   },
   "notes": [
-    "servicedata.json's 'today' bucket is dated 2026-08-05, not the target business day 2026-08-04 \u2014 Service Pulse had not rolled to a new day (or is ahead of it) at digest run time, and this engine has no other closed-day Service revenue/close-rate source, so service.yesterday is null rather than presenting a live partial day as a confirmed closed day.",
-    "hourly.json is dated 2026-08-05, not the target business day 2026-08-04 \u2014 it only ever exposes a live 'today' bucket, so it cannot be used for SILO yesterday figures; falling back to tgl_truth/conv.json for a genuine closed-day record.",
-    "SILO yesterday calls/tgls/rate sourced from tgl_truth/conv.json for 2026-08-04 (closed-day record) \u2014 hourly.json could not supply the target business day.",
+    "servicedata.json's 'today' bucket is dated 2026-08-06, not the target business day 2026-08-05 \u2014 Service Pulse had not rolled to a new day (or is ahead of it) at digest run time, and this engine has no other closed-day Service revenue/close-rate source, so service.yesterday is null rather than presenting a live partial day as a confirmed closed day.",
+    "hourly.json is dated 2026-08-06, not the target business day 2026-08-05 \u2014 it only ever exposes a live 'today' bucket, so it cannot be used for SILO yesterday figures; falling back to tgl_truth/conv.json for a genuine closed-day record.",
+    "SILO yesterday calls/tgls/rate are null \u2014 tgl_truth/conv.json has no day record for 2026-08-05, and hourly.json could not supply the target business day either.",
     "SILO yesterday.revenue is null \u2014 tgl_truth/conv.json does not carry revenue and hourly.json could not supply the target business day.",
-    "SILO vsPriorDay.revenue is null \u2014 tgl_truth/conv.json does not carry revenue.",
+    "SILO vsPriorDay unavailable \u2014 tgl_truth/conv.json has no per-tech day data for 2026-08-05 and/or the prior business day 2026-08-04.",
     "board-fill trend risk skipped \u2014 servicecalls_history.json does not yet contain 2+ trailing samples for any of the same weekdays as the next 5 business days (the snapshot history is too new/short to compute a trailing weekday average).",
     "DEPRECATED: top-level 'coachFocus'/'wins' are aliases for 'serviceCoachFocus'/'serviceWins' kept for one release for backward compatibility \u2014 new consumers should read the dept-specific fields (serviceCoachFocus/serviceWins/siloCoachFocus/siloWins) directly."
   ]

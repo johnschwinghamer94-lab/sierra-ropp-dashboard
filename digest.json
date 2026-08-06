@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-06T06:33:37.048160-07:00",
-  "generatedMs": 1786023217048,
+  "generated": "2026-08-06T06:41:28.555014-07:00",
+  "generatedMs": 1786023688555,
   "forDate": "2026-08-05",
   "yesterday": {
     "service": {
@@ -202,6 +202,17 @@
       "metric": {
         "tech": "Michael Washington",
         "eligible": 2,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Mike (Jiangtao) Li recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Mike (Jiangtao) Li",
+        "eligible": 1,
         "pct": 0
       }
     },

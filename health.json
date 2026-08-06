@@ -1,74 +1,74 @@
 {
-  "generated": "2026-08-06T08:02:48.993665-07:00",
-  "generatedMs": 1786028568993,
-  "worst": "warn",
+  "generated": "2026-08-06T09:42:46.974487-07:00",
+  "generatedMs": 1786034566974,
+  "worst": "dead",
   "counts": {
-    "ok": 11,
-    "warn": 1,
-    "dead": 0
+    "ok": 6,
+    "warn": 5,
+    "dead": 1
   },
   "checks": [
     {
       "key": "livefeed",
       "label": "SILO live feed",
-      "status": "ok",
-      "ageMin": 5,
+      "status": "warn",
+      "ageMin": 8,
       "expectMaxMin": 6,
-      "lastUpdate": "2026-08-06T07:57:19.179000-07:00",
-      "note": "fresh"
+      "lastUpdate": "2026-08-06T09:34:44.367000-07:00",
+      "note": "SILO live feed is running behind \u2014 cards may lag."
     },
     {
       "key": "servicefeed",
       "label": "Service live feed",
-      "status": "ok",
-      "ageMin": 4,
+      "status": "dead",
+      "ageMin": 25,
       "expectMaxMin": 6,
-      "lastUpdate": "2026-08-06T07:58:19.842000-07:00",
-      "note": "fresh"
+      "lastUpdate": "2026-08-06T09:16:47.120000-07:00",
+      "note": "Service live-call cards on the dashboard will show stale/no recent calls."
     },
     {
       "key": "hourly",
       "label": "ROPP hourly capture",
       "status": "ok",
-      "ageMin": 6,
-      "expectMaxMin": 40,
-      "lastUpdate": "2026-08-06T07:56:29.256000-07:00",
+      "ageMin": 2,
+      "expectMaxMin": 20,
+      "lastUpdate": "2026-08-06T09:40:36.204000-07:00",
       "note": "fresh"
     },
     {
       "key": "servicedata",
       "label": "Service Pulse data",
-      "status": "ok",
-      "ageMin": 6,
+      "status": "warn",
+      "ageMin": 71,
       "expectMaxMin": 45,
-      "lastUpdate": "2026-08-06T07:56:26.229303-07:00",
-      "note": "fresh"
+      "lastUpdate": "2026-08-06T08:30:50.095500-07:00",
+      "note": "Service Pulse data running behind."
     },
     {
       "key": "servicecalls",
       "label": "Calls board",
-      "status": "ok",
-      "ageMin": 6,
+      "status": "warn",
+      "ageMin": 71,
       "expectMaxMin": 60,
-      "lastUpdate": "2026-08-06T07:56:26.229303-07:00",
-      "note": "fresh"
+      "lastUpdate": "2026-08-06T08:30:50.095500-07:00",
+      "note": "Calls board running behind."
     },
     {
       "key": "scorecards",
       "label": "SILO live scorecards",
       "status": "ok",
-      "ageMin": 26,
+      "ageMin": 2,
       "expectMaxMin": 180,
-      "lastUpdate": "2026-08-06T07:36:32.335000-07:00",
+      "lastUpdate": "2026-08-06T09:40:29.154000-07:00",
       "note": "fresh"
     },
     {
       "key": "servicecards",
       "label": "Service live scorecards",
       "status": "ok",
-      "ageMin": 79,
+      "ageMin": 2,
       "expectMaxMin": 180,
-      "lastUpdate": "2026-08-06T06:42:49.080000-07:00",
+      "lastUpdate": "2026-08-06T09:40:29.203000-07:00",
       "note": "fresh"
     },
     {
@@ -83,17 +83,17 @@
     {
       "key": "service_coaching",
       "label": "Service daily plans",
-      "status": "ok",
-      "ageMin": 1440,
+      "status": "warn",
+      "ageMin": 2880,
       "expectMaxMin": 1440,
-      "lastUpdate": "2026-08-05",
-      "note": "fresh"
+      "lastUpdate": "2026-08-04",
+      "note": "Daily coaching plan is 2 days behind \u2014 close-rate metrics may fall back to graded-call sampling."
     },
     {
       "key": "tgl_conv",
       "label": "ServiceTitan TGL truth (conv.json)",
       "status": "ok",
-      "ageMin": 1410,
+      "ageMin": 1510,
       "expectMaxMin": 1800,
       "lastUpdate": "2026-08-05T08:32:37.698794-07:00",
       "note": "fresh"
@@ -113,8 +113,8 @@
       "status": "ok",
       "ageMin": null,
       "expectMaxMin": null,
-      "lastUpdate": "Jan 1 \\u2013 Aug 5, 2026",
-      "note": "dateRange='Jan 1 \\u2013 Aug 5, 2026' mentions today/yesterday"
+      "lastUpdate": "Jan 1 \\u2013 Aug 6, 2026",
+      "note": "dateRange='Jan 1 \\u2013 Aug 6, 2026' mentions today/yesterday"
     }
   ]
 }

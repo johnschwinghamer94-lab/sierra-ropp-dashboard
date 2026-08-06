@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-06T06:30:32.890404-07:00",
-  "generatedMs": 1786023032890,
+  "generated": "2026-08-06T06:33:37.048160-07:00",
+  "generatedMs": 1786023217048,
   "forDate": "2026-08-05",
   "yesterday": {
     "service": {
@@ -77,10 +77,10 @@
       "severity": "high",
       "area": "recording",
       "dept": "service",
-      "text": "Corey Reding recorded 0% of 4 eligible jobs over the last 7 days.",
+      "text": "Christopher Moreno recorded 0% of 1 eligible jobs over the last 7 days.",
       "metric": {
-        "tech": "Corey Reding",
-        "eligible": 4,
+        "tech": "Christopher Moreno",
+        "eligible": 1,
         "pct": 0
       }
     },
@@ -88,10 +88,21 @@
       "severity": "high",
       "area": "recording",
       "dept": "service",
-      "text": "Fabian Pantoja recorded 0% of 2 eligible jobs over the last 7 days.",
+      "text": "Corey Reding recorded 0% of 5 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Corey Reding",
+        "eligible": 5,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Fabian Pantoja recorded 0% of 3 eligible jobs over the last 7 days.",
       "metric": {
         "tech": "Fabian Pantoja",
-        "eligible": 2,
+        "eligible": 3,
         "pct": 0
       }
     },
@@ -121,10 +132,10 @@
       "severity": "high",
       "area": "recording",
       "dept": "service",
-      "text": "Joseph Byrd recorded 0% of 5 eligible jobs over the last 7 days.",
+      "text": "Joseph Byrd recorded 0% of 4 eligible jobs over the last 7 days.",
       "metric": {
         "tech": "Joseph Byrd",
-        "eligible": 5,
+        "eligible": 4,
         "pct": 0
       }
     },
@@ -191,17 +202,6 @@
       "metric": {
         "tech": "Michael Washington",
         "eligible": 2,
-        "pct": 0
-      }
-    },
-    {
-      "severity": "high",
-      "area": "recording",
-      "dept": "service",
-      "text": "Mike (Jiangtao) Li recorded 0% of 1 eligible jobs over the last 7 days.",
-      "metric": {
-        "tech": "Mike (Jiangtao) Li",
-        "eligible": 1,
         "pct": 0
       }
     },

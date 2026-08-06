@@ -10021,7 +10021,7 @@ function OverviewTab({
     strokeWidth: "2.5",
     transform: "translate(2,2)"
   })));
-  const gaugeCard = (label, rate, callsN, tglsN) => {
+  const gaugeCard = (label, rate, callsN, tglsN, egg) => {
     // three-zone background: red 0-48%, yellow 48-60%, blue 60-100%
     const zoneArc = (from, to, color) => {
       const R = 62,
@@ -10083,9 +10083,22 @@ function OverviewTab({
         fontSize: 9,
         letterSpacing: "0.16em",
         color: "#7089ab",
-        fontWeight: 700
+        fontWeight: 700,
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "baseline",
+        gap: 6
       }
-    }, label), /*#__PURE__*/React.createElement("svg", {
+    }, /*#__PURE__*/React.createElement("span", null, label), egg && /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 8,
+        letterSpacing: "0.22em",
+        color: "#3d5570",
+        fontWeight: 800,
+        whiteSpace: "nowrap",
+        opacity: 0.75
+      }
+    }, "CREAM CITY")), /*#__PURE__*/React.createElement("svg", {
       viewBox: "0 0 160 118",
       width: "100%",
       style: {
@@ -10287,7 +10300,7 @@ function OverviewTab({
       marginBottom: 14,
       alignItems: "stretch"
     }
-  }, gaugeCard("TODAY" + (hourly && hourly.updated ? " · " + hourly.updated : ""), (function(){var _c=hourly&&hourly.today?hourly.today.calls:0,_t=deptTgls!=null?deptTgls:hourly&&hourly.today?hourly.today.tgls:0;return _c>0?_t/_c*100:(hourly&&hourly.today?hourly.today.rate:null);})(), hourly && hourly.today ? hourly.today.calls : 0, deptTgls != null ? deptTgls : hourly && hourly.today ? hourly.today.tgls : 0), gaugeCard("YTD CONVERSION", ytdRate, yc, yt), gaugeCard(CUR_MONTH.toUpperCase() + " MTD", mtdRate, mc, mt), /*#__PURE__*/React.createElement("div", {
+  }, gaugeCard("TODAY" + (hourly && hourly.updated ? " · " + hourly.updated : ""), (function(){var _c=hourly&&hourly.today?hourly.today.calls:0,_t=deptTgls!=null?deptTgls:hourly&&hourly.today?hourly.today.tgls:0;return _c>0?_t/_c*100:(hourly&&hourly.today?hourly.today.rate:null);})(), hourly && hourly.today ? hourly.today.calls : 0, deptTgls != null ? deptTgls : hourly && hourly.today ? hourly.today.tgls : 0, true), gaugeCard("YTD CONVERSION", ytdRate, yc, yt), gaugeCard(CUR_MONTH.toUpperCase() + " MTD", mtdRate, mc, mt), /*#__PURE__*/React.createElement("div", {
     className: "riseIn liftCard",
     style: {
       background: "linear-gradient(160deg,#10231a,#0a1130)",

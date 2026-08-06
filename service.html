@@ -1114,7 +1114,7 @@ function ServicePulseTab({onClassic}){
   // dept avg options built per opportunity (weighted by opps) — 4-6 is the standard
   const oppN=techRows.reduce((a,r)=>a+((r.optionsPerOpp||0)*(r.opps||0)),0);
   const oppD=techRows.reduce((a,r)=>a+(r.opps||0),0);
-  const avgOpo=oppD?oppN/oppD:null;
+  const avgOpo=W.optionsPerOpp!=null?W.optionsPerOpp:(oppD?oppN/oppD:null);
   const opoColor=avgOpo==null?"#7a8fa0":(avgOpo>=4?"#4ADE80":(avgOpo>=3?GOLD:"#E63946"));
 
   const kpis=[

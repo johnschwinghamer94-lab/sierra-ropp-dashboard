@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-06T00:22:02.375781-07:00",
-  "generatedMs": 1786000922375,
+  "generated": "2026-08-06T00:22:25.477381-07:00",
+  "generatedMs": 1786000945477,
   "worst": "warn",
   "counts": {
     "ok": 10,
@@ -12,7 +12,7 @@
       "key": "livefeed",
       "label": "SILO live feed",
       "status": "ok",
-      "ageMin": 21,
+      "ageMin": 22,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-06T00:00:08.465000-07:00",
       "note": "outside ops hours"
@@ -57,7 +57,7 @@
       "key": "scorecards",
       "label": "SILO live scorecards",
       "status": "ok",
-      "ageMin": 91,
+      "ageMin": 92,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-05T22:50:04.131000-07:00",
       "note": "outside ops hours"

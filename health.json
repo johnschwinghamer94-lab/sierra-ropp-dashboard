@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-05T23:42:28.953401-07:00",
-  "generatedMs": 1785998548953,
+  "generated": "2026-08-05T23:43:25.558149-07:00",
+  "generatedMs": 1785998605558,
   "worst": "warn",
   "counts": {
     "ok": 11,
@@ -12,7 +12,7 @@
       "key": "livefeed",
       "label": "SILO live feed",
       "status": "ok",
-      "ageMin": 5,
+      "ageMin": 6,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-05T23:37:24.866000-07:00",
       "note": "fresh"
@@ -21,7 +21,7 @@
       "key": "servicefeed",
       "label": "Service live feed",
       "status": "ok",
-      "ageMin": 0,
+      "ageMin": 1,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-05T23:41:43.621000-07:00",
       "note": "fresh"
@@ -30,7 +30,7 @@
       "key": "hourly",
       "label": "ROPP hourly capture",
       "status": "ok",
-      "ageMin": 3,
+      "ageMin": 4,
       "expectMaxMin": 40,
       "lastUpdate": "2026-08-05T23:39:03.521000-07:00",
       "note": "outside ops hours"
@@ -57,7 +57,7 @@
       "key": "scorecards",
       "label": "SILO live scorecards",
       "status": "ok",
-      "ageMin": 52,
+      "ageMin": 53,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-05T22:50:04.131000-07:00",
       "note": "outside ops hours"
@@ -93,7 +93,7 @@
       "key": "tgl_conv",
       "label": "ServiceTitan TGL truth (conv.json)",
       "status": "ok",
-      "ageMin": 909,
+      "ageMin": 910,
       "expectMaxMin": 1800,
       "lastUpdate": "2026-08-05T08:32:37.698794-07:00",
       "note": "fresh"

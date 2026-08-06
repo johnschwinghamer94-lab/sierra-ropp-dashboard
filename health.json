@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-05T23:01:22.623088-07:00",
-  "generatedMs": 1785996082623,
+  "generated": "2026-08-05T23:02:15.562230-07:00",
+  "generatedMs": 1785996135562,
   "worst": "warn",
   "counts": {
     "ok": 11,
@@ -21,25 +21,25 @@
       "key": "servicefeed",
       "label": "Service live feed",
       "status": "ok",
-      "ageMin": 1,
+      "ageMin": 0,
       "expectMaxMin": 6,
-      "lastUpdate": "2026-08-05T22:59:56.004000-07:00",
+      "lastUpdate": "2026-08-05T23:01:59.896000-07:00",
       "note": "fresh"
     },
     {
       "key": "hourly",
       "label": "ROPP hourly capture",
       "status": "ok",
-      "ageMin": 3,
+      "ageMin": 1,
       "expectMaxMin": 40,
-      "lastUpdate": "2026-08-05T22:58:00.773000-07:00",
+      "lastUpdate": "2026-08-05T23:00:55.890000-07:00",
       "note": "outside ops hours"
     },
     {
       "key": "servicedata",
       "label": "Service Pulse data",
       "status": "ok",
-      "ageMin": 12,
+      "ageMin": 13,
       "expectMaxMin": 45,
       "lastUpdate": "2026-08-05T22:48:33.879547-07:00",
       "note": "outside ops hours"
@@ -48,7 +48,7 @@
       "key": "servicecalls",
       "label": "Calls board",
       "status": "ok",
-      "ageMin": 12,
+      "ageMin": 13,
       "expectMaxMin": 60,
       "lastUpdate": "2026-08-05T22:48:33.879547-07:00",
       "note": "outside ops hours"
@@ -57,7 +57,7 @@
       "key": "scorecards",
       "label": "SILO live scorecards",
       "status": "ok",
-      "ageMin": 11,
+      "ageMin": 12,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-05T22:50:04.131000-07:00",
       "note": "outside ops hours"
@@ -66,7 +66,7 @@
       "key": "servicecards",
       "label": "Service live scorecards",
       "status": "ok",
-      "ageMin": 69,
+      "ageMin": 70,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-05T21:51:27.337000-07:00",
       "note": "outside ops hours"
@@ -93,7 +93,7 @@
       "key": "tgl_conv",
       "label": "ServiceTitan TGL truth (conv.json)",
       "status": "ok",
-      "ageMin": 868,
+      "ageMin": 869,
       "expectMaxMin": 1800,
       "lastUpdate": "2026-08-05T08:32:37.698794-07:00",
       "note": "fresh"

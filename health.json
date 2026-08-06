@@ -1,10 +1,10 @@
 {
-  "generated": "2026-08-06T07:42:50.761193-07:00",
-  "generatedMs": 1786027370761,
+  "generated": "2026-08-06T07:58:58.747584-07:00",
+  "generatedMs": 1786028338747,
   "worst": "warn",
   "counts": {
-    "ok": 10,
-    "warn": 2,
+    "ok": 11,
+    "warn": 1,
     "dead": 0
   },
   "checks": [
@@ -14,7 +14,7 @@
       "status": "ok",
       "ageMin": 1,
       "expectMaxMin": 6,
-      "lastUpdate": "2026-08-06T07:41:28.723000-07:00",
+      "lastUpdate": "2026-08-06T07:57:19.179000-07:00",
       "note": "fresh"
     },
     {
@@ -23,41 +23,41 @@
       "status": "ok",
       "ageMin": 0,
       "expectMaxMin": 6,
-      "lastUpdate": "2026-08-06T07:42:42.444000-07:00",
+      "lastUpdate": "2026-08-06T07:58:19.842000-07:00",
       "note": "fresh"
     },
     {
       "key": "hourly",
       "label": "ROPP hourly capture",
       "status": "ok",
-      "ageMin": 3,
+      "ageMin": 2,
       "expectMaxMin": 40,
-      "lastUpdate": "2026-08-06T07:39:28.852000-07:00",
+      "lastUpdate": "2026-08-06T07:56:29.256000-07:00",
       "note": "fresh"
     },
     {
       "key": "servicedata",
       "label": "Service Pulse data",
       "status": "ok",
-      "ageMin": 11,
+      "ageMin": 2,
       "expectMaxMin": 45,
-      "lastUpdate": "2026-08-06T07:31:37.093197-07:00",
+      "lastUpdate": "2026-08-06T07:56:26.229303-07:00",
       "note": "fresh"
     },
     {
       "key": "servicecalls",
       "label": "Calls board",
       "status": "ok",
-      "ageMin": 11,
+      "ageMin": 2,
       "expectMaxMin": 60,
-      "lastUpdate": "2026-08-06T07:31:37.093197-07:00",
+      "lastUpdate": "2026-08-06T07:56:26.229303-07:00",
       "note": "fresh"
     },
     {
       "key": "scorecards",
       "label": "SILO live scorecards",
       "status": "ok",
-      "ageMin": 6,
+      "ageMin": 22,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-06T07:36:32.335000-07:00",
       "note": "fresh"
@@ -66,7 +66,7 @@
       "key": "servicecards",
       "label": "Service live scorecards",
       "status": "ok",
-      "ageMin": 60,
+      "ageMin": 76,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-06T06:42:49.080000-07:00",
       "note": "fresh"
@@ -75,25 +75,25 @@
       "key": "coaching",
       "label": "SILO daily plans",
       "status": "ok",
-      "ageMin": 2880,
+      "ageMin": 1440,
       "expectMaxMin": 1440,
-      "lastUpdate": "2026-08-04",
+      "lastUpdate": "2026-08-05",
       "note": "fresh (pre-generation window)"
     },
     {
       "key": "service_coaching",
       "label": "Service daily plans",
-      "status": "warn",
-      "ageMin": 4320,
+      "status": "ok",
+      "ageMin": 1440,
       "expectMaxMin": 1440,
-      "lastUpdate": "2026-08-03",
-      "note": "Daily coaching plan is 2 days behind \u2014 close-rate metrics may fall back to graded-call sampling."
+      "lastUpdate": "2026-08-05",
+      "note": "fresh (pre-generation window)"
     },
     {
       "key": "tgl_conv",
       "label": "ServiceTitan TGL truth (conv.json)",
       "status": "ok",
-      "ageMin": 1390,
+      "ageMin": 1406,
       "expectMaxMin": 1800,
       "lastUpdate": "2026-08-05T08:32:37.698794-07:00",
       "note": "fresh"

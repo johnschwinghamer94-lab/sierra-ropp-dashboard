@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-06T06:40:38.858718-07:00",
-  "generatedMs": 1786023638858,
+  "generated": "2026-08-06T06:41:25.130964-07:00",
+  "generatedMs": 1786023685130,
   "worst": "warn",
   "counts": {
     "ok": 10,
@@ -12,7 +12,7 @@
       "key": "livefeed",
       "label": "SILO live feed",
       "status": "ok",
-      "ageMin": 2,
+      "ageMin": 3,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-06T06:38:09.755000-07:00",
       "note": "fresh"
@@ -21,7 +21,7 @@
       "key": "servicefeed",
       "label": "Service live feed",
       "status": "ok",
-      "ageMin": 4,
+      "ageMin": 5,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-06T06:36:22.846000-07:00",
       "note": "fresh"
@@ -30,9 +30,9 @@
       "key": "hourly",
       "label": "ROPP hourly capture",
       "status": "ok",
-      "ageMin": 3,
+      "ageMin": 1,
       "expectMaxMin": 40,
-      "lastUpdate": "2026-08-06T06:37:10.710000-07:00",
+      "lastUpdate": "2026-08-06T06:40:07.258000-07:00",
       "note": "fresh"
     },
     {
@@ -57,7 +57,7 @@
       "key": "scorecards",
       "label": "SILO live scorecards",
       "status": "ok",
-      "ageMin": 0,
+      "ageMin": 1,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-06T06:40:04.097000-07:00",
       "note": "outside ops hours"

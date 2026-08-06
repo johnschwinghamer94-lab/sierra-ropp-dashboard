@@ -12433,7 +12433,13 @@ function HealthBanner() {
     const fails = { h: 0, l: 0 };
     const check = () => {
       const now = Date.now();
-      const grab = url => fetch(url + "?t=" + now).then(r => r.ok ? r.json() : null).catch(() => null);
+      // Read the SAME copy the tabs read (raw.githubusercontent), not the relative
+      // path. A bare "livefeed.json" resolves to GitHub Pages, whose deploy lags
+      // minutes behind a repo committing every 1-2 min — on 2026-08-06 Pages was
+      // serving 7:39a data at 7:57a, so this banner screamed "LIVE FEED STALE 18M"
+      // while the on-screen numbers were current to the minute. Cache-busting does
+      // not help: the lag is in the Pages build, not the edge. (John, 2026-08-06)
+      const grab = url => fetch("https://raw.githubusercontent.com/johnschwinghamer94-lab/sierra-ropp-dashboard/main/" + url + "?t=" + now).then(r => r.ok ? r.json() : null).catch(() => null);
       Promise.all([grab("hourly.json"), grab("livefeed.json")]).then(res => {
         if (!alive) return;
         const [hj, lj] = res;

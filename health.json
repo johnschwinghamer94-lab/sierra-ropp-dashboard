@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-06T07:58:58.747584-07:00",
-  "generatedMs": 1786028338747,
+  "generated": "2026-08-06T08:02:48.993665-07:00",
+  "generatedMs": 1786028568993,
   "worst": "warn",
   "counts": {
     "ok": 11,
@@ -12,7 +12,7 @@
       "key": "livefeed",
       "label": "SILO live feed",
       "status": "ok",
-      "ageMin": 1,
+      "ageMin": 5,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-06T07:57:19.179000-07:00",
       "note": "fresh"
@@ -21,7 +21,7 @@
       "key": "servicefeed",
       "label": "Service live feed",
       "status": "ok",
-      "ageMin": 0,
+      "ageMin": 4,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-06T07:58:19.842000-07:00",
       "note": "fresh"
@@ -30,7 +30,7 @@
       "key": "hourly",
       "label": "ROPP hourly capture",
       "status": "ok",
-      "ageMin": 2,
+      "ageMin": 6,
       "expectMaxMin": 40,
       "lastUpdate": "2026-08-06T07:56:29.256000-07:00",
       "note": "fresh"
@@ -39,7 +39,7 @@
       "key": "servicedata",
       "label": "Service Pulse data",
       "status": "ok",
-      "ageMin": 2,
+      "ageMin": 6,
       "expectMaxMin": 45,
       "lastUpdate": "2026-08-06T07:56:26.229303-07:00",
       "note": "fresh"
@@ -48,7 +48,7 @@
       "key": "servicecalls",
       "label": "Calls board",
       "status": "ok",
-      "ageMin": 2,
+      "ageMin": 6,
       "expectMaxMin": 60,
       "lastUpdate": "2026-08-06T07:56:26.229303-07:00",
       "note": "fresh"
@@ -57,7 +57,7 @@
       "key": "scorecards",
       "label": "SILO live scorecards",
       "status": "ok",
-      "ageMin": 22,
+      "ageMin": 26,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-06T07:36:32.335000-07:00",
       "note": "fresh"
@@ -66,7 +66,7 @@
       "key": "servicecards",
       "label": "Service live scorecards",
       "status": "ok",
-      "ageMin": 76,
+      "ageMin": 79,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-06T06:42:49.080000-07:00",
       "note": "fresh"
@@ -78,7 +78,7 @@
       "ageMin": 1440,
       "expectMaxMin": 1440,
       "lastUpdate": "2026-08-05",
-      "note": "fresh (pre-generation window)"
+      "note": "fresh"
     },
     {
       "key": "service_coaching",
@@ -87,13 +87,13 @@
       "ageMin": 1440,
       "expectMaxMin": 1440,
       "lastUpdate": "2026-08-05",
-      "note": "fresh (pre-generation window)"
+      "note": "fresh"
     },
     {
       "key": "tgl_conv",
       "label": "ServiceTitan TGL truth (conv.json)",
       "status": "ok",
-      "ageMin": 1406,
+      "ageMin": 1410,
       "expectMaxMin": 1800,
       "lastUpdate": "2026-08-05T08:32:37.698794-07:00",
       "note": "fresh"

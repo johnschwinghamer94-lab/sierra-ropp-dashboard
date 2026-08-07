@@ -1108,7 +1108,7 @@ function ServicePulseTab({onClassic}){
   const memSub = (W.membershipsSold!=null && W.membershipOpps!=null) ? (numOr0(W.membershipsSold)+" / "+numOr0(W.membershipOpps)+" opps") : "";
 
   const offerPct = W.membershipOfferRate!=null ? fmtPct(W.membershipOfferRate) : "—";
-  const offerSub = (W.membershipOffered!=null && W.membershipOfferJobs!=null) ? (numOr0(W.membershipOffered)+" / "+numOr0(W.membershipOfferJobs)+" calls offered") : "today/WTD only";
+  const offerSub = (W.membershipOffered!=null && W.membershipOfferJobs!=null) ? (numOr0(W.membershipOffered)+" / "+numOr0(W.membershipOfferJobs)+" non-member visits") : "today/WTD only";
   const offerColor = v=>v==null?"#7a8fa0":(v>=90?"#4ADE80":(v>=70?GOLD:"#E63946"));
 
   // dept avg options built per opportunity (weighted by opps) — 4-6 is the standard

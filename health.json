@@ -1,10 +1,10 @@
 {
-  "generated": "2026-08-06T18:00:57.206546-07:00",
-  "generatedMs": 1786064457206,
-  "worst": "warn",
+  "generated": "2026-08-06T18:22:24.901739-07:00",
+  "generatedMs": 1786065744901,
+  "worst": "ok",
   "counts": {
-    "ok": 10,
-    "warn": 2,
+    "ok": 12,
+    "warn": 0,
     "dead": 0
   },
   "checks": [
@@ -12,63 +12,63 @@
       "key": "livefeed",
       "label": "SILO live feed",
       "status": "ok",
-      "ageMin": 3,
+      "ageMin": 0,
       "expectMaxMin": 6,
-      "lastUpdate": "2026-08-06T17:57:43.469000-07:00",
+      "lastUpdate": "2026-08-06T18:21:27.371000-07:00",
       "note": "fresh"
     },
     {
       "key": "servicefeed",
       "label": "Service live feed",
       "status": "ok",
-      "ageMin": 0,
+      "ageMin": 1,
       "expectMaxMin": 6,
-      "lastUpdate": "2026-08-06T18:00:00.884000-07:00",
+      "lastUpdate": "2026-08-06T18:20:55.232000-07:00",
       "note": "fresh"
     },
     {
       "key": "hourly",
       "label": "ROPP hourly capture",
       "status": "ok",
-      "ageMin": 2,
+      "ageMin": 4,
       "expectMaxMin": 20,
-      "lastUpdate": "2026-08-06T17:58:07.692000-07:00",
+      "lastUpdate": "2026-08-06T18:17:32.812000-07:00",
       "note": "fresh"
     },
     {
       "key": "servicedata",
       "label": "Service Pulse data",
       "status": "ok",
-      "ageMin": 15,
+      "ageMin": 4,
       "expectMaxMin": 45,
-      "lastUpdate": "2026-08-06T17:45:35.156226-07:00",
+      "lastUpdate": "2026-08-06T18:17:53.247036-07:00",
       "note": "fresh"
     },
     {
       "key": "servicecalls",
       "label": "Calls board",
       "status": "ok",
-      "ageMin": 15,
+      "ageMin": 4,
       "expectMaxMin": 60,
-      "lastUpdate": "2026-08-06T17:45:35.156226-07:00",
+      "lastUpdate": "2026-08-06T18:17:53.247036-07:00",
       "note": "fresh"
     },
     {
       "key": "scorecards",
       "label": "SILO live scorecards",
       "status": "ok",
-      "ageMin": 0,
+      "ageMin": 11,
       "expectMaxMin": 180,
-      "lastUpdate": "2026-08-06T18:00:28.530000-07:00",
+      "lastUpdate": "2026-08-06T18:10:36.814000-07:00",
       "note": "fresh"
     },
     {
       "key": "servicecards",
       "label": "Service live scorecards",
       "status": "ok",
-      "ageMin": 22,
+      "ageMin": 1,
       "expectMaxMin": 180,
-      "lastUpdate": "2026-08-06T17:38:05.884000-07:00",
+      "lastUpdate": "2026-08-06T18:21:06.464000-07:00",
       "note": "fresh"
     },
     {
@@ -92,20 +92,20 @@
     {
       "key": "tgl_conv",
       "label": "ServiceTitan TGL truth (conv.json)",
-      "status": "warn",
-      "ageMin": 2008,
+      "status": "ok",
+      "ageMin": 3,
       "expectMaxMin": 1800,
-      "lastUpdate": "2026-08-05T08:32:37.698794-07:00",
-      "note": "TGL truth conv.json running behind \u2014 check the ServiceTitan credential/pull job."
+      "lastUpdate": "2026-08-06T18:18:26.836249-07:00",
+      "note": "fresh"
     },
     {
       "key": "tgl_truth_daily",
       "label": "TGL truth daily files",
-      "status": "warn",
-      "ageMin": 2880,
+      "status": "ok",
+      "ageMin": 0,
       "expectMaxMin": 1440,
-      "lastUpdate": "2026-08-04",
-      "note": "TGL truth daily files are running a day behind."
+      "lastUpdate": "2026-08-06",
+      "note": "fresh"
     },
     {
       "key": "deck_blob",

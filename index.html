@@ -154,6 +154,21 @@ input[type=range].kpi-range::-webkit-slider-thumb{-webkit-appearance:none;width:
     box-shadow:none!important;padding-left:12px!important;padding-right:12px!important;}
 }
 
+/* ── Short viewports / wall kiosk (John, 2026-08-06) ──────────────────────────
+   The phone rule above keys on WIDTH, but the wall TV is short, not narrow. At
+   1280x720 the tab strip wraps to two rows (116px -> 161px) and header + tabs
+   pinned ~310px of a 720px viewport: the top ~40% of the screen sat frozen while
+   a thin band underneath did all the scrolling. Measured 2026-08-06 — the same
+   page at 1920x1080 pins only 175px and scrolls 18px, which is why this never
+   showed up on a desktop monitor.
+   Same principle as the phone rule: when pinning costs more viewport than it
+   saves, don't pin. Kiosk mode auto-rotates tabs every 9s, so a pinned tab strip
+   earns nothing on the wall display anyway. */
+@media (max-height: 820px){
+  .tabs-pinned{position:static!important;backdrop-filter:none!important;
+    box-shadow:none!important;}
+}
+
 /* ── Round 4 Global ─────────────────────────────────────────── */
 tr.hov-row{transition:background .12s;}
 tr.hov-row:hover td{background:#13214f !important;}

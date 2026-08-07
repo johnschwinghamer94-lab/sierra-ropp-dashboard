@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-06T20:20:29.099144-07:00",
-  "generatedMs": 1786072829099,
+  "generated": "2026-08-06T20:35:31.427551-07:00",
+  "generatedMs": 1786073731427,
   "worst": "ok",
   "counts": {
     "ok": 12,
@@ -12,18 +12,18 @@
       "key": "livefeed",
       "label": "SILO live feed",
       "status": "ok",
-      "ageMin": 1,
+      "ageMin": 0,
       "expectMaxMin": 6,
-      "lastUpdate": "2026-08-06T20:18:47.416000-07:00",
+      "lastUpdate": "2026-08-06T20:34:49.102000-07:00",
       "note": "fresh"
     },
     {
       "key": "servicefeed",
       "label": "Service live feed",
       "status": "ok",
-      "ageMin": 1,
+      "ageMin": 0,
       "expectMaxMin": 6,
-      "lastUpdate": "2026-08-06T20:19:02.004000-07:00",
+      "lastUpdate": "2026-08-06T20:34:41.824000-07:00",
       "note": "fresh"
     },
     {
@@ -32,7 +32,7 @@
       "status": "ok",
       "ageMin": 3,
       "expectMaxMin": 20,
-      "lastUpdate": "2026-08-06T20:16:56.165000-07:00",
+      "lastUpdate": "2026-08-06T20:31:43.088000-07:00",
       "note": "fresh"
     },
     {
@@ -41,7 +41,7 @@
       "status": "ok",
       "ageMin": 4,
       "expectMaxMin": 45,
-      "lastUpdate": "2026-08-06T20:16:24.789839-07:00",
+      "lastUpdate": "2026-08-06T20:31:16.380815-07:00",
       "note": "fresh"
     },
     {
@@ -50,14 +50,14 @@
       "status": "ok",
       "ageMin": 4,
       "expectMaxMin": 60,
-      "lastUpdate": "2026-08-06T20:16:24.789839-07:00",
+      "lastUpdate": "2026-08-06T20:31:16.380815-07:00",
       "note": "fresh"
     },
     {
       "key": "scorecards",
       "label": "SILO live scorecards",
       "status": "ok",
-      "ageMin": 1,
+      "ageMin": 16,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-06T20:19:19.069000-07:00",
       "note": "fresh"
@@ -66,7 +66,7 @@
       "key": "servicecards",
       "label": "Service live scorecards",
       "status": "ok",
-      "ageMin": 119,
+      "ageMin": 134,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-06T18:21:06.464000-07:00",
       "note": "fresh"
@@ -95,7 +95,7 @@
       "status": "ok",
       "ageMin": 0,
       "expectMaxMin": 1800,
-      "lastUpdate": "2026-08-06T20:19:31.303131-07:00",
+      "lastUpdate": "2026-08-06T20:34:38.637658-07:00",
       "note": "fresh"
     },
     {

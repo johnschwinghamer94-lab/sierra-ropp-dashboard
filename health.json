@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-07T05:00:37.395103-07:00",
-  "generatedMs": 1786104037395,
+  "generated": "2026-08-07T05:00:50.447628-07:00",
+  "generatedMs": 1786104050447,
   "worst": "ok",
   "counts": {
     "ok": 12,
@@ -93,9 +93,9 @@
       "key": "tgl_conv",
       "label": "ServiceTitan TGL truth (conv.json)",
       "status": "ok",
-      "ageMin": 12,
+      "ageMin": 0,
       "expectMaxMin": 1800,
-      "lastUpdate": "2026-08-07T04:47:45.451464-07:00",
+      "lastUpdate": "2026-08-07T05:00:39.619512-07:00",
       "note": "fresh"
     },
     {

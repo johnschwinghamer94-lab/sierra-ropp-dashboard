@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-07T06:48:47.341212-07:00",
-  "generatedMs": 1786110527341,
+  "generated": "2026-08-07T07:31:43.632616-07:00",
+  "generatedMs": 1786113103632,
   "forDate": "2026-08-06",
   "yesterday": {
     "service": {
-      "revenue": 29461,
-      "calls": 83,
-      "closeRate": 42.2,
-      "avgTicket": 256,
-      "membershipsSold": 22,
-      "membershipOfferRate": 52.5,
+      "revenue": null,
+      "calls": null,
+      "closeRate": null,
+      "avgTicket": null,
+      "membershipsSold": null,
+      "membershipOfferRate": null,
       "vsPriorDay": null
     },
     "silo": {
@@ -30,10 +30,10 @@
       "severity": "high",
       "area": "board",
       "dept": "service",
-      "text": "THU 8/6 has 7 unassigned appointments still on the board.",
+      "text": "MON 8/10 has 5 unassigned appointments still on the board.",
       "metric": {
-        "date": "2026-08-06",
-        "unassigned": 7
+        "date": "2026-08-10",
+        "unassigned": 5
       }
     },
     {
@@ -50,9 +50,238 @@
       "severity": "high",
       "area": "recording",
       "dept": "service",
-      "text": "Kevin Rodriguez recorded 0% of 1 eligible jobs over the last 7 days.",
+      "text": "Service recording compliance is 0.0% over the last 7 days \u2014 below the 90% target.",
       "metric": {
-        "tech": "Kevin Rodriguez",
+        "deptPct": 0.0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "AJ Munoz recorded 0% of 2 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "AJ Munoz",
+        "eligible": 2,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Aaron Davis recorded 0% of 2 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Aaron Davis",
+        "eligible": 2,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Adrian Muniz recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Adrian Muniz",
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "CJ Lewis recorded 0% of 2 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "CJ Lewis",
+        "eligible": 2,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Chris Thomas recorded 0% of 5 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Chris Thomas",
+        "eligible": 5,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Christopher Moreno recorded 0% of 4 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Christopher Moreno",
+        "eligible": 4,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Corey Reding recorded 0% of 6 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Corey Reding",
+        "eligible": 6,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Fabian Pantoja recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Fabian Pantoja",
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Jack Jonathon Vanos recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Jack Jonathon Vanos",
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Jose Huesca recorded 0% of 5 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Jose Huesca",
+        "eligible": 5,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Joseph Byrd recorded 0% of 7 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Joseph Byrd",
+        "eligible": 7,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Josue Arciga recorded 0% of 2 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Josue Arciga",
+        "eligible": 2,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Juan Bernal recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Juan Bernal",
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Mario Conant recorded 0% of 3 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Mario Conant",
+        "eligible": 3,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Matthew Arnold recorded 0% of 4 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Matthew Arnold",
+        "eligible": 4,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Matthew Graves recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Matthew Graves",
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Michael Washington recorded 0% of 6 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Michael Washington",
+        "eligible": 6,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Mike (Jiangtao) Li recorded 0% of 2 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Mike (Jiangtao) Li",
+        "eligible": 2,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Pedro Manzanares recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Pedro Manzanares",
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Stanley Kim recorded 0% of 6 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Stanley Kim",
+        "eligible": 6,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Xavier Paredes recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Xavier Paredes",
         "eligible": 1,
         "pct": 0
       }
@@ -72,40 +301,31 @@
       "severity": "medium",
       "area": "board",
       "dept": "service",
-      "text": "FRI 8/7 has 2 unassigned appointments still on the board.",
+      "text": "FRI 8/7 has 3 unassigned appointments still on the board.",
       "metric": {
         "date": "2026-08-07",
-        "unassigned": 2
+        "unassigned": 3
       }
     },
     {
       "severity": "medium",
       "area": "board",
       "dept": "service",
-      "text": "MON 8/10 has 4 unassigned appointments still on the board.",
+      "text": "WED 8/12 has 1 unassigned appointment still on the board.",
       "metric": {
-        "date": "2026-08-10",
-        "unassigned": 4
-      }
-    },
-    {
-      "severity": "medium",
-      "area": "recording",
-      "dept": "service",
-      "text": "Service recording compliance is 84.0% over the last 7 days \u2014 below the 90% target.",
-      "metric": {
-        "deptPct": 84.0
+        "date": "2026-08-12",
+        "unassigned": 1
       }
     },
     {
       "severity": "low",
       "area": "pipeline",
       "dept": "service",
-      "text": "August is ahead of pace: $204,956 MTD vs ~$107,905 expected through 3 of 21 working days (+$97,051).",
+      "text": "August is ahead of pace: $209,808 MTD vs ~$143,873 expected through 4 of 21 working days (+$65,935).",
       "metric": {
-        "mtdActual": 204956,
-        "expected": 107905,
-        "gap": 97051
+        "mtdActual": 209808,
+        "expected": 143873,
+        "gap": 65935
       }
     }
   ],
@@ -113,20 +333,20 @@
     {
       "tech": "Matthew Arnold",
       "reason": "Financing mentioned as afterthought after customer declined",
-      "evidence": "failed critical flags: expectations, options, close; close rate 67%; recording compliance 100.0% (7-day)",
+      "evidence": "failed critical flags: expectations, options, close; close rate 67%; recording compliance 0.0% (7-day)",
       "planLink": "coaching/plans_service/2026-08-05/Matthew_Arnold.html"
-    },
-    {
-      "tech": "Adrian Muniz",
-      "reason": "Single solution path, closed well but no good/better/best",
-      "evidence": "failed critical flags: membership, close; close rate 100%; recording compliance 50.0% (7-day)",
-      "planLink": "coaching/plans_service/2026-08-05/Adrian_Muniz.html"
     },
     {
       "tech": "Josue Arciga",
       "reason": "Single repair paths only, 0 of 3 calls hit 4+ options",
-      "evidence": "failed critical flags: membership, close; close rate 67%; recording compliance 75.0% (7-day)",
+      "evidence": "failed critical flags: membership, close; close rate 67%; recording compliance 0.0% (7-day)",
       "planLink": "coaching/plans_service/2026-08-05/Josue_Arciga.html"
+    },
+    {
+      "tech": "Adrian Muniz",
+      "reason": "Single solution path, closed well but no good/better/best",
+      "evidence": "failed critical flags: membership, close; close rate 100%; recording compliance 0.0% (7-day)",
+      "planLink": "coaching/plans_service/2026-08-05/Adrian_Muniz.html"
     },
     {
       "tech": "Jack Vanos",
@@ -137,24 +357,11 @@
     {
       "tech": "Stanley Kim",
       "reason": "Only 1 of 6 calls hit 4+ options despite strong diagnosis",
-      "evidence": "failed critical flags: close; close rate 83%; recording compliance 100.0% (7-day)",
+      "evidence": "failed critical flags: close; close rate 83%; recording compliance 0.0% (7-day)",
       "planLink": "coaching/plans_service/2026-08-05/Stanley_Kim.html"
     }
   ],
-  "serviceWins": [
-    {
-      "tech": "Juan Bernal",
-      "text": "Juan Bernal offered a membership on 100.0% of 3 jobs on 2026-08-06."
-    },
-    {
-      "tech": "Josue Arciga",
-      "text": "Josue Arciga closed 100.0% on 3 opportunities on 2026-08-06."
-    },
-    {
-      "tech": "Adrian Muniz",
-      "text": "Adrian Muniz's closeRate improved from 33.33 to 100.0 since the 2026-08-05 coaching plan."
-    }
-  ],
+  "serviceWins": [],
   "siloCoachFocus": [
     {
       "tech": "Joe Mendoza",
@@ -197,20 +404,20 @@
     {
       "tech": "Matthew Arnold",
       "reason": "Financing mentioned as afterthought after customer declined",
-      "evidence": "failed critical flags: expectations, options, close; close rate 67%; recording compliance 100.0% (7-day)",
+      "evidence": "failed critical flags: expectations, options, close; close rate 67%; recording compliance 0.0% (7-day)",
       "planLink": "coaching/plans_service/2026-08-05/Matthew_Arnold.html"
-    },
-    {
-      "tech": "Adrian Muniz",
-      "reason": "Single solution path, closed well but no good/better/best",
-      "evidence": "failed critical flags: membership, close; close rate 100%; recording compliance 50.0% (7-day)",
-      "planLink": "coaching/plans_service/2026-08-05/Adrian_Muniz.html"
     },
     {
       "tech": "Josue Arciga",
       "reason": "Single repair paths only, 0 of 3 calls hit 4+ options",
-      "evidence": "failed critical flags: membership, close; close rate 67%; recording compliance 75.0% (7-day)",
+      "evidence": "failed critical flags: membership, close; close rate 67%; recording compliance 0.0% (7-day)",
       "planLink": "coaching/plans_service/2026-08-05/Josue_Arciga.html"
+    },
+    {
+      "tech": "Adrian Muniz",
+      "reason": "Single solution path, closed well but no good/better/best",
+      "evidence": "failed critical flags: membership, close; close rate 100%; recording compliance 0.0% (7-day)",
+      "planLink": "coaching/plans_service/2026-08-05/Adrian_Muniz.html"
     },
     {
       "tech": "Jack Vanos",
@@ -221,31 +428,18 @@
     {
       "tech": "Stanley Kim",
       "reason": "Only 1 of 6 calls hit 4+ options despite strong diagnosis",
-      "evidence": "failed critical flags: close; close rate 83%; recording compliance 100.0% (7-day)",
+      "evidence": "failed critical flags: close; close rate 83%; recording compliance 0.0% (7-day)",
       "planLink": "coaching/plans_service/2026-08-05/Stanley_Kim.html"
     }
   ],
-  "wins": [
-    {
-      "tech": "Juan Bernal",
-      "text": "Juan Bernal offered a membership on 100.0% of 3 jobs on 2026-08-06."
-    },
-    {
-      "tech": "Josue Arciga",
-      "text": "Josue Arciga closed 100.0% on 3 opportunities on 2026-08-06."
-    },
-    {
-      "tech": "Adrian Muniz",
-      "text": "Adrian Muniz's closeRate improved from 33.33 to 100.0 since the 2026-08-05 coaching plan."
-    }
-  ],
+  "wins": [],
   "health": {
     "worst": "ok",
     "dead": [],
     "warn": []
   },
   "notes": [
-    "vsPriorDay is null for Service: none of this engine's allowed sources (servicedata.json / servicecalls.json / servicefeed.json) retain a second day of per-day revenue/close-rate history \u2014 only the current live day is exposed.",
+    "servicedata.json's 'today' bucket is dated 2026-08-07, not the target business day 2026-08-06 \u2014 Service Pulse had not rolled to a new day (or is ahead of it) at digest run time, and this engine has no other closed-day Service revenue/close-rate source, so service.yesterday is null rather than presenting a live partial day as a confirmed closed day.",
     "hourly.json is dated 2026-08-07, not the target business day 2026-08-06 \u2014 it only ever exposes a live 'today' bucket, so it cannot be used for SILO yesterday figures; falling back to tgl_truth/conv.json for a genuine closed-day record.",
     "SILO yesterday calls/tgls/rate sourced from tgl_truth/conv.json for 2026-08-06 (closed-day record) \u2014 hourly.json could not supply the target business day.",
     "SILO yesterday.revenue is null \u2014 tgl_truth/conv.json does not carry revenue and hourly.json could not supply the target business day.",

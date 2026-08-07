@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-07T02:17:51.492886-07:00",
-  "generatedMs": 1786094271492,
+  "generated": "2026-08-07T02:42:28.489910-07:00",
+  "generatedMs": 1786095748489,
   "worst": "ok",
   "counts": {
     "ok": 12,
@@ -12,7 +12,7 @@
       "key": "livefeed",
       "label": "SILO live feed",
       "status": "ok",
-      "ageMin": 140,
+      "ageMin": 164,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-06T23:57:34.712000-07:00",
       "note": "outside ops hours"
@@ -21,7 +21,7 @@
       "key": "servicefeed",
       "label": "Service live feed",
       "status": "ok",
-      "ageMin": 139,
+      "ageMin": 164,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-06T23:58:04.438000-07:00",
       "note": "outside ops hours"
@@ -30,16 +30,16 @@
       "key": "hourly",
       "label": "ROPP hourly capture",
       "status": "ok",
-      "ageMin": 3,
+      "ageMin": 0,
       "expectMaxMin": 20,
-      "lastUpdate": "2026-08-07T02:14:49.328000-07:00",
+      "lastUpdate": "2026-08-07T02:42:04.585000-07:00",
       "note": "outside ops hours"
     },
     {
       "key": "servicedata",
       "label": "Service Pulse data",
       "status": "ok",
-      "ageMin": 147,
+      "ageMin": 172,
       "expectMaxMin": 45,
       "lastUpdate": "2026-08-06T23:50:05.844623-07:00",
       "note": "outside ops hours"
@@ -48,7 +48,7 @@
       "key": "servicecalls",
       "label": "Calls board",
       "status": "ok",
-      "ageMin": 147,
+      "ageMin": 172,
       "expectMaxMin": 60,
       "lastUpdate": "2026-08-06T23:50:05.844623-07:00",
       "note": "outside ops hours"
@@ -57,7 +57,7 @@
       "key": "scorecards",
       "label": "SILO live scorecards",
       "status": "ok",
-      "ageMin": 213,
+      "ageMin": 237,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-06T22:44:50.229000-07:00",
       "note": "outside ops hours"
@@ -66,7 +66,7 @@
       "key": "servicecards",
       "label": "Service live scorecards",
       "status": "ok",
-      "ageMin": 160,
+      "ageMin": 185,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-06T23:37:14.680000-07:00",
       "note": "outside ops hours"
@@ -93,9 +93,9 @@
       "key": "tgl_conv",
       "label": "ServiceTitan TGL truth (conv.json)",
       "status": "ok",
-      "ageMin": 0,
+      "ageMin": 7,
       "expectMaxMin": 1800,
-      "lastUpdate": "2026-08-07T02:17:26.916483-07:00",
+      "lastUpdate": "2026-08-07T02:35:09.794192-07:00",
       "note": "fresh"
     },
     {

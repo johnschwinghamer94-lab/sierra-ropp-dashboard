@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-07T06:45:35.268198-07:00",
-  "generatedMs": 1786110335268,
+  "generated": "2026-08-07T06:48:47.341212-07:00",
+  "generatedMs": 1786110527341,
   "forDate": "2026-08-06",
   "yesterday": {
     "service": {
@@ -14,13 +14,13 @@
     },
     "silo": {
       "calls": 23,
-      "tgls": 17,
-      "rate": 73.9,
+      "tgls": 16,
+      "rate": 69.6,
       "revenue": null,
       "vsPriorDay": {
         "calls": -12,
-        "tgls": -11,
-        "rate": -6.1,
+        "tgls": -12,
+        "rate": -10.4,
         "revenue": null
       }
     }

@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-08T06:51:11.778617-07:00",
-  "generatedMs": 1786197071778,
+  "generated": "2026-08-08T07:06:09.039211-07:00",
+  "generatedMs": 1786197969039,
   "forDate": "2026-08-07",
   "yesterday": {
     "service": {
@@ -82,10 +82,21 @@
       "severity": "high",
       "area": "recording",
       "dept": "service",
-      "text": "Pedro Manzanares recorded 0% of 1 eligible jobs over the last 7 days.",
+      "text": "Mike (Jiangtao) Li recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Mike (Jiangtao) Li",
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Pedro Manzanares recorded 0% of 2 eligible jobs over the last 7 days.",
       "metric": {
         "tech": "Pedro Manzanares",
-        "eligible": 1,
+        "eligible": 2,
         "pct": 0
       }
     },
@@ -126,20 +137,10 @@
       "severity": "medium",
       "area": "board",
       "dept": "service",
-      "text": "SAT 8/8 has 2 unassigned appointments still on the board.",
-      "metric": {
-        "date": "2026-08-08",
-        "unassigned": 2
-      }
-    },
-    {
-      "severity": "medium",
-      "area": "board",
-      "dept": "service",
-      "text": "MON 8/10 has 3 unassigned appointments still on the board.",
+      "text": "MON 8/10 has 4 unassigned appointments still on the board.",
       "metric": {
         "date": "2026-08-10",
-        "unassigned": 3
+        "unassigned": 4
       }
     },
     {

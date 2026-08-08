@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-08T06:35:04.282711-07:00",
-  "generatedMs": 1786196104282,
+  "generated": "2026-08-08T06:38:32.164498-07:00",
+  "generatedMs": 1786196312164,
   "forDate": "2026-08-07",
   "yesterday": {
     "service": {
@@ -49,10 +49,32 @@
       "severity": "high",
       "area": "recording",
       "dept": "service",
-      "text": "Josue Arciga recorded 0% of 2 eligible jobs over the last 7 days.",
+      "text": "Jack Jonathon Vanos recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Jack Jonathon Vanos",
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Josue Arciga recorded 0% of 1 eligible jobs over the last 7 days.",
       "metric": {
         "tech": "Josue Arciga",
-        "eligible": 2,
+        "eligible": 1,
+        "pct": 0
+      }
+    },
+    {
+      "severity": "high",
+      "area": "recording",
+      "dept": "service",
+      "text": "Matthew Graves recorded 0% of 1 eligible jobs over the last 7 days.",
+      "metric": {
+        "tech": "Matthew Graves",
+        "eligible": 1,
         "pct": 0
       }
     },
@@ -82,10 +104,10 @@
       "severity": "high",
       "area": "recording",
       "dept": "service",
-      "text": "Xavier Paredes recorded 0% of 2 eligible jobs over the last 7 days.",
+      "text": "Xavier Paredes recorded 0% of 1 eligible jobs over the last 7 days.",
       "metric": {
         "tech": "Xavier Paredes",
-        "eligible": 2,
+        "eligible": 1,
         "pct": 0
       }
     },
@@ -178,10 +200,10 @@
       "planLink": "coaching/plans_service/2026-08-06/Josue_Arciga.html"
     },
     {
-      "tech": "Chris Thomas",
-      "reason": "Talks himself out of sales",
-      "evidence": "failed critical flags: expectations, membership; close rate 33%",
-      "planLink": "coaching/plans_service/2026-08-06/Chris_Thomas.html"
+      "tech": "Matthew Graves",
+      "reason": "Referral-out with no capture",
+      "evidence": "failed critical flags: membership, close; close rate 50%; recording compliance 0.0% (7-day)",
+      "planLink": "coaching/plans_service/2026-08-06/Matthew_Graves.html"
     }
   ],
   "serviceWins": [],
@@ -244,10 +266,10 @@
       "planLink": "coaching/plans_service/2026-08-06/Josue_Arciga.html"
     },
     {
-      "tech": "Chris Thomas",
-      "reason": "Talks himself out of sales",
-      "evidence": "failed critical flags: expectations, membership; close rate 33%",
-      "planLink": "coaching/plans_service/2026-08-06/Chris_Thomas.html"
+      "tech": "Matthew Graves",
+      "reason": "Referral-out with no capture",
+      "evidence": "failed critical flags: membership, close; close rate 50%; recording compliance 0.0% (7-day)",
+      "planLink": "coaching/plans_service/2026-08-06/Matthew_Graves.html"
     }
   ],
   "wins": [],

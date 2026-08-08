@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-08T12:42:35.252841-07:00",
-  "generatedMs": 1786218155252,
+  "generated": "2026-08-08T12:43:09.689238-07:00",
+  "generatedMs": 1786218189689,
   "worst": "ok",
   "counts": {
     "ok": 12,
@@ -12,7 +12,7 @@
       "key": "livefeed",
       "label": "SILO live feed",
       "status": "ok",
-      "ageMin": 0,
+      "ageMin": 1,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-08T12:42:01.921000-07:00",
       "note": "fresh"
@@ -21,7 +21,7 @@
       "key": "servicefeed",
       "label": "Service live feed",
       "status": "ok",
-      "ageMin": 0,
+      "ageMin": 1,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-08T12:41:40.009000-07:00",
       "note": "fresh"
@@ -93,7 +93,7 @@
       "key": "tgl_conv",
       "label": "ServiceTitan TGL truth (conv.json)",
       "status": "ok",
-      "ageMin": 9,
+      "ageMin": 10,
       "expectMaxMin": 1800,
       "lastUpdate": "2026-08-08T12:32:40.967912-07:00",
       "note": "fresh"

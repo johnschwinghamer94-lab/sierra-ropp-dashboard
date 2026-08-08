@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-08T04:25:30.434660-07:00",
-  "generatedMs": 1786188330434,
+  "generated": "2026-08-08T04:41:55.201179-07:00",
+  "generatedMs": 1786189315201,
   "worst": "ok",
   "counts": {
     "ok": 12,
@@ -12,7 +12,7 @@
       "key": "livefeed",
       "label": "SILO live feed",
       "status": "ok",
-      "ageMin": 265,
+      "ageMin": 281,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-07T23:59:54.586000-07:00",
       "note": "outside ops hours"
@@ -21,7 +21,7 @@
       "key": "servicefeed",
       "label": "Service live feed",
       "status": "ok",
-      "ageMin": 268,
+      "ageMin": 285,
       "expectMaxMin": 6,
       "lastUpdate": "2026-08-07T23:56:42.359000-07:00",
       "note": "outside ops hours"
@@ -30,16 +30,16 @@
       "key": "hourly",
       "label": "ROPP hourly capture",
       "status": "ok",
-      "ageMin": 6,
+      "ageMin": 0,
       "expectMaxMin": 20,
-      "lastUpdate": "2026-08-08T04:18:42.834000-07:00",
+      "lastUpdate": "2026-08-08T04:41:35.682000-07:00",
       "note": "outside ops hours"
     },
     {
       "key": "servicedata",
       "label": "Service Pulse data",
       "status": "ok",
-      "ageMin": 257,
+      "ageMin": 274,
       "expectMaxMin": 45,
       "lastUpdate": "2026-08-08T00:07:34.929525-07:00",
       "note": "outside ops hours"
@@ -48,7 +48,7 @@
       "key": "servicecalls",
       "label": "Calls board",
       "status": "ok",
-      "ageMin": 257,
+      "ageMin": 274,
       "expectMaxMin": 60,
       "lastUpdate": "2026-08-08T00:07:34.929525-07:00",
       "note": "outside ops hours"
@@ -57,7 +57,7 @@
       "key": "scorecards",
       "label": "SILO live scorecards",
       "status": "ok",
-      "ageMin": 339,
+      "ageMin": 356,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-07T22:45:40.449000-07:00",
       "note": "outside ops hours"
@@ -66,7 +66,7 @@
       "key": "servicecards",
       "label": "Service live scorecards",
       "status": "ok",
-      "ageMin": 335,
+      "ageMin": 351,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-07T22:49:55.351000-07:00",
       "note": "outside ops hours"
@@ -95,7 +95,7 @@
       "status": "ok",
       "ageMin": 7,
       "expectMaxMin": 1800,
-      "lastUpdate": "2026-08-08T04:18:11.496365-07:00",
+      "lastUpdate": "2026-08-08T04:34:21.241614-07:00",
       "note": "fresh"
     },
     {

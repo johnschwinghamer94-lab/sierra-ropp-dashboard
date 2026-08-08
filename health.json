@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-08T10:40:37.986307-07:00",
-  "generatedMs": 1786210837986,
+  "generated": "2026-08-08T10:48:54.279498-07:00",
+  "generatedMs": 1786211334279,
   "worst": "ok",
   "counts": {
     "ok": 12,
@@ -12,34 +12,34 @@
       "key": "livefeed",
       "label": "SILO live feed",
       "status": "ok",
-      "ageMin": 1,
+      "ageMin": 0,
       "expectMaxMin": 6,
-      "lastUpdate": "2026-08-08T10:39:00.626000-07:00",
+      "lastUpdate": "2026-08-08T10:48:01.872000-07:00",
       "note": "fresh"
     },
     {
       "key": "servicefeed",
       "label": "Service live feed",
       "status": "ok",
-      "ageMin": 2,
+      "ageMin": 0,
       "expectMaxMin": 6,
-      "lastUpdate": "2026-08-08T10:38:15.991000-07:00",
+      "lastUpdate": "2026-08-08T10:48:29.658000-07:00",
       "note": "fresh"
     },
     {
       "key": "hourly",
       "label": "ROPP hourly capture",
       "status": "ok",
-      "ageMin": 0,
+      "ageMin": 1,
       "expectMaxMin": 20,
-      "lastUpdate": "2026-08-08T10:39:38.227000-07:00",
+      "lastUpdate": "2026-08-08T10:47:21.931000-07:00",
       "note": "fresh"
     },
     {
       "key": "servicedata",
       "label": "Service Pulse data",
       "status": "ok",
-      "ageMin": 10,
+      "ageMin": 18,
       "expectMaxMin": 45,
       "lastUpdate": "2026-08-08T10:30:27.051314-07:00",
       "note": "fresh"
@@ -48,7 +48,7 @@
       "key": "servicecalls",
       "label": "Calls board",
       "status": "ok",
-      "ageMin": 10,
+      "ageMin": 18,
       "expectMaxMin": 60,
       "lastUpdate": "2026-08-08T10:30:27.051314-07:00",
       "note": "fresh"
@@ -57,16 +57,16 @@
       "key": "scorecards",
       "label": "SILO live scorecards",
       "status": "ok",
-      "ageMin": 11,
+      "ageMin": 2,
       "expectMaxMin": 180,
-      "lastUpdate": "2026-08-08T10:28:37.178000-07:00",
+      "lastUpdate": "2026-08-08T10:46:24.232000-07:00",
       "note": "fresh"
     },
     {
       "key": "servicecards",
       "label": "Service live scorecards",
       "status": "ok",
-      "ageMin": 1,
+      "ageMin": 10,
       "expectMaxMin": 180,
       "lastUpdate": "2026-08-08T10:38:38.674000-07:00",
       "note": "fresh"
@@ -93,7 +93,7 @@
       "key": "tgl_conv",
       "label": "ServiceTitan TGL truth (conv.json)",
       "status": "ok",
-      "ageMin": 7,
+      "ageMin": 16,
       "expectMaxMin": 1800,
       "lastUpdate": "2026-08-08T10:32:49.174367-07:00",
       "note": "fresh"
